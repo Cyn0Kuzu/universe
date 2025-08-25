@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "universe",
+    "slug": "universe-kampus", 
+    "version": "1.2.0",
+    "orientation": "portrait",
+    "icon": "./assets/compact_icon.png",
+    "userInterfaceStyle": "light",
+    "description": "Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu.",
+    "privacy": "public",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "jsEngine": "hermes",
+    "platforms": ["ios", "android", "web"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.universekampus.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir.",
+        "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
+        "NSLocationWhenInUseUsageDescription": "Yakınızdaki etkinlikleri göstermek için konum bilgisi kullanılır."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/compact_icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.universekampus.app",
+      "versionCode": 2
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
+          "cameraPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir."
+        }
+      ],
+      "expo-font"
+    ],
+    "extra": {
+      "firebaseApiKey": "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc",
+      "firebaseAuthDomain": "universe-a6f60.firebaseapp.com",
+      "firebaseProjectId": "universe-a6f60",
+      "firebaseStorageBucket": "universe-a6f60.appspot.com",
+      "firebaseMessagingSenderId": "946853543876",
+      "firebaseAppId": "1:946853543876:android:7a40780d639fa5f763ae91",
+      "eas": {
+        "projectId": "87915ccc-6506-4464-8a60-1573cbc33a76"
+      }
+    }
+  }
+}
