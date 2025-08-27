@@ -433,11 +433,14 @@ export const createEventWithScoring = async (
           (clubDoc.data()?.name || clubDoc.data()?.displayName || 'Kulüp') : 'Kulüp';
         
         // 1. Send notification to the club itself (for admin dashboard)
-        // TODO: Replace with ClubNotificationService
-        console.log('Event creation notification would be sent to club:', eventData.clubId);
-        // await enhancedClubNotificationService.sendEventNotification(
-        //   eventData.clubId, docRef.id, eventData.title, eventData.clubId, clubName, 'event_created'
-        // );
+        const ClubNotificationService = require('../services/clubNotificationService').default;
+        const notificationService = ClubNotificationService.getInstance();
+        await notificationService.notifyEventCreated(
+          eventData.clubId,
+          docRef.id,
+          eventData.title,
+          eventData.date.toDate()
+        );
         
         // 2. Send notification to club followers/members
         const followersSnapshot = await firestore

@@ -224,16 +224,15 @@ export class PushNotificationDebugService {
       }
 
       // Send test notification
-      await sendExpoPush(
-        tokens,
-        '🎉 Test Bildirimi',
-        'Push notification sistemi başarıyla çalışıyor!',
-        {
+      await sendExpoPush(tokens, {
+        title: '🎉 Test Bildirimi',
+        body: 'Push notification sistemi başarıyla çalışıyor!',
+        data: {
           type: 'test',
           category: 'system',
           testTime: new Date().toISOString()
         }
-      );
+      });
 
       console.log('✅ Test push notification sent to', tokens.length, 'tokens');
       return true;

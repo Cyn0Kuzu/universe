@@ -482,34 +482,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!snap.exists) return;
         const data: any = snap.data() || {};
         
-        // TEMPORARILY DISABLED - Causing incorrect student → club conversions
-        // TODO: Fix the logic to properly detect club accounts vs student accounts
-        /*
-        // Determine signals that indicate this is a club
-        const bioText = (data.bio || '').toString().toLowerCase();
-        const displayNameText = (data.displayName || '').toString().toLowerCase();
-        const looksLikeClub = !!(
-          data.accountType === 'club' ||
-          data.clubName ||
-          (Array.isArray(data.clubTypes) && data.clubTypes.length > 0) ||
-          data.description ||
-          bioText.includes('kulüp') || bioText.includes('kulup') ||
-          displayNameText.includes('kulüp') || displayNameText.includes('kulup')
-        );
-        const session = await SecureStorage.getUserSession().catch(() => null as any);
-        const pending = await SecureStorage.getCache('pending_profile').catch(() => null as any);
-        const sessionSaysClub = session?.userType === 'club' || pending?.userType === 'club';
-
-        if (data.userType !== 'club' && (looksLikeClub || sessionSaysClub)) {
-          console.log('🛡️ Real-time guard: correcting userType to club');
-          await firebase.firestore().collection('users').doc(uid).update({
-            userType: 'club',
-            accountType: 'club'
-          });
-          // Also update local state profile quickly
-          setUserProfile((prev: any) => prev ? { ...prev, userType: 'club', accountType: 'club' } : prev);
+        // Club account detection based on email domain and explicit account type
+        let userTypeToSet = data.userType || 'student';
+        
+        if (data.accountType === 'club' || data.isClub === true) {
+          // Explicitly marked as club account
+          userTypeToSet = 'club';
+        } else if (data.email && data.email.includes('@club.')) {
+          // Club domain detection
+          userTypeToSet = 'club';
+        } else if (data.clubName || (Array.isArray(data.clubTypes) && data.clubTypes.length > 0)) {
+          // Has club-specific fields
+          userTypeToSet = 'club';
         }
-        */
+
+        // Update user type if needed
+        if (data.userType !== userTypeToSet) {
+          await firebase.firestore().collection('users').doc(uid).update({
+            userType: userTypeToSet,
+            accountType: userTypeToSet
+          });
+          setUserProfile((prev: any) => prev ? { ...prev, userType: userTypeToSet, accountType: userTypeToSet } : prev);
+        }
 
         // TEMPORARILY DISABLED - Real-time name repair causing issues
         /*

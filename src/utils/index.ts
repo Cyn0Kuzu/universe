@@ -26,11 +26,10 @@ export * from './notificationHelper';
 export * from './usernameUtils';
 export * from './cleanupTestData';
 export * from './notificationDebugger';
+export * from './validation';
+export * from './dateUtils';
+export * from './styleUtils';
+export * from './networkUtils';
+export * from './errorHandling';
 
-// TODO: Add more utilities as they are created
-// - errorHandling.ts (centralized error handling)
-// - analytics.ts (analytics utilities)
-// - permissions.ts (permission handling)
-// - biometrics.ts (biometric authentication)
-// - deepLink.ts (deep linking utilities)
-// - storage.ts (enhanced storage utilities)
+// All utility functions are available for import throughout the application

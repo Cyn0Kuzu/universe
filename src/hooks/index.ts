@@ -16,11 +16,6 @@ export * from './useUnifiedLeaderboard';
 // State Management Hooks
 export * from './useGlobalFollowState';
 
-// TODO: Add more hooks as they are created
-// - useTheme (for theme switching)
-// - useAuth (authentication state management)
-// - useFormValidation (form validation utilities)
-// - useDebounce (debounced input handling)
-// - useAsyncStorage (storage utilities)
-// - useNetworkStatus (network connectivity)
+// Additional hooks are available in their respective files
+// This file serves as the main export point for all custom hooks
 // - usePushNotifications (push notification management)

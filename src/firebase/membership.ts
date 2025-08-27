@@ -292,11 +292,14 @@ export const sendMembershipNotification = async (
     const userProfileImage = userData?.profileImageURL || userData?.photoURL;
     
     // Send notification using the enhanced service
-    // TODO: Replace with ClubNotificationService
-    console.log('Membership request notification would be sent');
-    // await enhancedClubNotificationService.sendMembershipNotification(
-    //   clubId, clubId, userData?.clubName || 'Kulüp', userId, userName, 'membership_request'
-    // );
+    const ClubNotificationService = require('../services/clubNotificationService').default;
+    const notificationService = ClubNotificationService.getInstance();
+    await notificationService.sendAnnouncement(
+      clubId,
+      'Yeni Üyelik Başvurusu',
+      `${userName} kulübünüze katılma başvurusu yaptı.`,
+      { userId, userName, userProfileImage }
+    );
     
     console.log('✅ Membership request notification sent successfully');
   } catch (error) {

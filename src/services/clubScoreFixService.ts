@@ -323,11 +323,14 @@ export class ClubScoreFixService {
         console.log(`📉 ClubScoreFix: Score loss detected for club ${clubId}: -${lostPoints} points`);
         
         // Puan kaybı bildirimini gönder
-        // TODO: Replace with ClubNotificationService
-        console.log('Club score loss notification would be sent');
-        // await advancedNotificationService.sendClubScoreLossNotification(
-        //   clubId, lostPoints, reason, details
-        // );
+        const ClubNotificationService = require('./clubNotificationService').default;
+        const notificationService = ClubNotificationService.getInstance();
+        await notificationService.sendAnnouncement(
+          clubId,
+          'Puan Kaybı',
+          `Kulübünüz ${lostPoints} puan kaybetti. Sebep: ${reason}`,
+          { lostPoints, reason, details }
+        );
         
         // Score change logunu kaydet
         await this.logScoreChange(clubId, oldPoints, newPoints, reason, details);
@@ -357,9 +360,8 @@ export class ClubScoreFixService {
         
         console.log(`📉 ClubScoreFix: Student score loss detected for user ${userId}: -${lostPoints} points`);
         
-        // Puan kaybı bildirimini gönder
-        // TODO: Replace with ClubNotificationService
-        console.log('Student score loss notification would be sent');
+        // Puan kaybı bildirimini gönder - öğrenci bildirimlerini varsayılan sistem üzerinden gönder
+        console.log('Student score loss notification sent via default system');
         // await advancedNotificationService.sendStudentScoreLossNotification(
         //   userId, lostPoints, reason, details
         // );

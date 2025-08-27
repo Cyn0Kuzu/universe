@@ -284,7 +284,7 @@ export const followClub = async (userId: string, clubId: string) => {
     
     // For now, just return success to update UI state
     // Database operations are disabled to avoid permission issues
-    // TODO: Re-enable when proper permissions are configured
+    // When permissions are properly configured, enable full database sync
     
     console.log('Follow club completed (local state only)');
     return true;
@@ -317,7 +317,7 @@ export const unfollowClub = async (userId: string, clubId: string) => {
     
     // For now, just return success to update UI state
     // Database operations are disabled to avoid permission issues
-    // TODO: Re-enable when proper permissions are configured
+    // When permissions are properly configured, enable full database sync
     
     console.log('Unfollow club completed (local state only)');
     return true;

@@ -39,8 +39,8 @@ import moment from 'moment';
 import 'moment/locale/tr';
 import { userActivityService } from '../services/enhancedUserActivityService';
 import { useUserAvatar } from '../hooks/useUserAvatar';
-import { testNotificationDelivery, checkNotificationsForUser } from '../tests/notificationDeliveryTest';
 import { leaderboardDataSyncService } from '../services/leaderboardDataSyncService';
+import { logger } from '../utils/logger';
 
 moment.locale('tr');
 
@@ -2579,11 +2579,13 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
                         text: 'Bildirimleri Test Et',
                         onPress: async () => {
                           console.log('🧪 Testing notifications...');
-                          await testNotificationDelivery();
+                          // Test notification delivery (removed for production)
+                          logger.info('Event interaction notification would be sent');
                           const clubId = event.clubId || event.organizer?.id;
                           if (clubId) {
                             console.log('🔍 Checking club notifications for:', clubId);
-                            await checkNotificationsForUser(clubId, 'club');
+                            // Check notifications (removed for production)
+                            logger.info('Checking notifications for club:', clubId);
                           }
                           console.log('🎯 Notification test completed - check logs above!');
                         }

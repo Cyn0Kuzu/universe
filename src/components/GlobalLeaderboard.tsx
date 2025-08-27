@@ -257,7 +257,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
               weeklyScore: validatedPoints, // Club'lar için aynı değer
               level: Math.max(1, Math.floor(validatedPoints / 1000) + 1),
               rank: scoreData.rank || 1,
-              eventCount: 0, // TODO: Bu bilgiyi ekleyebiliriz
+              eventCount: scoreData.eventCount || 0, // Etkinlik sayısı varsa kullan
               lastActivity: firebase.firestore.Timestamp.now()
             } as LeaderboardEntry;
           })
@@ -297,7 +297,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
               weeklyScore: rankData.weeklyPoints,
               level: rankData.level,
               rank: rankData.rank,
-              eventCount: 0, // TODO: Bu bilgiyi ekleyebiliriz
+              eventCount: (rankData as any).eventCount || 0, // Etkinlik sayısı varsa kullan
               lastActivity: firebase.firestore.Timestamp.now()
             } as LeaderboardEntry;
           })

@@ -1,38 +1,64 @@
 {
   "expo": {
-    "name": "universe",
-    "slug": "universe-kampus", 
+    "name": "Universe Campus",
+    "slug": "universe-kampus",
     "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/compact_icon.png",
-    "userInterfaceStyle": "light",
-    "description": "Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu.",
+    "userInterfaceStyle": "automatic",
+    "description": "Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu. Kampüsünüzdeki tüm etkinlikleri takip edin, kulüplere üye olun ve sosyal ağınızı genişletin.",
     "privacy": "public",
+    "primaryColor": "#6750A4",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#6750A4"
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "jsEngine": "hermes",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.universekampus.app",
-      "buildNumber": "1",
+      "buildNumber": "2",
+      "requireFullScreen": false,
       "infoPlist": {
         "NSCameraUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir.",
         "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
-        "NSLocationWhenInUseUsageDescription": "Yakınızdaki etkinlikleri göstermek için konum bilgisi kullanılır."
+        "NSLocationWhenInUseUsageDescription": "Yakınızdaki etkinlikleri göstermek için konum bilgisi kullanılır.",
+        "NSUserNotificationsUsageDescription": "Etkinlik hatırlatmaları ve önemli duyurular için bildirim izni gereklidir.",
+        "UIBackgroundModes": [
+          "background-fetch",
+          "remote-notification"
+        ]
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/compact_icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#6750A4"
       },
       "package": "com.universekampus.app",
-      "versionCode": 2
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "versionCode": 2,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK"
+      ],
+      "useNextNotificationsApi": true
     },
     "plugins": [
       [
@@ -40,6 +66,29 @@
         {
           "photosPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
           "cameraPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/compact_icon.png",
+          "color": "#6750A4",
+          "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0",
+            "proguardMinifyEnabled": true,
+            "enableProguardInReleaseBuilds": true
+          },
+          "ios": {
+            "deploymentTarget": "13.0"
+          }
         }
       ],
       "expo-font"
