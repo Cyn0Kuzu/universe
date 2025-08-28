@@ -13,7 +13,7 @@ interface PushMessage {
   subtitle?: string;
 }
 
-interface PushNotificationResult {
+export interface PushNotificationResult {
   success: boolean;
   message?: string;
   error?: string;
@@ -26,6 +26,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 

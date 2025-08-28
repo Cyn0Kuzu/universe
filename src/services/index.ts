@@ -152,5 +152,22 @@ export class ServiceManager {
   }
 }
 
+// 📱 Push Notification Services
+export { 
+  sendLocalNotification,
+  sendExpoPush,
+  sendBulkExpoPush,
+  getPushToken,
+  validatePushToken,
+  configureNotificationChannel
+} from './pushNotifications';
+export type { PushNotificationResult } from './pushNotifications';
+
+export { 
+  PushNotificationDebugService,
+  pushNotificationDebugService
+} from './pushNotificationDebugService';
+export type { PushNotificationStatus } from './pushNotificationDebugService';
+
 // Singleton instance for global service management
 export const serviceManager = ServiceManager.getInstance();
