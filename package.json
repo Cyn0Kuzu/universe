@@ -1,6 +1,7 @@
 {
   "name": "universe",
   "version": "1.0.0",
+  "description": "Üniversite Evreni - Üniversite öğrencileri için sosyal kampüs platformu",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -42,7 +43,8 @@
     "react-native-reanimated": "~3.6.2",
     "react-native-safe-area-context": "4.8.2",
     "react-native-screens": "~3.29.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "expo-dev-client": "~3.3.12"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",

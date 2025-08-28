@@ -8,6 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { auth, firestore, firebase } from '../../firebase/config';
 import { globalAvatarCache } from '../../services/globalAvatarCacheService';
+import { advancedStorageService } from '../../services/advancedFirebaseStorageService';
 import { 
   refreshUserProfileCounts,
   getFollowerCountFromStorage,
@@ -821,7 +822,7 @@ const ProfileScreen: React.FC = () => {
     );
   };
   
-  // Handle edit profile
+  // Handle edit profile with Advanced Storage Service
   const handleEditProfile = async (imageType = 'profile') => {
     if (!currentUser) {
       Alert.alert('Hata', 'Oturum açmanız gerekiyor.');
@@ -829,7 +830,7 @@ const ProfileScreen: React.FC = () => {
     }
     
     try {
-      // İzin kontrolü
+      // Permission check
       if (Platform.OS !== 'web') {
         const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!galleryStatus.granted) {
@@ -843,7 +844,7 @@ const ProfileScreen: React.FC = () => {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: imageType === 'profile' ? [1, 1] as [number, number] : [16, 9] as [number, number],
-        quality: 0.5,
+        quality: 0.8,
         exif: false,
       };
       
@@ -856,69 +857,60 @@ const ProfileScreen: React.FC = () => {
         setRefreshing(true);
         
         try {
-          console.log('Resim yükleme başladı:', result.assets[0].uri);
+          console.log('🚀 Starting professional image upload:', result.assets[0].uri);
           
-          // Yeni yaklaşım: Base64'e çevir ve direkt Firestore'a kaydet
-          const fieldToUpdate = imageType === 'profile' ? 'profileImage' : 'coverImage';
+          // Determine image type for storage service
+          const storageImageType = imageType === 'profile' ? 'profile_avatar' : 'profile_cover';
           
-          // Resmi Base64'e çevirme işlemi
-          const manipulateResult = await ImageManipulator.manipulateAsync(
+          // Upload using Advanced Storage Service
+          const uploadResult = await advancedStorageService.uploadImage(
             result.assets[0].uri,
-            // Profil resmi için kare, kapak resmi için geniş ölçek
-            imageType === 'profile' 
-              ? [{ resize: { width: 400, height: 400 } }]
-              : [{ resize: { width: 800, height: 450 } }],
-            { format: ImageManipulator.SaveFormat.JPEG, compress: 0.6, base64: true }
+            currentUser.uid,
+            storageImageType,
+            {
+              quality: 0.8,
+              maxWidth: imageType === 'profile' ? 400 : 800,
+              maxHeight: imageType === 'profile' ? 400 : 450,
+              generateThumbnail: true
+            }
           );
           
-          if (manipulateResult.base64) {
-            // Base64 veriyi URL formatında oluştur
-            const base64Image = `data:image/jpeg;base64,${manipulateResult.base64}`;
+          if (uploadResult.success && uploadResult.originalUrl) {
+            console.log('✅ Professional image upload successful:', uploadResult.originalUrl);
             
-            // Direkt olarak Firestore'a kaydet
-            await firestore.collection('users').doc(currentUser.uid).update({
-              [fieldToUpdate]: base64Image,
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-            
-            console.log('Resim base64 olarak Firestore\'a kaydedildi');
-            
-            // GlobalAvatarCache'i güncelle - TÜM AVATARLARIN GÜNCELLENMESI İÇİN!
+            // Update global avatar cache for profile images
             if (imageType === 'profile') {
               await globalAvatarCache.updateUserAvatar(
                 currentUser.uid, 
-                base64Image,
-                userProfile?.displayName || userProfile?.name
+                uploadResult.originalUrl,
+                userProfile?.displayName || userProfile?.name || 'User'
               );
               console.log('🖼️ Global avatar cache updated for user:', currentUser.uid);
             }
             
-            // AuthContext'teki user profile'ı güncelle
+            // Refresh user profile to get updated image URLs
             await refreshUserProfile();
             
             const successMessage = imageType === 'profile' 
-              ? 'Profil fotoğrafınız güncellendi.'
-              : 'Kapak fotoğrafınız güncellendi.';
-            Alert.alert('Başarılı', successMessage);
+              ? 'Profil fotoğrafınız profesyonel şekilde güncellendi!'
+              : 'Kapak fotoğrafınız profesyonel şekilde güncellendi!';
+            
+            Alert.alert('✅ Başarılı', successMessage);
+            
           } else {
-            throw new Error('Resim base64 formatına dönüştürülemedi');
+            throw new Error(uploadResult.error || 'Image upload failed');
           }
+          
         } catch (error) {
-          console.error('Resim yükleme hatası detayları:', error);
-          
-          let errorMessage = 'Fotoğraf yüklenirken bir hata oluştu.';
-          if (error instanceof Error) {
-            errorMessage += ' ' + error.message;
-          }
-          
-          Alert.alert('Hata', errorMessage);
+          console.error('❌ Professional image upload failed:', error);
+          Alert.alert('Hata', 'Fotoğraf yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.');
         } finally {
           setRefreshing(false);
         }
       }
     } catch (error) {
-      console.error('Fotoğraf güncellenirken hata:', error);
-      Alert.alert('Hata', 'Fotoğraf güncellenirken bir hata oluştu.');
+      console.error('❌ Image selection failed:', error);
+      Alert.alert('Hata', 'Fotoğraf seçerken bir sorun oluştu.');
       setRefreshing(false);
     }
   };

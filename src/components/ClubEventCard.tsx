@@ -2147,7 +2147,7 @@ const ClubEventCard = ({
       }
 
       // Create share message using template literal (safe outside JSX)
-      const shareMessage = `${event.title} - ${event.description}\n\nTarih: ${formatDate(event.date)} ${formatTime(event.date)}\nKonum: ${locationText}\n\nUniverseApp'ten paylaşıldı`;
+      const shareMessage = `${event.title} - ${event.description}\n\nTarih: ${formatDate(event.date)} ${formatTime(event.date)}\nKonum: ${locationText}\n\nUniverse - Üniversite Evreni'nden paylaşıldı`;
       
       await Share.share({ message: shareMessage });
       

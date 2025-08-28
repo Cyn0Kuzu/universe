@@ -11,10 +11,6 @@ export type {
   ImageUploadOptions 
 } from './advancedFirebaseStorageService';
 
-// 🔗 Image Reference Manager - COMPREHENSIVE IMAGE TRACKING
-export { imageReferenceManager } from './imageReferenceManager';
-export type { ImageReference } from './imageReferenceManager';
-
 // 📊 Club Activity Service - Core Activity Tracking
 export { clubActivityService } from './clubActivityService';
 export type { ClubActivity, ClubActivityStats } from './clubActivityService';

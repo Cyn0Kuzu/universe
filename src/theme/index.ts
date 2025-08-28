@@ -5,7 +5,7 @@ const lighterBlue = '#3498db';     // Daha açık mavi
 const darkBlue = '#003366';        // Koyu mavi
 const accentOrange = '#FFA500';    // Vurgu için turuncu
 
-// Universe uygulaması için özel tema
+// Universe - Üniversite Evreni uygulaması için özel tema
 // Create the theme using DefaultTheme as a base
 const theme = {
   ...DefaultTheme,

@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "universe",
+    "name": "Universe",
     "slug": "universe-kampus", 
     "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/compact_icon.png",
     "userInterfaceStyle": "light",
-    "description": "Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu.",
+    "description": "Üniversite Evreni - Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu.",
     "privacy": "public",
     "assetBundlePatterns": [
       "**/*"

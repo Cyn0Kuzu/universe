@@ -11,12 +11,13 @@ import { firestore, firebase } from '../../firebase/config';
 import { createEventWithScoring as createEventService } from '../../firebase/eventManagement';
 import { getUserProfile as fetchUserProfile } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
-// Use our custom DateTimePicker implementation to avoid native module issues
 import DateTimePicker from '../../components/CustomDateTimePicker';
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { eventCategories } from '../../constants';
 import { CustomTheme } from '../../types/theme';
+import { advancedStorageService } from '../../services/advancedFirebaseStorageService';
+import { imageReferenceManager } from '../../services/imageReferenceManager';
 
 type EventCapacity = 'limited' | 'unlimited';
 type EventVisibility = 'public' | 'private' | 'members';
@@ -199,7 +200,39 @@ const CreateEventScreen: React.FC = () => {
     });
     
     if (!result.canceled && result.assets && result.assets[0].uri) {
-      setEventImage(result.assets[0].uri);
+      try {
+        setLoading(true);
+        console.log('🚀 Starting professional event image upload...');
+        
+        // Upload using Advanced Storage Service
+        const uploadResult = await advancedStorageService.uploadImage(
+          result.assets[0].uri,
+          currentUser?.uid || '',
+          'event_banner',
+          {
+            quality: 0.8,
+            maxWidth: 1200,
+            maxHeight: 675,
+            generateThumbnail: true
+          }
+        );
+        
+        if (uploadResult.success && uploadResult.originalUrl) {
+          setEventImage(uploadResult.originalUrl);
+          console.log('✅ Event image uploaded successfully:', uploadResult.originalUrl);
+          setSnackbarMessage('Etkinlik görseli başarıyla yüklendi!');
+          setSnackbarVisible(true);
+        } else {
+          throw new Error(uploadResult.error || 'Image upload failed');
+        }
+        
+      } catch (error) {
+        console.error('❌ Event image upload failed:', error);
+        setSnackbarMessage('Görsel yüklenirken hata oluştu!');
+        setSnackbarVisible(true);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

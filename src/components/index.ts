@@ -11,10 +11,6 @@ export { default as StudentNotificationModal } from './StudentNotificationModal'
 // Club Components
 export { default as ClubMemberStats } from './ClubMemberStats';
 
-// Leaderboard Components
-// export { default as UserStatsCard } from './UserStatsCard'; // Module not found error - commented out temporarily
-export { ProfileLeaderboardCard } from './ProfileLeaderboardCard';
-
 // Main Components
 export { default as ClubEventCard } from './ClubEventCard';
 export { default as StudentEventCard } from './StudentEventCard';

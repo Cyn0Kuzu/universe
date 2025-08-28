@@ -84,7 +84,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
             UNIVERSE
           </Text>
           <Text style={[styles.appSubtitle, { color: theme.colors.text }]}>
-            Kampüs Hayatını Keşfet
+            Üniversite Evreni
           </Text>
         </Animated.View>
         
@@ -94,7 +94,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           { opacity: copyrightOpacity }
         ]}>
           <Text style={[styles.copyrightText, { color: theme.colors.text }]}>
-            © 2025 Universe App
+            © 2025 Universe - Üniversite Evreni
           </Text>
           <Text style={[styles.poweredByText, { color: theme.colors.text }]}>
             Powered by MeMoDe

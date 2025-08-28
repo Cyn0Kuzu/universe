@@ -6,7 +6,7 @@
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { firebase } from '../firebase/config';
-import { sendExpoPush } from './pushNotifications';
+import { sendExpoPush, sendBulkExpoPush } from './pushNotifications';
 
 export interface PushNotificationStatus {
   permissionGranted: boolean;
@@ -224,7 +224,7 @@ export class PushNotificationDebugService {
       }
 
       // Send test notification
-      await sendExpoPush(
+      await sendBulkExpoPush(
         tokens,
         '🎉 Test Bildirimi',
         'Push notification sistemi başarıyla çalışıyor!',

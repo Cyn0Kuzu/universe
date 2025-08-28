@@ -303,7 +303,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           <Animated.View style={{ opacity: titleOpacity }}>
             <Text style={[styles.title, { color: theme.colors.text }]}>UNIVERSE</Text>
             <Text style={[styles.subtitle, { color: theme.colors.placeholder }]}>
-              Üniversite Yaşamınızı Kolaylaştıran Platform
+              Üniversite Evreni
             </Text>
           </Animated.View>
           
@@ -355,7 +355,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
                 styles.featuredButtonText,
                 { color: agreedToTerms ? "white" : "#999999" }
               ]}>
-                Universe'e Katıl
+                Universe - Üniversite Evreni'ne Katıl
               </Text>
             </TouchableOpacity>
             
@@ -422,7 +422,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           {/* Copyright Footer */}
           <View style={styles.copyrightContainer}>
             <Text style={[styles.copyrightText, { color: theme.colors.text }]}>
-              © 2025 Universe App
+              © 2025 Universe - Üniversite Evreni
             </Text>
             <Text style={[styles.poweredByText, { color: theme.colors.text }]}>
               Powered by MeMoDe

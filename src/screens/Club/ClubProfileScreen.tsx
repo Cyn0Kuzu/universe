@@ -11,7 +11,6 @@ import { auth, firestore, firebase } from '../../firebase/config';
 import { refreshUserProfileCounts } from '../../firebase/userProfile';
 import { ClubStatsService } from '../../services/clubStatsService';
 import { centralizedRankingService } from '../../services/centralizedRankingService';
-// import RealTimeClubScoresService from '../../services/realTimeClubScoresService'; // Service not available - commented out
 import ClubScoreFixService from '../../services/clubScoreFixService';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -22,6 +21,7 @@ import { UniversalAvatar } from '../../components/common';
 import ProfileEditModal from '../../components/profile/ProfileEditModal';
 import { CustomTheme } from '../../types/theme';
 import AccountDeletionService from '../../services/accountDeletionService';
+import { advancedStorageService } from '../../services/advancedFirebaseStorageService';
 
 const ClubProfileScreen: React.FC = () => {
   const baseTheme = useTheme();
@@ -852,7 +852,7 @@ const ClubProfileScreen: React.FC = () => {
     }
     
     try {
-      // İzin kontrolü
+      // Permission check
       if (Platform.OS !== 'web') {
         const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!galleryStatus.granted) {
@@ -866,7 +866,7 @@ const ClubProfileScreen: React.FC = () => {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: imageType === 'profile' ? [1, 1] as [number, number] : [16, 9] as [number, number],
-        quality: 0.5,
+        quality: 0.8,
         exif: false,
       };
       
@@ -879,60 +879,50 @@ const ClubProfileScreen: React.FC = () => {
         setRefreshing(true);
         
         try {
-          console.log('Resim yükleme başladı:', result.assets[0].uri);
+          console.log('🚀 Starting professional club image upload...');
           
-          // Yeni yaklaşım: Base64'e çevir ve direkt Firestore'a kaydet
-          const fieldToUpdate = imageType === 'profile' ? 'profileImage' : 'coverImage';
+          // Determine image type for storage service
+          const storageImageType = imageType === 'profile' ? 'club_logo' : 'club_cover';
           
-          // Resmi Base64'e çevirme işlemi
-          const manipulateResult = await ImageManipulator.manipulateAsync(
+          // Upload using Advanced Storage Service
+          const uploadResult = await advancedStorageService.uploadImage(
             result.assets[0].uri,
-            // Profil resmi için kare, kapak resmi için geniş ölçek
-            imageType === 'profile' 
-              ? [{ resize: { width: 400, height: 400 } }]
-              : [{ resize: { width: 800, height: 450 } }],
-            { format: ImageManipulator.SaveFormat.JPEG, compress: 0.6, base64: true }
+            currentUser.uid,
+            storageImageType,
+            {
+              quality: 0.8,
+              maxWidth: imageType === 'profile' ? 400 : 800,
+              maxHeight: imageType === 'profile' ? 400 : 450,
+              generateThumbnail: true
+            }
           );
           
-          if (manipulateResult.base64) {
-            // Base64 veriyi URL formatında oluştur
-            const base64Image = `data:image/jpeg;base64,${manipulateResult.base64}`;
-            console.log('Base64 resim oluşturuldu, boyut:', base64Image.length);
+          if (uploadResult.success && uploadResult.originalUrl) {
+            console.log('✅ Professional club image upload successful:', uploadResult.originalUrl);
             
-            // Direkt olarak Firestore'a kaydet
-            await firestore.collection('users').doc(currentUser.uid).update({
-              [fieldToUpdate]: base64Image,
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-            
-            console.log('Resim base64 olarak Firestore\'a kaydedildi');
-            
-            // AuthContext'teki user profile'ı güncelle
+            // Refresh user profile to get updated image URLs
             await refreshUserProfile();
             
             const successMessage = imageType === 'profile' 
-              ? 'Profil fotoğrafınız güncellendi.'
-              : 'Kapak fotoğrafınız güncellendi.';
-            Alert.alert('Başarılı', successMessage);
+              ? 'Kulüp logosu profesyonel şekilde güncellendi!'
+              : 'Kulüp kapak fotoğrafı profesyonel şekilde güncellendi!';
+            
+            Alert.alert('✅ Başarılı', successMessage);
+            
           } else {
-            throw new Error('Resim base64 formatına dönüştürülemedi');
+            throw new Error(uploadResult.error || 'Club image upload failed');
           }
+          
         } catch (error) {
-          console.error('Resim yükleme hatası detayları:', error);
-          
-          let errorMessage = 'Fotoğraf yüklenirken bir hata oluştu.';
-          if (error instanceof Error) {
-            errorMessage += ' ' + error.message;
-          }
-          
-          Alert.alert('Hata', errorMessage);
+          console.error('❌ Professional club image upload failed:', error);
+          Alert.alert('Hata', 'Fotoğraf yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.');
         } finally {
           setRefreshing(false);
         }
       }
     } catch (error) {
-      console.error('Fotoğraf güncellenirken hata:', error);
-      Alert.alert('Hata', 'Fotoğraf güncellenirken bir hata oluştu.');
+      console.error('❌ Club image selection failed:', error);
+      Alert.alert('Hata', 'Fotoğraf seçerken bir sorun oluştu.');
       setRefreshing(false);
     }
   };

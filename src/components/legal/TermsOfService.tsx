@@ -34,7 +34,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             1. Kabul ve Onay
           </Text>
           <Text style={[styles.text, { color: theme.colors.onSurface }]}>
-            Universe Kampüs Hayatını Keşfet uygulamasını (bundan sonra "Uygulama" olarak anılacaktır) 
+            Universe - Üniversite Evreni uygulamasını (bundan sonra "Uygulama" olarak anılacaktır) 
             kullanarak, bu kullanım şartlarını kabul etmiş sayılırsınız. Bu şartları kabul etmiyorsanız, 
             lütfen uygulamayı kullanmayın.
           </Text>
@@ -45,7 +45,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             2. Uygulama Hakkında
           </Text>
           <Text style={[styles.text, { color: theme.colors.onSurface }]}>
-            Universe, üniversite öğrencilerinin kampüs hayatını keşfetmelerine yardımcı olan bir 
+            Universe - Üniversite Evreni, üniversite öğrencilerinin kampüs hayatını keşfetmelerine yardımcı olan bir 
             sosyal platform uygulamasıdır. Öğrenciler kulüpleri keşfedebilir, etkinliklere katılabilir, 
             yeni arkadaşlıklar kurabilir ve kampüs yaşamına aktif olarak katılabilirler.
           </Text>
@@ -95,7 +95,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
           </Text>
           <Text style={[styles.text, { color: theme.colors.onSurface }]}>
             • Paylaştığınız içeriklerin telif haklarına sahip olmalısınız{'\n'}
-            • Universe, paylaştığınız içerikleri platform içinde kullanma hakkına sahiptir{'\n'}
+            • Universe - Üniversite Evreni, paylaştığınız içerikleri platform içinde kullanma hakkına sahiptir{'\n'}
             • Başkalarının telif haklarını ihlal eden içerikler derhal kaldırılır{'\n'}
             • Uygunsuz içerikleri bildirme hakkınız vardır
           </Text>
@@ -120,7 +120,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             • Etkinliklere katılım, kulüp üyeliği gibi aktivitelerle puan kazanabilirsiniz{'\n'}
             • Puanlar sadece uygulama içi kullanım içindir{'\n'}
             • Puan manipülasyonu yasaktır{'\n'}
-            • Universe, puan sistemini değiştirme hakkını saklı tutar
+            • Universe - Üniversite Evreni, puan sistemini değiştirme hakkını saklı tutar
           </Text>
         </Surface>
 
@@ -129,7 +129,7 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onClose }) => {
             8. Hesap Askıya Alma ve Sonlandırma
           </Text>
           <Text style={[styles.text, { color: theme.colors.onSurface }]}>
-            Universe, kullanım şartlarını ihlal eden hesapları uyarı vermeksizin askıya alma 
+            Universe - Üniversite Evreni, kullanım şartlarını ihlal eden hesapları uyarı vermeksizin askıya alma 
             veya sonlandırma hakkını saklı tutar. Ciddi ihlaller durumunda hesabınız kalıcı 
             olarak kapatılabilir.
           </Text>

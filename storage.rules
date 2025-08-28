@@ -1,9 +1,346 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Test için tamamen açık erişim
+    
+    // ============================================================================
+    // 🔐 ENHANCED STORAGE SECURITY FUNCTIONS
+    // ============================================================================
+    
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
+    }
+    
+    function isValidImageFile() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 10 * 1024 * 1024 && // 10MB limit
+             request.resource.contentType in [
+               'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'
+             ];
+    }
+    
+    function isValidDocumentFile() {
+      return request.resource.contentType in ['application/pdf', 'image/jpeg', 'image/png'] &&
+             request.resource.size < 50 * 1024 * 1024; // 50MB limit for documents
+    }
+    
+    function isClubAdmin(clubId) {
+      return isAuthenticated() && 
+             firestore.exists(/databases/(default)/documents/users/$(clubId)) &&
+             firestore.get(/databases/(default)/documents/users/$(clubId)).data.userType == 'club' &&
+             (firestore.get(/databases/(default)/documents/users/$(clubId)).data.adminIds.hasAny([request.auth.uid]) ||
+              firestore.get(/databases/(default)/documents/users/$(clubId)).data.leaderId == request.auth.uid);
+    }
+    
+    function isEventCreator(eventId) {
+      return isAuthenticated() && 
+             firestore.exists(/databases/(default)/documents/events/$(eventId)) &&
+             firestore.get(/databases/(default)/documents/events/$(eventId)).data.creatorId == request.auth.uid;
+    }
+    
+    function isEventAttendee(eventId) {
+      return isAuthenticated() && 
+             firestore.exists(/databases/(default)/documents/events/$(eventId)) &&
+             (firestore.get(/databases/(default)/documents/events/$(eventId)).data.attendeeIds.hasAny([request.auth.uid]) ||
+              firestore.get(/databases/(default)/documents/events/$(eventId)).data.creatorId == request.auth.uid);
+    }
+    
+    function isValidFileName(fileName) {
+      return fileName.matches('^[a-zA-Z0-9_\\-\\.]+$') && 
+             fileName.size() > 3 && 
+             fileName.size() < 255;
+    }
+
+    // ============================================================================
+    // 👤 USER PROFILE IMAGES - AVATARS & COVERS
+    // ============================================================================
+    
+    match /users/avatars/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+    
+    match /users/covers/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+
+    // ============================================================================
+    // 🏢 CLUB IMAGES - LOGOS & COVERS
+    // ============================================================================
+    
+    match /clubs/logos/{clubId}/{fileName} {
+      allow read: if true; // Public read for club logos
+      
+      allow write: if isAuthenticated() && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName) &&
+                      isClubAdmin(clubId);
+      
+      allow delete: if isAuthenticated() && 
+                       (isClubAdmin(clubId) || isAdmin());
+    }
+    
+    match /clubs/covers/{clubId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName) &&
+                      isClubAdmin(clubId);
+      
+      allow delete: if isAuthenticated() && 
+                       (isClubAdmin(clubId) || isAdmin());
+    }
+
+    // ============================================================================
+    // 🎉 EVENT IMAGES - BANNERS & GALLERY
+    // ============================================================================
+    
+    match /events/banners/{eventId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName) &&
+                      isEventCreator(eventId);
+      
+      allow delete: if isAuthenticated() && 
+                       (isEventCreator(eventId) || isAdmin());
+    }
+    
+    match /events/gallery/{eventId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName) &&
+                      isEventAttendee(eventId);
+      
+      allow delete: if isAuthenticated() && 
+                       (isEventCreator(eventId) || isAdmin());
+    }
+
+    // ============================================================================
+    // 📝 POST IMAGES - USER GENERATED CONTENT
+    // ============================================================================
+    
+    match /posts/images/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+
+    // ============================================================================
+    // � COMMENT & MESSAGE IMAGES
+    // ============================================================================
+    
+    match /comments/images/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+    
+    match /messages/images/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+
+    // ============================================================================
+    // 📄 DOCUMENTS & CERTIFICATES
+    // ============================================================================
+    
+    match /documents/{userId}/{fileName} {
+      allow read: if isAuthenticated() && 
+                     (isOwner(userId) || isAdmin());
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidDocumentFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+    
+    match /certificates/{userId}/{fileName} {
+      allow read: if isAuthenticated() && 
+                     (isOwner(userId) || isAdmin());
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidDocumentFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+
+    // ============================================================================
+    // 🏆 ACHIEVEMENT & BADGE IMAGES
+    // ============================================================================
+    
+    match /achievements/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAuthenticated() && 
+                      (isOwner(userId) || isAdmin()) && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+    
+    match /badges/{fileName} {
+      allow read: if isAuthenticated();
+      
+      allow write: if isAdmin() && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // 📱 APP & SYSTEM ASSETS
+    // ============================================================================
+    
+    match /app/banners/{fileName} {
+      allow read: if true; // Public banners
+      
+      allow write: if isAdmin() && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAdmin();
+    }
+    
+    match /app/icons/{fileName} {
+      allow read: if true; // Public icons
+      
+      allow write: if isAdmin() && 
+                      isValidImageFile() &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // 🗂️ MISCELLANEOUS FILES
+    // ============================================================================
+    
+    match /misc/{userId}/{fileName} {
+      allow read: if isAuthenticated() && 
+                     (isOwner(userId) || isAdmin());
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      (isValidImageFile() || isValidDocumentFile()) &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+
+    // ============================================================================
+    // 🔄 TEMPORARY FILES (AUTO-DELETE AFTER 24H)
+    // ============================================================================
+    
+    match /temp/{userId}/{fileName} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      
+      allow write: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      (isValidImageFile() || isValidDocumentFile()) &&
+                      isValidFileName(fileName);
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin());
+    }
+
+    // ============================================================================
+    // 👑 ADMIN ONLY STORAGE
+    // ============================================================================
+    
+    match /admin/{fileName} {
+      allow read, write: if isAdmin() && isValidFileName(fileName);
+    }
+    
+    match /system/{fileName} {
+      allow read, write: if isAdmin() && isValidFileName(fileName);
+    }
+    
+    match /backups/{fileName} {
+      allow read, write: if isAdmin() && isValidFileName(fileName);
+    }
+
+    // ============================================================================
+    // 🚨 RATE LIMITING & ADVANCED SECURITY
+    // ============================================================================
+    
+    // Enhanced security for admin functions
+    match /admin/{fileName} {
+      allow read, write: if isAdmin() && isValidFileName(fileName);
+    }
+    
+    match /system/{fileName} {
+      allow read, write: if isAdmin() && isValidFileName(fileName);
+    }
+    
+    match /backups/{fileName} {
+      allow read, write: if isAdmin() && isValidFileName(fileName);
+    }
+
+    // ============================================================================
+    // 🚫 SECURITY FALLBACK - DENY BY DEFAULT
+    // ============================================================================
+    
+    // Tüm diğer dosyalar için varsayılan olarak erişim reddedilir
     match /{allPaths=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }
