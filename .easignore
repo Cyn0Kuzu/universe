@@ -1,0 +1,55 @@
+# EAS Build ignore file
+# Reduce upload size by excluding unnecessary files
+
+# Node modules (will be installed on build server)
+node_modules/
+
+# Build outputs
+android/app/build/
+android/.gradle/
+android/app/.cxx/
+
+# Logs
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cache files
+.expo/
+.gradle/
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+
+# Documentation
+docs/
+*.md
+README.md
+DEVELOPER_GUIDE.md
+CLEANUP_REPORT.md
+FINAL_PRODUCTION_READY_REPORT.md
+PROFESSIONAL_ARCHITECTURE_REVIEW.md
+UNIFIED_NOTIFICATION_SYSTEM.md
+COMPLETE_IMAGE_INTEGRATION_REPORT.md
+
+# Test files
+__tests__/
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
+
+# Large media files (will be bundled)
+assets/large_videos/
+assets/samples/
