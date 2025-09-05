@@ -98,24 +98,39 @@
         </div>
 
         <h2>1. Genel Çocuk Güvenliği Politikamız</h2>
-        <p>Universe Kampüs, üniversite öğrencilerine yönelik bir sosyal platform olarak, çocukların güvenliğini en üst öncelik olarak kabul eder. Uygulamamız 18 yaş ve üzeri kullanıcılara yöneliktir ve çocukların cinsel istismarı ve sömürüsü (CSAE) ile mücadelede sıfır tolerans politikası uygular.</p>
+        <p>Universe, üniversite öğrencileri için kampüs yaşamını keşfetme, kulüp etkinliklerine katılma ve sosyal etkileşim kurma platformu olarak, çocukların güvenliğini en üst öncelik kabul eder. Uygulamamız özel olarak 18 yaş ve üzeri üniversite öğrencilerine yöneliktir ve çocukların cinsel istismarı ve sömürüsü (CSAE) ile mücadelede sıfır tolerans politikası uygular.</p>
+
+        <div class="warning">
+            <strong>18+ Yaş Sınırı ve Üniversite Öğrenci Doğrulaması:</strong>
+            <ul>
+                <li>Universe sadece 18 yaş ve üzeri üniversite öğrencilerine yöneliktir</li>
+                <li>Kayıt sırasında zorunlu üniversite e-posta doğrulaması (.edu.tr) yapılır</li>
+                <li>Öğrenci numarası doğrulaması gereklidir</li>
+                <li>Üniversite, bölüm ve sınıf bilgileri kontrol edilir</li>
+                <li>18 yaş altı kullanıcı tespit edilirse hesap derhal kapatılır</li>
+            </ul>
+        </div>
 
         <h2>2. Çocuk Cinsel İstismarı Materyali (CSAM) Önleme Standartları</h2>
 
         <h3>2.1 Proaktif Önlemler</h3>
         <ul>
-            <li><strong>Yaş Doğrulama:</strong> Kayıt sırasında üniversite e-posta adresi doğrulaması</li>
-            <li><strong>İçerik Moderasyonu:</strong> Tüm paylaşımlar otomatik ve manuel olarak kontrol edilir</li>
-            <li><strong>AI Tabanlı Tespit:</strong> Şüpheli içerik ve davranışları tespit eden algoritma sistemleri</li>
-            <li><strong>Kullanıcı Kimlik Doğrulama:</strong> Üniversite öğrenci numarası ve kimlik doğrulama sistemi</li>
+            <li><strong>Üniversite E-posta Doğrulama:</strong> Sadece .edu.tr uzantılı üniversite e-postaları kabul edilir</li>
+            <li><strong>Firebase Authentication:</strong> Google Firebase ile güvenli kimlik doğrulama</li>
+            <li><strong>Öğrenci Bilgi Kontrolü:</strong> Üniversite, bölüm, sınıf bilgileri zorunlu ve kontrol edilir</li>
+            <li><strong>İçerik Moderasyonu:</strong> Tüm etkinlik paylaşımları ve yorumlar kontrol edilir</li>
+            <li><strong>Otomatik İçerik Filtresi:</strong> Şüpheli kelime ve görsel tespit sistemi</li>
+            <li><strong>Kulüp Doğrulama:</strong> Kulüp hesapları üniversite onayı ile açılır</li>
         </ul>
 
         <h3>2.2 Teknik Güvenlik Önlemleri</h3>
         <ul>
-            <li>End-to-end şifreleme ile güvenli iletişim</li>
-            <li>Düzenli güvenlik denetimleri ve penetrasyon testleri</li>
-            <li>Güvenlik açığı bildirimi için bug bounty programı</li>
-            <li>Blockchain tabanlı şeffaf moderasyon sistemi</li>
+            <li><strong>Firebase Firestore:</strong> Güvenli bulut veritabanı ile veri koruması</li>
+            <li><strong>TLS Şifreleme:</strong> Tüm veri iletişiminde güvenli şifreleme</li>
+            <li><strong>Real-time Monitoring:</strong> Anlık kullanıcı aktivite izleme</li>
+            <li><strong>IP Takibi:</strong> Şüpheli IP adreslerinin otomatik tespiti</li>
+            <li><strong>Device Fingerprinting:</strong> Cihaz bazlı güvenlik kontrolü</li>
+            <li><strong>Expo Security:</strong> React Native Expo güvenlik standartları</li>
         </ul>
 
         <h2>3. İçerik Moderasyonu ve Denetim</h2>

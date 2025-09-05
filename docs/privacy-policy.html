@@ -123,25 +123,30 @@
 
         <h3>2.1 Kayıt Sırasında Toplanan Veriler</h3>
         <ul>
-            <li><strong>Kimlik Bilgileri:</strong> Ad, soyad, e-posta adresi</li>
-            <li><strong>Akademik Bilgiler:</strong> Üniversite adı, bölüm, sınıf</li>
-            <li><strong>İletişim Bilgileri:</strong> Üniversite e-posta adresi</li>
-            <li><strong>Doğrulama Bilgileri:</strong> Öğrenci numarası (sadece doğrulama için)</li>
+            <li><strong>Kimlik Bilgileri:</strong> Ad, soyad, kullanıcı adı (username)</li>
+            <li><strong>İletişim Bilgileri:</strong> E-posta adresi (sadece üniversite e-postaları)</li>
+            <li><strong>Akademik Bilgiler:</strong> Üniversite adı, bölüm, sınıf seviyesi</li>
+            <li><strong>Hesap Türü:</strong> Öğrenci veya kulüp hesabı bilgisi</li>
+            <li><strong>Avatar Bilgileri:</strong> Seçilen avatar ikonu ve rengi</li>
         </ul>
 
         <h3>2.2 Uygulama Kullanımı Sırasında Toplanan Veriler</h3>
         <ul>
-            <li><strong>İçerik Verileri:</strong> Gönderiler, yorumlar, fotoğraflar</li>
-            <li><strong>Etkileşim Verileri:</strong> Beğeniler, takip edilenler, etkinlik katılımları</li>
-            <li><strong>Konum Bilgileri:</strong> Kampüs içi konum (sadece etkinlikler için, isteğe bağlı)</li>
-            <li><strong>Cihaz Bilgileri:</strong> IP adresi, cihaz türü, işletim sistemi</li>
+            <li><strong>Etkinlik Etkileşimleri:</strong> Etkinliklere katılım, beğeniler, yorumlar</li>
+            <li><strong>Kulüp Etkileşimleri:</strong> Kulüp takipleri, üyelik başvuruları</li>
+            <li><strong>Sosyal Etkileşimler:</strong> Kullanıcı takipleri, profil görüntülemeleri</li>
+            <li><strong>İçerik Verileri:</strong> Paylaşılan etkinlikler, yorumlar, fotoğraflar</li>
+            <li><strong>Puanlama Verileri:</strong> Liderlik tablosu puanları ve başarılar</li>
+            <li><strong>Bildirim Tercihleri:</strong> Push notification ayarları</li>
         </ul>
 
-        <h3>2.3 Otomatik Olarak Toplanan Veriler</h3>
+        <h3>2.3 Firebase Sistemi Tarafından Otomatik Toplanan Veriler</h3>
         <ul>
-            <li><strong>Kullanım Analitikleri:</strong> Uygulama içi aktivite, oturum süreleri</li>
-            <li><strong>Teknik Veriler:</strong> Uygulama performansı, hata raporları</li>
-            <li><strong>Güvenlik Verileri:</strong> Giriş logları, IP adresleri</li>
+            <li><strong>Kimlik Doğrulama:</strong> Firebase Auth UID, e-posta doğrulama durumu</li>
+            <li><strong>Oturum Bilgileri:</strong> Giriş/çıkış zamanları, cihaz türü</li>
+            <li><strong>Analitik Veriler:</strong> Uygulama kullanım istatistikleri</li>
+            <li><strong>Performans Verileri:</strong> Uygulama hızı ve çökme raporları</li>
+            <li><strong>Güvenlik Logları:</strong> IP adresi, cihaz kimliği</li>
         </ul>
 
         <h2>3. Verilerin Kullanım Amaçları</h2>
@@ -156,27 +161,37 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Kimlik Bilgileri</td>
-                    <td>Hesap oluşturma, kimlik doğrulama</td>
+                    <td>Üniversite E-posta</td>
+                    <td>Kimlik doğrulama, öğrenci statüsü kontrolü</td>
                     <td>Sözleşmenin ifası</td>
                 </tr>
                 <tr>
                     <td>Akademik Bilgiler</td>
-                    <td>Üniversite topluluğu oluşturma</td>
+                    <td>Üniversite kampüsü oluşturma, etkinlik önerileri</td>
                     <td>Meşru menfaat</td>
                 </tr>
                 <tr>
-                    <td>İçerik Verileri</td>
-                    <td>Sosyal etkileşim, içerik paylaşımı</td>
+                    <td>Etkinlik Katılımları</td>
+                    <td>Sosyal etkileşim, kampüs yaşamı deneyimi</td>
                     <td>Kullanıcı rızası</td>
                 </tr>
                 <tr>
-                    <td>Kullanım Analitikleri</td>
+                    <td>Kulüp Takipleri</td>
+                    <td>Kişiselleştirilmiş içerik, bildirimler</td>
+                    <td>Kullanıcı rızası</td>
+                </tr>
+                <tr>
+                    <td>Liderlik Puanları</td>
+                    <td>Gamification, kampüs liderleri belirleme</td>
+                    <td>Meşru menfaat</td>
+                </tr>
+                <tr>
+                    <td>Firebase Analytics</td>
                     <td>Uygulama iyileştirme, performans analizi</td>
                     <td>Meşru menfaat</td>
                 </tr>
                 <tr>
-                    <td>Güvenlik Verileri</td>
+                    <td>Güvenlik Logları</td>
                     <td>Güvenlik, dolandırıcılık önleme</td>
                     <td>Meşru menfaat</td>
                 </tr>
@@ -187,16 +202,21 @@
 
         <h3>4.1 Aktif Hesaplar</h3>
         <ul>
-            <li><strong>Profil Bilgileri:</strong> Hesap aktif olduğu sürece</li>
-            <li><strong>İçerik Verileri:</strong> Kullanıcı silene kadar</li>
-            <li><strong>Mesajlaşma:</strong> 2 yıl veya kullanıcı silene kadar</li>
+            <li><strong>Profil Bilgileri:</strong> Hesap aktif olduğu sürece (Firebase Auth)</li>
+            <li><strong>Etkinlik Katılımları:</strong> Kullanıcı silene kadar (Firestore collections)</li>
+            <li><strong>Kulüp Takipleri:</strong> Takip kaldırılana kadar</li>
+            <li><strong>Yorumlar ve Beğeniler:</strong> Kullanıcı silene kadar</li>
+            <li><strong>Liderlik Puanları:</strong> Yıllık reset (akademik yıl bazında)</li>
+            <li><strong>Bildirim Geçmişi:</strong> 6 ay</li>
         </ul>
 
         <h3>4.2 Silinen Hesaplar</h3>
         <ul>
-            <li><strong>Kişisel Veriler:</strong> Hesap silindikten sonra 30 gün içinde</li>
-            <li><strong>Güvenlik Logları:</strong> Yasal gereklilikler için 1 yıl</li>
-            <li><strong>Analitik Veriler:</strong> Anonimleştirilerek 3 yıl</li>
+            <li><strong>Kişisel Veriler:</strong> Hesap silindikten sonra 30 gün içinde (Firebase Auth deletion)</li>
+            <li><strong>Firestore Verileri:</strong> Hesap silme işlemi ile birlikte otomatik silme</li>
+            <li><strong>Analytics Verileri:</strong> Anonimleştirilerek 1 yıl (Google Analytics)</li>
+            <li><strong>Güvenlik Logları:</strong> Yasal gereklilikler için 2 yıl</li>
+            <li><strong>Backup Verileri:</strong> 90 gün sonra otomatik silme</li>
         </ul>
 
         <h2>5. Veri Paylaşımı ve Aktarımı</h2>
