@@ -20,6 +20,9 @@ web-build/
 .env.production
 .env.staging
 
+# Credentials
+credentials.json
+
 # macOS
 .DS_Store
 

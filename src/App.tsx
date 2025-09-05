@@ -3,13 +3,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, AppState } from 'react-native';
 import * as Font from 'expo-font';
 import AuthNavigator from './navigation/AuthNavigator';
 import theme from './theme';
 import { AuthProvider } from './contexts/AuthContext';
 import { LogBox } from 'react-native';
 import './utils/logger'; // Initialize production logging
+
+// Professional imports
+import GlobalErrorBoundary from './components/common/GlobalErrorBoundary';
+import MonitoringService from './services/monitoringService';
+import Config from './config/appConfig';
 
 // Ignore specific warnings
 LogBox.ignoreLogs([
@@ -20,6 +25,9 @@ const App: React.FC = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
+    // Initialize monitoring and analytics
+    initializeApp();
+    
     async function loadFonts() {
       try {
         // Direct font path loading - APK'da %100 çalışır
@@ -42,6 +50,31 @@ const App: React.FC = () => {
     loadFonts();
   }, []);
 
+  // Professional app initialization
+  const initializeApp = async () => {
+    try {
+      // Track app start
+      await MonitoringService.trackAppStart();
+      
+      // Setup app state change listeners
+      AppState.addEventListener('change', handleAppStateChange);
+      
+      console.log('🚀 Professional app initialization completed');
+    } catch (error) {
+      console.error('❌ App initialization failed:', error);
+      MonitoringService.reportCrash(error as Error, 'App initialization');
+    }
+  };
+
+  // Handle app state changes
+  const handleAppStateChange = (nextAppState: string) => {
+    if (nextAppState === 'background') {
+      MonitoringService.trackAppBackground();
+    } else if (nextAppState === 'active') {
+      MonitoringService.trackAppForeground();
+    }
+  };
+
   if (!fontsLoaded) {
     return (
       <View style={{ 
@@ -63,17 +96,19 @@ const App: React.FC = () => {
   }
 
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={theme as any}>
-        <AuthProvider>
-          <NavigationContainer>
-            {/* Status bar'ı telefon varsayılan renginde ayarla */}
-            <StatusBar style="auto" backgroundColor="transparent" translucent={false} />
-            <AuthNavigator />
-          </NavigationContainer>
-        </AuthProvider>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <GlobalErrorBoundary>
+      <SafeAreaProvider>
+        <PaperProvider theme={theme as any}>
+          <AuthProvider>
+            <NavigationContainer>
+              {/* Status bar'ı telefon varsayılan renginde ayarla */}
+              <StatusBar style="auto" backgroundColor="transparent" translucent={false} />
+              <AuthNavigator />
+            </NavigationContainer>
+          </AuthProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </GlobalErrorBoundary>
   );
 };
 
