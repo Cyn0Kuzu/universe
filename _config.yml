@@ -1,0 +1,23 @@
+baseurl: ""
+url: "https://cyn0kuzu.github.io/universe"
+
+# GitHub Pages settings
+github:
+  repository_name: universe
+  repository_nwo: Cyn0Kuzu/universe
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+gems:
+  - jekyll-feed
+exclude:
+  - node_modules/
+  - android/
+  - ios/
+  - .expo/
+  - .git/
+  - README.md
+  - package.json
+  - babel.config.js
+  - metro.config.js
