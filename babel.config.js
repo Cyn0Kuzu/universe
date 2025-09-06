@@ -13,12 +13,8 @@ module.exports = function(api) {
       ['@babel/plugin-transform-runtime', {
         'helpers': true,
         'regenerator': false,
-      }],
-      // Prevent crashes from async/await issues
-      ['@babel/plugin-transform-async-to-generator', {
-        'module': 'bluebird',
-        'method': 'coroutine'
       }]
+      // Removed problematic async-to-generator config that requires bluebird
     ],
     env: {
       production: {
