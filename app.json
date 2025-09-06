@@ -2,7 +2,7 @@
   "expo": {
     "name": "Universe",
     "slug": "universe-kampus",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "orientation": "portrait",
     "icon": "./assets/compact_icon.png",
     "userInterfaceStyle": "light",
@@ -33,7 +33,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.universekampus.app",
-      "versionCode": 6,
+      "versionCode": 7,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
@@ -46,7 +46,8 @@
       "screenOrientation": "default",
       "jsEngine": "hermes",
       "enableProguardInReleaseBuilds": false,
-      "enableSeparateBuildPerCPUArchitecture": false
+      "enableSeparateBuildPerCPUArchitecture": false,
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "favicon": "./assets/favicon.png"

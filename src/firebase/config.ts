@@ -35,6 +35,12 @@ if (!firebase.apps.length) {
   try {
     firebase.initializeApp(firebaseConfig);
     console.log('🔥 Firebase initialized successfully');
+    
+    // Enable network for Firestore to prevent crashes
+    firebase.firestore().enableNetwork().catch(networkError => {
+      console.warn('⚠️ Firebase network enable failed:', networkError);
+    });
+    
   } catch (initError: any) {
     console.error('❌ Firebase initialization failed:', initError);
     // Don't throw, allow app to continue with limited functionality

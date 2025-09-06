@@ -8,8 +8,25 @@ module.exports = function(api) {
       '@babel/preset-typescript' // added for TS/TSX support
     ],
     plugins: [
-      '@babel/plugin-syntax-jsx' // added plugin to enable parsing of JSX syntax
+      '@babel/plugin-syntax-jsx', // added plugin to enable parsing of JSX syntax
+      '@babel/plugin-proposal-export-namespace-from',
+      ['@babel/plugin-transform-runtime', {
+        'helpers': true,
+        'regenerator': false,
+      }],
+      // Prevent crashes from async/await issues
+      ['@babel/plugin-transform-async-to-generator', {
+        'module': 'bluebird',
+        'method': 'coroutine'
+      }]
     ],
-    // ...existing config...
+    env: {
+      production: {
+        plugins: [
+          // Keep function names in production to prevent crashes
+          ['babel-plugin-transform-remove-console', { exclude: ['error', 'warn'] }]
+        ]
+      }
+    }
   };
 };
