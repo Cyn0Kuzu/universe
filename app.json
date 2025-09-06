@@ -43,7 +43,10 @@
       "largeScreenSupport": true,
       "resizeableActivity": true,
       "supportsPictureInPicture": false,
-      "screenOrientation": "default"
+      "screenOrientation": "default",
+      "jsEngine": "hermes",
+      "enableProguardInReleaseBuilds": false,
+      "enableSeparateBuildPerCPUArchitecture": false
     },
     "web": {
       "favicon": "./assets/favicon.png"

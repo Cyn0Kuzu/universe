@@ -1,0 +1,101 @@
+[debug] [2025-09-05T23:07:58.014Z] ----------------------------------------------------------------------
+[debug] [2025-09-05T23:07:58.017Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\lenovo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init hosting
+[debug] [2025-09-05T23:07:58.017Z] CLI Version:   14.15.2
+[debug] [2025-09-05T23:07:58.017Z] Platform:      win32
+[debug] [2025-09-05T23:07:58.017Z] Node Version:  v22.16.0
+[debug] [2025-09-05T23:07:58.018Z] Time:          Sat Sep 06 2025 02:07:58 GMT+0300 (GMT+03:00)
+[debug] [2025-09-05T23:07:58.018Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-05T23:07:58.021Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-09-05T23:07:58.282Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-05T23:07:58.282Z] > authorizing via signed-in user (finduk513@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\lenovo\Desktop\universe
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[debug] [2025-09-05T23:07:58.643Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-09-05T23:07:58.643Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-09-05T23:08:01.583Z] Using project from CLI flag: universe-a6f60
+[debug] [2025-09-05T23:08:01.584Z] Checked if tokens are valid: false, expires at: 1757022936698
+[debug] [2025-09-05T23:08:01.584Z] Checked if tokens are valid: false, expires at: 1757022936698
+[debug] [2025-09-05T23:08:01.584Z] > refreshing access token with scopes: []
+[debug] [2025-09-05T23:08:01.586Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-05T23:08:01.587Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-05T23:08:01.769Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-05T23:08:01.769Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-05T23:08:01.785Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/universe-a6f60 [none]
+[debug] [2025-09-05T23:08:02.175Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/universe-a6f60 200
+[debug] [2025-09-05T23:08:02.176Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/universe-a6f60 {"projectId":"universe-a6f60","projectNumber":"946853543876","displayName":"universe","name":"projects/universe-a6f60","resources":{"hostingSite":"universe-a6f60"},"state":"ACTIVE","etag":"1_fa816a96-5b78-46c1-857a-e953c61fd7bd"}
+[info] i  Using project universe-a6f60 (universe) 
+[info] 
+=== Hosting Setup
+[debug] [2025-09-05T23:08:02.328Z] Checked if tokens are valid: true, expires at: 1757117280769
+[debug] [2025-09-05T23:08:02.328Z] Checked if tokens are valid: true, expires at: 1757117280769
+[debug] [2025-09-05T23:08:02.328Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/universe-a6f60 [none]
+[debug] [2025-09-05T23:08:02.694Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/universe-a6f60 200
+[debug] [2025-09-05T23:08:02.694Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/universe-a6f60 {"projectId":"universe-a6f60","projectNumber":"946853543876","displayName":"universe","name":"projects/universe-a6f60","resources":{"hostingSite":"universe-a6f60"},"state":"ACTIVE","etag":"1_fa816a96-5b78-46c1-857a-e953c61fd7bd"}
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
+[debug] [2025-09-05T23:08:14.778Z] >>> [apiv2][query] GET https://www.gstatic.com/firebasejs/releases.json [none]
+[debug] [2025-09-05T23:08:14.932Z] <<< [apiv2][status] GET https://www.gstatic.com/firebasejs/releases.json 200
+[debug] [2025-09-05T23:08:14.932Z] <<< [apiv2][body] GET https://www.gstatic.com/firebasejs/releases.json {"current":{"version":"12.2.1","browserURL":"https://www.gstatic.com/firebasejs/12.2.1/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/12.2.1/firebase.tgz"},"live":{"version":"12.2","browserURL":"https://www.gstatic.com/firebasejs/live/12.2/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/live/12.2/firebase.tgz"},"components":{"ai":"https://www.gstatic.com/firebasejs/12.2.1/firebase-ai.js","analytics":"https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js","app":"https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js","app-check":"https://www.gstatic.com/firebasejs/12.2.1/firebase-app-check.js","auth":"https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js","auth/cordova":"https://www.gstatic.com/firebasejs/12.2.1/firebase-auth/cordova.js","auth/web-extension":"https://www.gstatic.com/firebasejs/12.2.1/firebase-auth/web-extension.js","functions":"https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js","firestore":"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js","firestore/lite":"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore/lite.js","installations":"https://www.gstatic.com/firebasejs/12.2.1/firebase-installations.js","storage":"https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js","performance":"https://www.gstatic.com/firebasejs/12.2.1/firebase-performance.js","remote-config":"https://www.gstatic.com/firebasejs/12.2.1/firebase-remote-config.js","messaging":"https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging.js","messaging/sw":"https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging/sw.js","database":"https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js","data-connect":"https://www.gstatic.com/firebasejs/12.2.1/firebase-data-connect.js","firestore.memory":"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.memory.js"}}
+[info] +  Wrote public/index.html 
+[info] 
+[info] i  Detected a .git folder at C:\Users\lenovo\Desktop\universe 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=534568556&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...
+[debug] [2025-09-05T23:08:17.379Z] >>> [apiv2][query] POST https://github.com/login/oauth/access_token [none]
+[debug] [2025-09-05T23:08:17.379Z] >>> [apiv2][body] POST https://github.com/login/oauth/access_token [stream]
+[debug] [2025-09-05T23:08:17.713Z] <<< [apiv2][status] POST https://github.com/login/oauth/access_token 200
+[debug] [2025-09-05T23:08:17.714Z] <<< [apiv2][body] POST https://github.com/login/oauth/access_token {"access_token":"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","token_type":"bearer","scope":"read:user,repo"}
+[debug] [2025-09-05T23:08:17.719Z] >>> [apiv2][query] GET https://api.github.com/user [none]
+[debug] [2025-09-05T23:08:18.112Z] <<< [apiv2][status] GET https://api.github.com/user 200
+[debug] [2025-09-05T23:08:18.112Z] <<< [apiv2][body] GET https://api.github.com/user {"login":"Cyn0Kuzu","id":92626166,"node_id":"U_kgDOBYVc9g","avatar_url":"https://avatars.githubusercontent.com/u/92626166?v=4","gravatar_id":"","url":"https://api.github.com/users/Cyn0Kuzu","html_url":"https://github.com/Cyn0Kuzu","followers_url":"https://api.github.com/users/Cyn0Kuzu/followers","following_url":"https://api.github.com/users/Cyn0Kuzu/following{/other_user}","gists_url":"https://api.github.com/users/Cyn0Kuzu/gists{/gist_id}","starred_url":"https://api.github.com/users/Cyn0Kuzu/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/Cyn0Kuzu/subscriptions","organizations_url":"https://api.github.com/users/Cyn0Kuzu/orgs","repos_url":"https://api.github.com/users/Cyn0Kuzu/repos","events_url":"https://api.github.com/users/Cyn0Kuzu/events{/privacy}","received_events_url":"https://api.github.com/users/Cyn0Kuzu/received_events","type":"User","user_view_type":"private","site_admin":false,"name":"çayan","company":null,"blog":"","location":null,"email":null,"hireable":null,"bio":null,"twitter_username":null,"notification_email":null,"public_repos":1,"public_gists":0,"followers":0,"following":1,"created_at":"2021-10-16T08:57:51Z","updated_at":"2025-08-27T21:58:37Z","private_gists":0,"total_private_repos":9,"owned_private_repos":6,"disk_usage":18708,"collaborators":1,"two_factor_authentication":false,"plan":{"name":"pro","space":976562499,"collaborators":0,"private_repos":9999}}
+[info] 
+[info] +  Success! Logged into GitHub as Cyn0Kuzu 
+[info] 
+[debug] [2025-09-05T23:09:01.220Z] >>> [apiv2][query] GET https://api.github.com/repos//actions/secrets/public-key type=owner
+[debug] [2025-09-05T23:09:01.642Z] <<< [apiv2][status] GET https://api.github.com/repos//actions/secrets/public-key 404
+[debug] [2025-09-05T23:09:01.642Z] <<< [apiv2][body] GET https://api.github.com/repos//actions/secrets/public-key {"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}
+[info] 
+[info] 
+[error] !  The provided authorization cannot be used with this repository. If this repository is in an organization, did you remember to grant access? 
+[info] 
+[info] i  Action required: Visit this URL to ensure access has been granted to the appropriate organization(s) for the Firebase CLI GitHub OAuth App: 
+[info] https://github.com/settings/connections/applications/89cf50f02ac6aaed3484
+[info] 
+[debug] [2025-09-05T23:09:06.642Z] >>> [apiv2][query] GET https://api.github.com/repos//actions/secrets/public-key type=owner
+[debug] [2025-09-05T23:09:06.896Z] <<< [apiv2][status] GET https://api.github.com/repos//actions/secrets/public-key 404
+[debug] [2025-09-05T23:09:06.896Z] <<< [apiv2][body] GET https://api.github.com/repos//actions/secrets/public-key {"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}
+[info] 
+[info] 
+[error] !  The provided authorization cannot be used with this repository. If this repository is in an organization, did you remember to grant access? 
+[info] 
+[info] i  Action required: Visit this URL to ensure access has been granted to the appropriate organization(s) for the Firebase CLI GitHub OAuth App: 
+[info] https://github.com/settings/connections/applications/89cf50f02ac6aaed3484
+[info] 
