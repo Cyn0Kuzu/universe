@@ -1,4 +1,4 @@
-// babel.config.js
+// babel.config.js - Production-safe configuration
 module.exports = function(api) {
   api.cache(true);
   return {
@@ -9,7 +9,7 @@ module.exports = function(api) {
     ],
     plugins: [
       '@babel/plugin-syntax-jsx', // added plugin to enable parsing of JSX syntax
-      '@babel/plugin-proposal-export-namespace-from',
+      '@babel/plugin-transform-export-namespace-from', // Updated to new plugin name
       ['@babel/plugin-transform-runtime', {
         'helpers': true,
         'regenerator': false,
