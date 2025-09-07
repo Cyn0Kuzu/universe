@@ -1,4 +1,4 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
+// ULTRA SAFE Metro Config - NO minification/obfuscation
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
@@ -10,20 +10,17 @@ config.resolver = {
   sourceExts: [...config.resolver.sourceExts, 'cjs']
 };
 
-// Safe transformer settings for production builds
+// ULTRA SAFE transformer - NO minification
 config.transformer = {
   ...config.transformer,
-  minifierPath: require.resolve('metro-minify-terser'),
-  minifierConfig: {
-    // Production-safe minification
-    keep_fnames: true,
-    mangle: {
-      keep_fnames: true,
-    },
-    compress: {
-      drop_console: false, // Keep console logs for debugging
-    },
-  },
+  // Disable all minification and optimization to prevent crashes
+  minifierPath: undefined,
+  minifierConfig: undefined,
+};
+
+// Disable all optimizations that can cause crashes
+config.serializer = {
+  ...config.serializer,
 };
 
 module.exports = config;

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { LogBox } from 'react-native';
 
 // SAFE IMPORTS - only if they exist
@@ -52,9 +52,51 @@ LogBox.ignoreLogs([
 ]);
 
 const App: React.FC = () => {
-  console.log('🚀 Main Universe app component rendering...');
+  const [appReady, setAppReady] = useState(false);
 
-  // Main app - no additional loading needed
+  useEffect(() => {
+    // Simple app initialization
+    const initializeApp = async () => {
+      try {
+        console.log('🚀 Universe app starting...');
+        
+        // Give some time for initial setup
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        console.log('✅ App ready');
+        setAppReady(true);
+        
+      } catch (error) {
+        console.warn('⚠️ App initialization had issues but continuing:', error);
+        setAppReady(true); // Always continue
+      }
+    };
+
+    initializeApp();
+  }, []);
+
+  // Loading screen
+  if (!appReady) {
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: '#4f46e5' 
+      }}>
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={{ 
+          color: '#ffffff', 
+          marginTop: 20, 
+          fontSize: 16
+        }}>
+          Universe yükleniyor...
+        </Text>
+      </View>
+    );
+  }
+
+  // Main app
   return (
     <GlobalErrorBoundary>
       <SafeAreaProvider>

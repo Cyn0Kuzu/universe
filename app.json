@@ -2,10 +2,15 @@
   "expo": {
     "name": "Universe",
     "slug": "universe-kampus",
-    "version": "1.8.0",
+    "version": "1.9.4",
     "orientation": "portrait",
     "icon": "./assets/compact_icon.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "description": "Üniversite Evreni - Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu.",
     "privacy": "public",
     "assetBundlePatterns": [
