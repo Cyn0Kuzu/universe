@@ -5,18 +5,18 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text } from 'react-native';
 import { LogBox } from 'react-native';
+import GlobalErrorBoundary from './components/common/GlobalErrorBoundary';
 
 // SAFE IMPORTS - only if they exist
 let AuthNavigator: any;
 let theme: any;
 let AuthProvider: any;
-let GlobalErrorBoundary: any;
 
 try {
   AuthNavigator = require('./navigation/AuthNavigator').default;
 } catch (e) {
   console.warn('AuthNavigator not found, using fallback');
-  AuthNavigator = () => <Text style={{flex: 1, textAlign: 'center', marginTop: 100}}>Loading...</Text>;
+  AuthNavigator = () => <Text style={{flex: 1, textAlign: 'center', marginTop: 100}}>Loading Navigation...</Text>;
 }
 
 try {
@@ -31,13 +31,6 @@ try {
 } catch (e) {
   console.warn('AuthProvider not found, using fallback');
   AuthProvider = ({ children }: any) => children;
-}
-
-try {
-  GlobalErrorBoundary = require('./components/common/GlobalErrorBoundary').default;
-} catch (e) {
-  console.warn('GlobalErrorBoundary not found, using fallback');
-  GlobalErrorBoundary = ({ children }: any) => children;
 }
 
 // Ignore warnings that don't affect functionality

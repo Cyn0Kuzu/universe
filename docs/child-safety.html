@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çocuk Güvenliği Standartları - Universe Kampüs</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff5f5;
+            padding: 15px;
+            border-left: 4px solid #e74c3c;
+            margin: 20px 0;
+        }
+        .contact-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 14px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            border: none;
+            color: #3498db;
+            font-size: 2.5em;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🌌 Universe</h1>
+            <p><em>Üniversite Evreni - Kampüs yaşamını keşfetme platformu</em></p>
+            <p><strong>Package:</strong> com.universekampus.app | <strong>Versiyon:</strong> 1.5.0</p>
+        </div>
+
+        <h1>Çocuk Güvenliği Standartları ve Politikalar</h1>
+
+        <div class="highlight">
+            <strong>Son Güncelleme:</strong> 10 Eylül 2025<br>
+            <strong>Uygulama:</strong> Universe (com.universekampus.app)<br>
+            <strong>Versiyon:</strong> 1.5.0<br>
+            <strong>Geçerlilik:</strong> Bu standartlar Universe uygulamasının tüm versiyonları için geçerlidir.
+        </div>
+
+        <h2>1. Genel Çocuk Güvenliği Politikamız</h2>
+        <p>Universe, üniversite öğrencileri için kampüs yaşamını keşfetme, kulüp etkinliklerine katılma ve sosyal etkileşim kurma platformu olarak, çocukların güvenliğini en üst öncelik kabul eder. Uygulamamız özel olarak 18 yaş ve üzeri üniversite öğrencilerine yöneliktir ve çocukların cinsel istismarı ve sömürüsü (CSAE) ile mücadelede sıfır tolerans politikası uygular.</p>
+
+        <div class="warning">
+            <strong>18+ Yaş Sınırı ve Üniversite Öğrenci Doğrulaması:</strong>
+            <ul>
+                <li>Universe sadece 18 yaş ve üzeri üniversite öğrencilerine yöneliktir</li>
+                <li>Kayıt sırasında zorunlu üniversite e-posta doğrulaması (.edu.tr) yapılır</li>
+                <li>Öğrenci numarası doğrulaması gereklidir</li>
+                <li>Üniversite, bölüm ve sınıf bilgileri kontrol edilir</li>
+                <li>18 yaş altı kullanıcı tespit edilirse hesap derhal kapatılır</li>
+            </ul>
+        </div>
+
+        <h2>2. Çocuk Cinsel İstismarı Materyali (CSAM) Önleme Standartları</h2>
+
+        <h3>2.1 Proaktif Önlemler</h3>
+        <ul>
+            <li><strong>Üniversite E-posta Doğrulama:</strong> Sadece .edu.tr uzantılı üniversite e-postaları kabul edilir</li>
+            <li><strong>Firebase Authentication:</strong> Google Firebase ile güvenli kimlik doğrulama</li>
+            <li><strong>Öğrenci Bilgi Kontrolü:</strong> Üniversite, bölüm, sınıf bilgileri zorunlu ve kontrol edilir</li>
+            <li><strong>İçerik Moderasyonu:</strong> Tüm etkinlik paylaşımları ve yorumlar kontrol edilir</li>
+            <li><strong>Otomatik İçerik Filtresi:</strong> Şüpheli kelime ve görsel tespit sistemi</li>
+            <li><strong>Kulüp Doğrulama:</strong> Kulüp hesapları üniversite onayı ile açılır</li>
+        </ul>
+
+        <h3>2.2 Teknik Güvenlik Önlemleri</h3>
+        <ul>
+            <li><strong>Firebase Firestore:</strong> Güvenli bulut veritabanı ile veri koruması</li>
+            <li><strong>TLS Şifreleme:</strong> Tüm veri iletişiminde güvenli şifreleme</li>
+            <li><strong>Real-time Monitoring:</strong> Anlık kullanıcı aktivite izleme</li>
+            <li><strong>IP Takibi:</strong> Şüpheli IP adreslerinin otomatik tespiti</li>
+            <li><strong>Device Fingerprinting:</strong> Cihaz bazlı güvenlik kontrolü</li>
+            <li><strong>Expo Security:</strong> React Native Expo güvenlik standartları</li>
+        </ul>
+
+        <h2>3. İçerik Moderasyonu ve Denetim</h2>
+
+        <h3>3.1 Otomatik Moderasyon</h3>
+        <ul>
+            <li>PhotoDNA ve diğer hash tabanlı tespit sistemleri</li>
+            <li>Machine Learning ile şüpheli davranış analizi</li>
+            <li>Real-time görüntü ve metin analizi</li>
+            <li>Çoklu dil desteği ile zararlı içerik tespiti</li>
+        </ul>
+
+        <h3>3.2 İnsan Moderasyonu</h3>
+        <ul>
+            <li>24/7 moderasyon ekibi</li>
+            <li>Uzman psikolog ve çocuk güvenliği uzmanları</li>
+            <li>Travma-bilgilendirilmiş moderasyon yaklaşımı</li>
+            <li>Sürekli eğitim ve sertifikasyon programları</li>
+        </ul>
+
+        <h2>4. Kullanıcı Bildirimi ve Şikayet Sistemi</h2>
+
+        <div class="highlight">
+            <h3>Bildirimi Yöntemleri:</h3>
+            <ul>
+                <li><strong>Uygulama İçi:</strong> Her içerikte bulunan "Bildir" butonu</li>
+                <li><strong>E-posta:</strong> safety@universekampus.com</li>
+                <li><strong>Acil Durum Hattı:</strong> 7/24 açık güvenlik hattı</li>
+                <li><strong>Anonim Bildirimi:</strong> Kimlik gizliliği ile bildirimi seçeneği</li>
+            </ul>
+        </div>
+
+        <div class="contact-info">
+            <h3>📞 Acil İletişim Bilgileri</h3>
+            <p><strong>E-posta:</strong> safety@universekampus.com</p>
+            <p><strong>Güvenlik Hattı:</strong> 7/24 açık</p>
+            <p><strong>Yanıt Süresi:</strong> Acil durumlar için 15 dakika içinde</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>Universe Kampüs</strong> - Güvenli ve Eğitici Kampüs Yaşamı</p>
+            <p>Tüm hakları saklıdır © 2025</p>
+            <p>Bu belgeler Google Play Store ve App Store güvenlik gereksinimlerine uygun olarak hazırlanmıştır.</p>
+        </div>
+    </div>
+</body>
+</html>

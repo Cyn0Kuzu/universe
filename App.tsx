@@ -1,25 +1,46 @@
 /**
- * ULTRA PROFESSIONAL APP - v1.9.4
- * NO OBFUSCATION/MINIFICATION - Pure stability
+ * UNIVERSE APP - v1.9.7 CRASH-PROOF EDITION
+ * Professional crash prevention and error handling
  */
 
 import React, { Component, ErrorInfo, ReactNode, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, AppState, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, AppState, ActivityIndicator, Platform } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 
-// Keep splash screen visible while app loads
-SplashScreen.preventAutoHideAsync().catch(() => {
-  // Splash screen is already hidden or doesn't exist
-  console.log('Splash screen already hidden');
-});
+// Ultra-safe splash screen management
+const initializeSplashScreen = async () => {
+  try {
+    await SplashScreen.preventAutoHideAsync();
+    console.log('✅ Splash screen prevention successful');
+    return true;
+  } catch (error) {
+    console.log('⚠️ Splash screen already hidden or not available:', error);
+    return false;
+  }
+};
 
-// ULTRA SAFE gesture handler import
-try {
-  require('react-native-gesture-handler');
-  console.log('✅ Gesture handler loaded successfully');
-} catch (e) {
-  console.log('⚠️ Gesture handler not available, continuing safely');
-}
+// Initialize splash screen
+initializeSplashScreen();
+
+// CRASH-PROOF gesture handler import with platform detection
+const initializeGestureHandler = () => {
+  try {
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
+      require('react-native-gesture-handler');
+      console.log('✅ Gesture handler loaded successfully');
+      return true;
+    } else {
+      console.log('ℹ️ Gesture handler not required for this platform');
+      return true;
+    }
+  } catch (error) {
+    console.log('⚠️ Gesture handler not available, continuing safely:', error);
+    return false;
+  }
+};
+
+// Initialize gesture handler
+const gestureHandlerLoaded = initializeGestureHandler();
 
 // PROGRESSIVE LOADING SYSTEM - Safe synchronous loading
 let MainApp: React.ComponentType | null = null;
@@ -154,7 +175,7 @@ const FallbackApp: React.FC<{ error?: any }> = ({ error }) => {
     <View style={styles.container}>
       <Text style={styles.title}>🌟 Universe</Text>
       <Text style={styles.subtitle}>Üniversite Kampüs Uygulaması</Text>
-      <Text style={styles.version}>v1.9.4 - Güvenli Mod</Text>
+      <Text style={styles.version}>v1.9.5 - Güvenli Mod</Text>
       <Text style={styles.errorText}>
         ⚠️ Uygulama güvenli modda çalışıyor
       </Text>
@@ -229,7 +250,7 @@ const SmartLoadingApp: React.FC = () => {
         <Text style={styles.splashSubtitle}>Üniversite Kampüs Uygulaması</Text>
         <ActivityIndicator size="large" color="#3498db" style={{ marginTop: 30 }} />
         <Text style={styles.splashText}>Uygulama Hazırlanıyor...</Text>
-        <Text style={styles.splashVersion}>v1.9.4</Text>
+        <Text style={styles.splashVersion}>v1.9.6</Text>
       </View>
     );
   }

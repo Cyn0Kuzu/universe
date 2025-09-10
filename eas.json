@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 10.0.0"
+    "version": ">= 10.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -8,6 +9,7 @@
         "buildType": "apk",
         "gradleCommand": ":app:assembleDebug",
         "env": {
+          "NODE_ENV": "development",
           "EXPO_NO_CAPABILITY_SYNC": "1",
           "EXPO_NO_GIT_STATUS": "1"
         }
@@ -17,6 +19,7 @@
       "android": {
         "buildType": "apk",
         "env": {
+          "NODE_ENV": "production",
           "EXPO_NO_CAPABILITY_SYNC": "1",
           "EXPO_NO_GIT_STATUS": "1"
         }
@@ -26,7 +29,12 @@
       "android": {
         "buildType": "app-bundle",
         "credentialsSource": "local",
+        "cache": {
+          "disabled": false
+        },
         "env": {
+          "NODE_ENV": "production",
+          "EXPO_ENV": "production",
           "EXPO_NO_CAPABILITY_SYNC": "1",
           "EXPO_NO_GIT_STATUS": "1"
         }

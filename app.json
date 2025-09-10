@@ -2,7 +2,7 @@
   "expo": {
     "name": "Universe",
     "slug": "universe-kampus",
-    "version": "1.9.4",
+    "version": "1.9.7",
     "orientation": "portrait",
     "icon": "./assets/compact_icon.png",
     "userInterfaceStyle": "light",
@@ -64,9 +64,7 @@
           "photosPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
           "cameraPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir."
         }
-      ],
-      "expo-font",
-      "expo-asset"
+      ]
     ],
     "extra": {
       "firebaseApiKey": "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc",

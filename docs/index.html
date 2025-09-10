@@ -3,244 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çocuk Güvenliği Standartları - Universe Kampüs</title>
+    <title>Universe Kampüs - Politikalar ve Şartlar</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
             color: #333;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
         .container {
             background: white;
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
         }
         h1 {
             color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
             margin-bottom: 30px;
         }
-        h2 {
-            color: #34495e;
+        .policies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
             margin-top: 30px;
+        }
+        .policy-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .policy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .policy-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .policy-card p {
+            color: #5a6c7d;
             margin-bottom: 15px;
         }
-        h3 {
-            color: #2980b9;
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
-        .highlight {
-            background-color: #e8f4fd;
-            padding: 15px;
-            border-left: 4px solid #3498db;
-            margin: 20px 0;
-        }
-        .warning {
-            background-color: #fff5f5;
-            padding: 15px;
-            border-left: 4px solid #e74c3c;
-            margin: 20px 0;
-        }
-        .contact-info {
-            background-color: #f8f9fa;
-            padding: 20px;
+        .policy-link {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
             border-radius: 5px;
-            margin: 20px 0;
+            transition: background 0.3s ease;
+            font-weight: 500;
         }
-        ul {
-            margin: 15px 0;
-            padding-left: 25px;
-        }
-        li {
-            margin: 8px 0;
+        .policy-link:hover {
+            background: #2980b9;
         }
         .footer {
+            text-align: center;
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #666;
-            font-size: 14px;
+            border-top: 1px solid #ecf0f1;
+            color: #7f8c8d;
         }
-        .logo {
-            text-align: center;
+        .last-updated {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 30px;
-        }
-        .logo h1 {
-            border: none;
-            color: #3498db;
-            font-size: 2.5em;
-            margin: 0;
+            border-left: 4px solid #3498db;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <h1>🌌 Universe</h1>
-            <p><em>Üniversite Evreni - Kampüs yaşamını keşfetme platformu</em></p>
-            <p><strong>Package:</strong> com.universekampus.app | <strong>Versiyon:</strong> 1.5.0</p>
+        <div class="header">
+            <div class="logo">U</div>
+            <h1>Universe Kampüs</h1>
+            <p class="subtitle">Politikalar ve Kullanım Şartları</p>
         </div>
 
-        <h1>Çocuk Güvenliği Standartları ve Politikalar</h1>
-
-        <div class="highlight">
-            <strong>Son Güncelleme:</strong> 6 Eylül 2025<br>
-            <strong>Uygulama:</strong> Universe (com.universekampus.app)<br>
-            <strong>Versiyon:</strong> 1.5.0<br>
-            <strong>Geçerlilik:</strong> Bu standartlar Universe uygulamasının tüm versiyonları için geçerlidir.
+        <div class="last-updated">
+            <strong>Son Güncelleme:</strong> 10 Eylül 2025<br>
+            Bu sayfada Universe Kampüs uygulamasının tüm yasal belgeleri ve politikaları yer almaktadır.
         </div>
 
-        <h2>1. Genel Çocuk Güvenliği Politikamız</h2>
-        <p>Universe, üniversite öğrencileri için kampüs yaşamını keşfetme, kulüp etkinliklerine katılma ve sosyal etkileşim kurma platformu olarak, çocukların güvenliğini en üst öncelik kabul eder. Uygulamamız özel olarak 18 yaş ve üzeri üniversite öğrencilerine yöneliktir ve çocukların cinsel istismarı ve sömürüsü (CSAE) ile mücadelede sıfır tolerans politikası uygular.</p>
+        <div class="policies-grid">
+            <div class="policy-card">
+                <h3>🔒 Gizlilik Politikası</h3>
+                <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi.</p>
+                <a href="privacy-policy.html" class="policy-link">Gizlilik Politikasını Oku</a>
+            </div>
 
-        <div class="warning">
-            <strong>18+ Yaş Sınırı ve Üniversite Öğrenci Doğrulaması:</strong>
-            <ul>
-                <li>Universe sadece 18 yaş ve üzeri üniversite öğrencilerine yöneliktir</li>
-                <li>Kayıt sırasında zorunlu üniversite e-posta doğrulaması (.edu.tr) yapılır</li>
-                <li>Öğrenci numarası doğrulaması gereklidir</li>
-                <li>Üniversite, bölüm ve sınıf bilgileri kontrol edilir</li>
-                <li>18 yaş altı kullanıcı tespit edilirse hesap derhal kapatılır</li>
-            </ul>
+            <div class="policy-card">
+                <h3>📋 Kullanım Şartları</h3>
+                <p>Universe Kampüs uygulamasını kullanırken uymanız gereken kurallar ve şartlar.</p>
+                <a href="terms-of-service.html" class="policy-link">Kullanım Şartlarını Oku</a>
+            </div>
+
+            <div class="policy-card">
+                <h3>👶 Çocuk Güvenliği</h3>
+                <p>13 yaş altı kullanıcıların güvenliği için aldığımız özel önlemler ve standartlar.</p>
+                <a href="child-safety.html" class="policy-link">Çocuk Güvenliği Standartları</a>
+            </div>
+
+            <div class="policy-card">
+                <h3>🛡️ Güvenlik Politikası</h3>
+                <p>Uygulamanızın ve verilerinizin güvenliğini sağlamak için uyguladığımız güvenlik önlemleri.</p>
+                <a href="security-policy.html" class="policy-link">Güvenlik Politikasını Oku</a>
+            </div>
+
+            <div class="policy-card">
+                <h3>🏫 Topluluk Kuralları</h3>
+                <p>Sağlıklı ve güvenli bir kampüs ortamı için topluluk kuralları ve davranış standartları.</p>
+                <a href="community-guidelines.html" class="policy-link">Topluluk Kurallarını Oku</a>
+            </div>
+
+            <div class="policy-card">
+                <h3>📞 İletişim ve Destek</h3>
+                <p>Sorularınız, önerileriniz veya sorunlarınız için bizimle iletişime geçin.</p>
+                <a href="contact.html" class="policy-link">İletişim Bilgileri</a>
+            </div>
         </div>
 
-        <h2>2. Çocuk Cinsel İstismarı Materyali (CSAM) Önleme Standartları</h2>
-
-        <h3>2.1 Proaktif Önlemler</h3>
-        <ul>
-            <li><strong>Üniversite E-posta Doğrulama:</strong> Sadece .edu.tr uzantılı üniversite e-postaları kabul edilir</li>
-            <li><strong>Firebase Authentication:</strong> Google Firebase ile güvenli kimlik doğrulama</li>
-            <li><strong>Öğrenci Bilgi Kontrolü:</strong> Üniversite, bölüm, sınıf bilgileri zorunlu ve kontrol edilir</li>
-            <li><strong>İçerik Moderasyonu:</strong> Tüm etkinlik paylaşımları ve yorumlar kontrol edilir</li>
-            <li><strong>Otomatik İçerik Filtresi:</strong> Şüpheli kelime ve görsel tespit sistemi</li>
-            <li><strong>Kulüp Doğrulama:</strong> Kulüp hesapları üniversite onayı ile açılır</li>
-        </ul>
-
-        <h3>2.2 Teknik Güvenlik Önlemleri</h3>
-        <ul>
-            <li><strong>Firebase Firestore:</strong> Güvenli bulut veritabanı ile veri koruması</li>
-            <li><strong>TLS Şifreleme:</strong> Tüm veri iletişiminde güvenli şifreleme</li>
-            <li><strong>Real-time Monitoring:</strong> Anlık kullanıcı aktivite izleme</li>
-            <li><strong>IP Takibi:</strong> Şüpheli IP adreslerinin otomatik tespiti</li>
-            <li><strong>Device Fingerprinting:</strong> Cihaz bazlı güvenlik kontrolü</li>
-            <li><strong>Expo Security:</strong> React Native Expo güvenlik standartları</li>
-        </ul>
-
-        <h2>3. İçerik Moderasyonu ve Denetim</h2>
-
-        <h3>3.1 Otomatik Moderasyon</h3>
-        <ul>
-            <li>PhotoDNA ve diğer hash tabanlı tespit sistemleri</li>
-            <li>Machine Learning ile şüpheli davranış analizi</li>
-            <li>Real-time görüntü ve metin analizi</li>
-            <li>Çoklu dil desteği ile zararlı içerik tespiti</li>
-        </ul>
-
-        <h3>3.2 İnsan Moderasyonu</h3>
-        <ul>
-            <li>24/7 moderasyon ekibi</li>
-            <li>Uzman psikolog ve çocuk güvenliği uzmanları</li>
-            <li>Travma-bilgilendirilmiş moderasyon yaklaşımı</li>
-            <li>Sürekli eğitim ve sertifikasyon programları</li>
-        </ul>
-
-        <h2>4. Kullanıcı Bildirimi ve Şikayet Sistemi</h2>
-
-        <div class="highlight">
-            <h3>Bildirimi Yöntemleri:</h3>
-            <ul>
-                <li><strong>Uygulama İçi:</strong> Her içerikte bulunan "Bildir" butonu</li>
-                <li><strong>E-posta:</strong> safety@universekampus.com</li>
-                <li><strong>Acil Durum Hattı:</strong> 7/24 açık güvenlik hattı</li>
-                <li><strong>Anonim Bildirimi:</strong> Kimlik gizliliği ile bildirimi seçeneği</li>
-            </ul>
+        <div class="footer">
+            <p><strong>Universe Kampüs</strong> - Güvenli ve Eğitici Kampüs Yaşamı</p>
+            <p>Tüm hakları saklıdır © 2025</p>
+            <p>Bu politikalar Google Play Store ve App Store gereksinimlerine uygun olarak hazırlanmıştır.</p>
         </div>
-
-        <h3>4.1 Bildirimi İşlem Süreci</h3>
-        <ol>
-            <li><strong>Anında Alım:</strong> Bildirimi 1 dakika içinde sistem tarafından alınır</li>
-            <li><strong>Öncelik Değerlendirmesi:</strong> CSAM şüphesi olan vakalar en yüksek öncelik</li>
-            <li><strong>Hızlı İnceleme:</strong> Acil vakalar 15 dakika, diğerleri 24 saat içinde</li>
-            <li><strong>Gerekli Önlemler:</strong> İçerik kaldırma, hesap askıya alma, yetkili bildirimi</li>
-            <li><strong>Geri Bildirim:</strong> Bildirimi yapan kullanıcıya durum güncelleme</li>
-        </ol>
-
-        <h2>5. Yasal Uyumluluk ve Raporlama</h2>
-
-        <h3>5.1 Ulusal ve Uluslararası Uyumluluk</h3>
-        <ul>
-            <li><strong>Türkiye:</strong> 5651 sayılı İnternet Kanunu ve ilgili mevzuat</li>
-            <li><strong>AB:</strong> GDPR ve Digital Services Act uyumluluğu</li>
-            <li><strong>ABD:</strong> NCMEC bildirimi protokolleri</li>
-            <li><strong>INTERPOL:</strong> Uluslararası çocuk koruma programları</li>
-        </ul>
-
-        <h3>5.2 Yetkili Kurumlara Bildirimi</h3>
-        <div class="warning">
-            <strong>Zorunlu Bildirimi:</strong> CSAM şüphesi tespit edildiğinde, yasal gereklilikler doğrultusunda:
-            <ul>
-                <li>Derhal yerel kolluk kuvvetlerine bildirimi</li>
-                <li>İçişleri Bakanlığı Siber Güvenlik Dairesi'ne rapor</li>
-                <li>NCMEC (National Center for Missing & Exploited Children) bildirimi</li>
-                <li>İlgili üniversite yönetimine bilgilendirme</li>
-            </ul>
-        </div>
-
-        <h2>6. Kullanıcı Eğitimi ve Farkındalık</h2>
-
-        <h3>6.1 Güvenlik Eğitimi Programları</h3>
-        <ul>
-            <li>Yeni kullanıcılar için zorunlu güvenlik eğitimi</li>
-            <li>Düzenli güvenlik ipuçları ve güncellemeleri</li>
-            <li>Siber zorbalık ve taciz farkındalığı</li>
-            <li>Dijital vatandaşlık ve etik kullanım eğitimi</li>
-        </ul>
-
-        <h3>6.2 Topluluk Standartları</h3>
-        <ul>
-            <li>Saygılı ve güvenli iletişim kuralları</li>
-            <li>Kişisel bilgi paylaşımı sınırları</li>
-            <li>Taciz ve zorbalığa karşı sıfır tolerans</li>
-            <li>Akademik dürüstlük ve etik değerler</li>
-        </ul>
-
-        <h2>7. Teknik Güvenlik Altyapısı</h2>
-
-        <h3>7.1 Veri Koruma</h3>
-        <ul>
-            <li>AES-256 şifreleme ile veri koruması</li>
-            <li>Firebase Security Rules ile katmanlı güvenlik</li>
-            <li>Regular security audits ve penetrasyon testleri</li>
-            <li>OWASP güvenlik standartlarına uyumluluk</li>
-        </ul>
-
-        <h3>7.2 İzleme ve Analitik</h3>
-        <ul>
-            <li>Anormal kullanıcı davranışı tespiti</li>
-            <li>Geo-location tabanlı güvenlik kontrolleri</li>
-            <li>Device fingerprinting ile kimlik doğrulama</li>
-            <li>Real-time threat detection sistemleri</li>
-        </ul>
-
-        <h2>8. Kriz Yönetimi ve Müdahale Protokolü</h2>
-
-        <h3>8.1 Acil Durum Prosedürleri</h3>
-        <ol>
-            <li><strong>Anında Değerlendirme:</strong> Bildirimi alındıktan sonra 5 dakika içinde risk değerlendirmesi</li>
-            <li><strong>İçerik İzolasyonu:</strong> Şüpheli içeriğin derhal platformdan kaldırılması</li>
-            <li><strong>Kullanıcı Koruması:</strong> Potansiyel mağdurların güvenliğinin sağlanması</li>
-            <li><strong>Kanıt Koruma:</strong> Yasal süreç için dijital kanıtların muhafazası</li>
-            <li><strong>Yetkililer Bildirimi:</strong> Kolluk kuvvetlerine derhal bildirimi</li>
-        </ol>
-
-        <h2>9. Sürekli İyileştirme ve Güncelleme</h2>
+    </div>
+</body>
+</html>
 
         <h3>9.1 Düzenli Değerlendirme</h3>
         <ul>

@@ -20,7 +20,7 @@ try {
   console.warn('Base64 polyfill not available:', error);
 }
 
-// Firebase configuration from environment variables
+// Firebase configuration with proper error handling
 const firebaseConfig = {
   apiKey: Constants.expoConfig?.extra?.firebaseApiKey || "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc",
   authDomain: Constants.expoConfig?.extra?.firebaseAuthDomain || "universe-a6f60.firebaseapp.com",
@@ -29,6 +29,25 @@ const firebaseConfig = {
   messagingSenderId: Constants.expoConfig?.extra?.firebaseMessagingSenderId || "946853543876",
   appId: Constants.expoConfig?.extra?.firebaseAppId || "1:946853543876:android:7a40780d639fa5f763ae91",
 };
+
+// Validate Firebase configuration
+const validateFirebaseConfig = (config: any): boolean => {
+  const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+  const missingFields = requiredFields.filter(field => !config[field]);
+  
+  if (missingFields.length > 0) {
+    console.error('❌ Missing Firebase configuration fields:', missingFields);
+    return false;
+  }
+  
+  console.log('✅ Firebase configuration validated successfully');
+  return true;
+};
+
+// Validate config before initialization
+if (!validateFirebaseConfig(firebaseConfig)) {
+  console.error('⚠️ Firebase configuration is incomplete, app may have limited functionality');
+}
 
 // Initialize Firebase if it hasn't been initialized already
 if (!firebase.apps.length) {
