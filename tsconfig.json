@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "strict": true,
+    "noEmit": true,
+    "jsx": "react-native",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "extends": "expo/tsconfig.base",
+  "include": [
+    "src/**/*",
+    "App.tsx",
+    "app.config.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "extends": ["@types/jest"],
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  }
+}
