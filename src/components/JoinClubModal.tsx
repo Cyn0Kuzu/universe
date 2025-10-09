@@ -9,8 +9,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
-import { firestore } from '../firebase/config';
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 interface JoinClubModalProps {
   visible: boolean;
@@ -48,7 +48,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
 
     try {
       // Check if already a member
-      const memberDoc = await firestore
+      const memberDoc = await firebase.firestore()
         .collection('clubs')
         .doc(club.id)
         .collection('members')
@@ -63,7 +63,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
       }
 
       // Join the club
-      await firestore
+      await firebase.firestore()
         .collection('clubs')
         .doc(club.id)
         .collection('members')
@@ -75,7 +75,7 @@ export const JoinClubModal: React.FC<JoinClubModalProps> = ({
         });
 
       // Update club member count
-      await firestore
+      await firebase.firestore()
         .collection('clubs')
         .doc(club.id)
         .update({

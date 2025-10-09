@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text, Card, Chip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { firestore } from '../firebase/config';
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { useTheme } from 'react-native-paper';
 import { eventCategories } from '../constants';
 import StudentEventCard from './StudentEventCard';
@@ -43,7 +43,7 @@ const UpcomingEventsList: React.FC<UpcomingEventsListProps> = ({ clubId }) => {
         const now = new Date();
         
         // Firestore'dan kulübün yaklaşan (7 gün içinde) etkinliklerini çek (en fazla 3 tane)
-        const eventsRef = firestore.collection('events');
+        const eventsRef = firebase.firestore().collection('events');
         const nowTs = firebase.firestore.Timestamp.fromDate(new Date());
         const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
         const sevenDaysTs = firebase.firestore.Timestamp.fromDate(sevenDaysLater);

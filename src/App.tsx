@@ -1,96 +1,167 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import BackgroundLoadingService from './services/backgroundLoadingService';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, ActivityIndicator, Platform } from 'react-native';
-import * as Font from 'expo-font';
+import { Text } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AuthNavigator from './navigation/AuthNavigator';
 import theme from './theme';
 import { AuthProvider } from './contexts/AuthContext';
 import { LogBox } from 'react-native';
-import PushNotificationService from './services/pushNotificationService';
-import { logger } from './utils/logger';
+import * as SplashScreen from 'expo-splash-screen';
+import { firebase } from './firebase';
+import { SecureStorage } from './utils/secureStorage';
+
+// Enable React Native Screens optimizations
+import { enableScreens } from 'react-native-screens';
+enableScreens(true);
+
+// Keep splash screen visible while loading
+SplashScreen.preventAutoHideAsync();
 
 // Ignore only non-critical warnings
-// IMPORTANT: Do not ignore "Possible Unhandled Promise Rejection" - it can cause crashes
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
-  // Note: Promise rejections should be handled properly, not ignored
+  'VirtualizedLists should never be nested',
+  'Warning: componentWillReceiveProps has been renamed',
+  'Could not find generated setter for class',
+  'Attempt to set local data for view with unknown tag',
+  'Long monitor contention',
+  'Timed out waiting for layout',
+  'Skipped frames',
+  'Slow Looper main',
+  'JIT profile information will not be recorded',
+  'Access denied finding property',
+  'Warning: unused DT entry',
+  'Seed missing signature',
+  'Enum should inherit from class',
+  'Not starting debugger since process cannot load the jdwp agent',
 ]);
 
 const App: React.FC = () => {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [notificationsInitialized, setNotificationsInitialized] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
+  // Enhanced splash screen with authentication check
   useEffect(() => {
-    async function initializeApp() {
+    const initializeApp = async () => {
       try {
-        // Load fonts with error handling for each font
-        // Expo handles these fonts automatically, but we load them explicitly for reliability
-        try {
-          await Font.loadAsync({
-            'Ionicons': require('../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
-            'MaterialCommunityIcons': require('../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
-            'MaterialIcons': require('../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf'),
-            'FontAwesome': require('../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf'),
-            'AntDesign': require('../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/AntDesign.ttf'),
-          });
-          
-          logger.info('Vector icons fonts loaded successfully!');
-        } catch (fontError) {
-          // If fonts fail to load explicitly, they might be loaded by Expo
-          logger.warn('Font loading warning (may be pre-loaded by Expo):', fontError);
-        }
+        console.log('🚀 Starting app initialization with auth check...');
         
-        setFontsLoaded(true);
-
-        // Initialize push notifications
-        if (Platform.OS !== 'web') {
-          try {
+        // Start authentication check immediately
+        const authCheckPromise = checkAuthenticationStatus();
+        
+        // Wait for splash screen duration (2 seconds)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Wait for auth check to complete
+        await authCheckPromise;
+        
+        // Request all necessary permissions
+        try {
+          console.log('🔐 Requesting app permissions...');
+          const { PermissionManager } = require('./services/permissionManager');
+          const permissionManager = PermissionManager.getInstance();
+          const permissionResults = await permissionManager.requestAllPermissions();
+          
+          console.log('📋 Permission results:', permissionResults);
+          
+          // Initialize push notifications if permission granted
+          if (permissionResults.notifications.granted) {
+            console.log('🔔 Initializing push notifications...');
+            const { PushNotificationService } = require('./services/pushNotificationService');
             const pushService = PushNotificationService.getInstance();
             const token = await pushService.initialize();
-            
             if (token) {
-              logger.info('Push notifications initialized successfully');
+              console.log('✅ Push notifications initialized successfully');
             } else {
-              logger.warn('Push notifications initialization failed');
+              console.warn('⚠️ Push notifications initialization failed');
             }
-          } catch (pushError) {
-            logger.error('Push notification initialization error:', pushError);
-            // Continue without push notifications
+          } else {
+            console.warn('⚠️ Notification permission not granted - skipping push notification initialization');
           }
+        } catch (permissionError) {
+          console.error('❌ Permission request error:', permissionError);
         }
         
-        setNotificationsInitialized(true);
+        await SplashScreen.hideAsync();
+        setIsReady(true);
+        console.log('✅ App initialization completed with auth check and push notifications');
       } catch (error) {
-        logger.error('App initialization error:', error);
-        // Always allow app to continue even if initialization fails
-        setFontsLoaded(true);
-        setNotificationsInitialized(true);
+        console.error('App initialization error:', error);
+        await SplashScreen.hideAsync();
+        setIsReady(true);
       }
-    }
+    };
 
     initializeApp();
   }, []);
 
-  // Don't show any loading screen - let the splash screen handle it
-  if (!fontsLoaded || !notificationsInitialized) {
-    return null;
+  // Check authentication status during splash screen
+  const checkAuthenticationStatus = async () => {
+    try {
+      console.log('🔐 Checking authentication status...');
+      
+      // Check if user is already authenticated
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser) {
+        console.log('✅ User already authenticated:', currentUser.email);
+        setAuthChecked(true);
+        return;
+      }
+
+      // Check SecureStorage for stored session
+      const storedSession = await SecureStorage.getUserSession();
+      if (storedSession) {
+        console.log('✅ Found stored session, attempting auto sign-in...');
+        
+        if (storedSession.password) {
+          try {
+            await firebase.auth().signInWithEmailAndPassword(
+              storedSession.email, 
+              storedSession.password
+            );
+            console.log('✅ Auto sign-in successful');
+          } catch (error) {
+            console.log('⚠️ Auto sign-in failed, user will need to login manually');
+          }
+        }
+      } else {
+        console.log('ℹ️ No stored session found, user will need to login');
+      }
+      
+      setAuthChecked(true);
+    } catch (error) {
+      console.error('❌ Auth check error:', error);
+      setAuthChecked(true);
+    }
+  };
+
+  // Don't render main app until splash screen is hidden
+  if (!isReady) {
+    return null; // Expo splash screen will be shown
   }
 
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={theme as any}>
-        <AuthProvider>
-          <NavigationContainer>
-            {/* Status bar'ı telefon varsayılan renginde ayarla */}
-            <StatusBar style="auto" backgroundColor="transparent" translucent={false} />
-            <AuthNavigator />
-          </NavigationContainer>
-        </AuthProvider>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <PaperProvider theme={theme as any}>
+          <AuthProvider>
+            <NavigationContainer
+              onReady={() => {
+                console.log('Navigation ready');
+              }}
+              fallback={<Text style={{ textAlign: 'center', marginTop: 50 }}>Navigation yükleniyor...</Text>}
+            >
+              <StatusBar style="auto" backgroundColor="transparent" translucent={false} />
+              <AuthNavigator />
+            </NavigationContainer>
+          </AuthProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 };
 

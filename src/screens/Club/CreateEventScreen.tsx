@@ -7,7 +7,8 @@ import {
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { firestore, firebase } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { createEventWithScoring as createEventService } from '../../firebase/eventManagement';
 import { getUserProfile as fetchUserProfile } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -215,7 +216,7 @@ const CreateEventScreen: React.FC = () => {
         if (__DEV__) {
           console.log('🔄 Etkinlik verileri yükleniyor:', eventId);
         }
-        const eventDoc = await firestore.collection('events').doc(eventId).get();
+        const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
         
         if (!eventDoc.exists) {
           setSnackbarMessage('Etkinlik bulunamadı');
@@ -528,7 +529,34 @@ const CreateEventScreen: React.FC = () => {
         delete (updateData as any).attendeesCount; // Mevcut katılımcı sayısını koru
         delete (updateData as any).attendees; // Mevcut katılımcıları koru
         
-        await firestore.collection('events').doc(eventId).update(updateData);
+        await firebase.firestore().collection('events').doc(eventId).update(updateData);
+        
+        // Firebase Functions ile etkinlik güncellendi bildirimi gönder
+        try {
+          const FirebaseFunctionsService = require('../../services/firebaseFunctionsService').default;
+          
+          // Etkinlik katılımcılarını al
+          const attendeesQuery = await firebase.firestore()
+            .collection('eventAttendees')
+            .where('eventId', '==', eventId)
+            .get();
+          
+          const attendeeIds = attendeesQuery.docs.map(doc => doc.data().userId);
+          
+          if (attendeeIds.length > 0) {
+            const clubName = effectiveProfile.clubName || effectiveProfile.displayName || 'Kulüp';
+            await FirebaseFunctionsService.sendEventUpdatedNotification(
+              eventId,
+              eventData.title,
+              effectiveProfile.uid,
+              clubName,
+              attendeeIds
+            );
+            console.log('✅ Event updated notification sent via Firebase Functions');
+          }
+        } catch (notificationError) {
+          console.warn('⚠️ Failed to send event updated notification:', notificationError);
+        }
         
         setSnackbarMessage('Etkinlik başarıyla güncellendi');
         setSnackbarVisible(true);

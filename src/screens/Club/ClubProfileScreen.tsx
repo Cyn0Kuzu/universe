@@ -7,7 +7,9 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../contexts/AuthContext';
-import { auth, firestore, firebase } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 import { refreshUserProfileCounts } from '../../firebase/userProfile';
 import { ClubStatsService } from '../../services/clubStatsService';
 import { centralizedRankingService } from '../../services/centralizedRankingService';
@@ -18,7 +20,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClubStackParamList } from '../../navigation/ClubNavigator';
 import { StatusBar } from 'expo-status-bar';
 import { UNIVERSITIES_DATA as universities, CLUB_TYPES_DATA as clubTypes, DEPARTMENTS_DATA, CLASS_LEVELS_DATA } from '../../constants';
-import { UniversalAvatar } from '../../components/common';
+import { UniversalAvatar, EnhancedButton, EnhancedCard } from '../../components/common';
+import { useResponsiveDesign } from '../../utils/responsiveDesignUtils';
+import AccessibilityUtils from '../../utils/accessibilityUtils';
 import ProfileEditModal from '../../components/profile/ProfileEditModal';
 import { CustomTheme } from '../../types/theme';
 import AccountDeletionService from '../../services/accountDeletionService';
@@ -28,6 +32,7 @@ const ClubProfileScreen: React.FC = () => {
   const theme = baseTheme as unknown as CustomTheme;
   const { currentUser, refreshUserProfile, refreshUserData, signOut } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<ClubStackParamList>>();
+  const { fontSizes, spacing, shadows } = useResponsiveDesign();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
   const [deleteAccountDialogVisible, setDeleteAccountDialogVisible] = useState(false);
@@ -565,7 +570,7 @@ const ClubProfileScreen: React.FC = () => {
     if (needsUpdate) {
       try {
         console.log('Profil verileri güncelleniyor:', updates);
-        await firestore.collection('users').doc(userProfile.uid).update(updates);
+        await firebase.firestore().collection('users').doc(userProfile.uid).update(updates);
         console.log('Profil başarıyla güncellendi!');
       } catch (error) {
         console.error('Profil güncellenirken hata:', error);
@@ -713,7 +718,7 @@ const ClubProfileScreen: React.FC = () => {
   // Handle delete account
   const handleDeleteAccount = async () => {
     try {
-      const user = auth.currentUser;
+      const user = firebase.auth().currentUser;
       if (!user || !userProfile) {
         Alert.alert('Hata', 'Oturum açmanız gerekiyor.');
         return;
@@ -900,7 +905,7 @@ const ClubProfileScreen: React.FC = () => {
             console.log('Base64 resim oluşturuldu, boyut:', base64Image.length);
             
             // Direkt olarak Firestore'a kaydet
-            await firestore.collection('users').doc(currentUser.uid).update({
+            await firebase.firestore().collection('users').doc(currentUser.uid).update({
               [fieldToUpdate]: base64Image,
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             });

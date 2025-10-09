@@ -83,40 +83,48 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
     try {
       setModalState({ loading: true });
       
+      console.log(`📋 Loading student notifications for user: ${userId}`);
+      
+      // Tüm bildirimleri al (recipientType filtresi olmadan)
       let snapshot;
       try {
-        // Öğrenci bildirimleri için recipientType = 'student' filter
         snapshot = await firebase.firestore()
           .collection('notifications')
           .where('recipientId', '==', userId)
-          .where('recipientType', '==', 'student') // Öğrenci bildirimleri için
           .orderBy('createdAt', 'desc')
-          .limit(50)
+          .limit(200)
           .get();
           
-        console.log(`📋 Loaded ${snapshot.size} student notifications for user ${userId}`);
+        console.log(`📋 Loaded ${snapshot.size} total notifications for user ${userId}`);
       } catch (orderError) {
         console.warn('OrderBy failed, trying without ordering:', orderError);
         snapshot = await firebase.firestore()
           .collection('notifications')
           .where('recipientId', '==', userId)
-          .where('recipientType', '==', 'student')
-          .limit(50)
+          .limit(200)
           .get();
       }
 
       const fetchedNotifications: StudentNotification[] = [];
       
+      // Tüm bildirimleri işle
       snapshot.docs.forEach((doc) => {
         const data = doc.data();
+        
+        // Client-side filtering: recipientType 'student' olanları veya recipientType olmayan eski bildirimleri al
+        const recipientType = data.recipientType;
+        if (recipientType && recipientType !== 'student') {
+          return; // Skip non-student notifications
+        }
+        
         const notification: StudentNotification = {
           id: doc.id,
           type: data.type || 'unknown',
           title: data.title || 'Bildirim',
           message: data.message || '',
           recipientId: data.recipientId,
-          senderId: data.senderId, // Yeni sistem senderId kullanır
-          senderName: data.senderName, // Yeni sistem senderName kullanır
+          senderId: data.senderId,
+          senderName: data.senderName,
           senderImage: data.senderImage,
           clubId: data.metadata?.clubId || data.clubId,
           eventId: data.metadata?.eventId || data.eventId,

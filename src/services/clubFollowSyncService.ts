@@ -3,7 +3,8 @@
  * Ensures follow state is synchronized across all screens
  */
 
-import { firestore, firebase } from '../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { followClub, unfollowClub } from '../firebase/firestore';
 import { UnifiedNotificationService } from './unifiedNotificationService';
 
@@ -68,7 +69,7 @@ export class ClubFollowSyncService {
    */
   static async getFollowState(userId: string, clubId: string): Promise<ClubFollowState> {
     try {
-      const db = firestore;
+      const db = firebase.firestore();
       
       // Get user's follow status
       const userDoc = await db.collection('users').doc(userId).get();
@@ -115,7 +116,7 @@ export class ClubFollowSyncService {
         };
       }
       
-      const db = firestore;
+      const db = firebase.firestore();
       const batch = db.batch();
       
       // 1. Update Firestore atomically
@@ -140,6 +141,21 @@ export class ClubFollowSyncService {
       // 3. Club follow statistics are tracked directly in Firebase collections
       console.log('✅ Club follow statistics recorded in Firebase');
       
+      // Firebase Functions ile kulüp takip bildirimi gönder
+      try {
+        const FirebaseFunctionsService = require('./firebaseFunctionsService').default;
+        const userInfo = await UnifiedNotificationService.getUserInfo(userId);
+        
+        await FirebaseFunctionsService.sendClubFollowNotification(
+          userId,
+          clubId,
+          userInfo.name
+        );
+        console.log('✅ Club follow notification sent via Firebase Functions');
+      } catch (notificationError) {
+        console.warn('⚠️ Failed to send club follow notification:', notificationError);
+      }
+
       // Unified Notification System - Kulüp takip edildi bildirimi
       try {
         const userInfo = await UnifiedNotificationService.getUserInfo(userId);
@@ -201,7 +217,7 @@ export class ClubFollowSyncService {
         };
       }
       
-      const db = firestore;
+      const db = firebase.firestore();
       const batch = db.batch();
       
       // 1. Update Firestore atomically

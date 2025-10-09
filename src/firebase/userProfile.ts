@@ -1,4 +1,5 @@
-import { firebase, firestore } from './config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**

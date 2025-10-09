@@ -104,7 +104,8 @@ service cloud.firestore {
                        request.resource.data.diff(resource.data).affectedKeys()
                        .hasOnly(['following', 'followingCount', 'followers', 'followerCount', 'memberClubs', 'followedClubs', 
                                 'displayName', 'username', 'bio', 'description', 'university', 'department', 'classLevel',
-                                'clubType', 'clubTypes', 'categories', 'userType', 'clubName', 'updatedAt', 'lastModifiedBy', 'version']));
+                                'clubType', 'clubTypes', 'categories', 'userType', 'clubName', 'updatedAt', 'lastModifiedBy', 'version',
+                                'pushTokens', 'fcmToken', 'expoPushToken', 'lastTokenUpdate', 'deviceInfo']));
       allow delete: if isOwner(userId) || isAdmin();
       
       // User Social Features

@@ -35,14 +35,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 // 🚀 Performance optimization imports
 import { 
-  useBatchedState, 
-  useDebounce, 
-  useMountedState, 
-  useThrottle,
-  useIntersectionObserver,
-  // useRenderTime, // Disabled to reduce warnings
-  firestoreCache,
-  globalFirestoreListener
+  useMountedState
 } from '../utils/performanceOptimizer';
 import { useAuth } from '../contexts/AuthContext';
 import { firebase } from '../firebase';
@@ -335,7 +328,7 @@ const ClubEventCard = ({
   // useRenderTime(`ClubEventCard-${event.id}`);
   
   // 🚀 Performance: Consolidated state using batched updates
-  const [componentState, setComponentState] = useBatchedState({
+  const [componentState, setComponentState] = useState({
     // Basic states
     expanded: false,
     loading: false,
@@ -407,98 +400,98 @@ const ClubEventCard = ({
   }, [liveEvent.university]);
 
   // 🚀 Performance: Throttled toggle function
-  const toggleExpand = useThrottle(() => {
+  const toggleExpand = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setComponentState({ expanded: !componentState.expanded });
-  }, 300);
+    setComponentState(prev => ({ ...prev, expanded: !prev.expanded }));
+  }, [componentState.expanded]);
 
   // Additional state for compatibility
   const setHasLiked = useCallback((value: boolean) => {
-    setComponentState({ hasLiked: value });
+    setComponentState(prev => ({ ...prev, hasLiked: value }));
   }, []);
 
   const setShowSeeLikesButton = useCallback((value: boolean) => {
-    setComponentState({ showSeeLikesButton: value });
+    setComponentState(prev => ({ ...prev, showSeeLikesButton: value }));
   }, []);
 
   const setHasAttended = useCallback((value: boolean) => {
-    setComponentState({ hasAttended: value });
+    setComponentState(prev => ({ ...prev, hasAttended: value }));
   }, []);
 
   const setAttendeesCount = useCallback((value: number) => {
-    setComponentState({ attendeesCount: value });
+    setComponentState(prev => ({ ...prev, attendeesCount: value }));
   }, []);
 
   const setLikesCount = useCallback((value: number) => {
-    setComponentState({ likesCount: value });
+    setComponentState(prev => ({ ...prev, likesCount: value }));
   }, []);
 
   const setComments = useCallback((value: any[]) => {
-    setComponentState({ comments: value });
+    setComponentState(prev => ({ ...prev, comments: value }));
   }, []);
 
   const setServerEvent = useCallback((value: any) => {
-    setComponentState({ serverEvent: value });
+    setComponentState(prev => ({ ...prev, serverEvent: value }));
   }, []);
 
   const setCommentsCount = useCallback((value: number) => {
-    setComponentState({ commentsCount: value });
+    setComponentState(prev => ({ ...prev, commentsCount: value }));
   }, []);
 
   const setLikesList = useCallback((value: any[]) => {
-    setComponentState({ likesList: value });
+    setComponentState(prev => ({ ...prev, likesList: value }));
   }, []);
 
   const setAttendeesList = useCallback((value: any[] | ((prev: any[]) => any[])) => {
     if (typeof value === 'function') {
-      setComponentState(prev => ({ attendeesList: value(prev.attendeesList) }));
+      setComponentState(prev => ({ ...prev, attendeesList: value(prev.attendeesList) }));
     } else {
-      setComponentState({ attendeesList: value });
+      setComponentState(prev => ({ ...prev, attendeesList: value }));
     }
   }, []);
 
   const setShowDetailsModal = useCallback((value: boolean) => {
-    setComponentState({ showDetailsModal: value });
+    setComponentState(prev => ({ ...prev, showDetailsModal: value }));
   }, []);
 
   const setShowComments = useCallback((value: boolean) => {
-    setComponentState({ showComments: value });
+    setComponentState(prev => ({ ...prev, showComments: value }));
   }, []);
 
   const setCommentText = useCallback((value: string) => {
-    setComponentState({ commentText: value });
+    setComponentState(prev => ({ ...prev, commentText: value }));
   }, []);
 
   const setIsLoadingComments = useCallback((value: boolean) => {
-    setComponentState({ isLoadingComments: value });
+    setComponentState(prev => ({ ...prev, isLoadingComments: value }));
   }, []);
 
   const setIsPostingComment = useCallback((value: boolean) => {
-    setComponentState({ isPostingComment: value });
+    setComponentState(prev => ({ ...prev, isPostingComment: value }));
   }, []);
 
   const setShowLikesList = useCallback((value: boolean) => {
-    setComponentState({ showLikesList: value });
+    setComponentState(prev => ({ ...prev, showLikesList: value }));
   }, []);
 
   const setShowAttendeesList = useCallback((value: boolean) => {
-    setComponentState({ showAttendeesList: value });
+    setComponentState(prev => ({ ...prev, showAttendeesList: value }));
   }, []);
 
   const setIsLoadingAttendees = useCallback((value: boolean) => {
-    setComponentState({ isLoadingAttendees: value });
+    setComponentState(prev => ({ ...prev, isLoadingAttendees: value }));
   }, []);
 
   const setIsLoadingLikes = useCallback((value: boolean) => {
-    setComponentState({ isLoadingLikes: value });
+    setComponentState(prev => ({ ...prev, isLoadingLikes: value }));
   }, []);
 
   const setLoading = useCallback((value: boolean) => {
-    setComponentState({ loading: value });
+    setComponentState(prev => ({ ...prev, loading: value }));
   }, []);
 
   const setRefreshing = useCallback((value: boolean) => {
-    setComponentState({ refreshing: value });
+    setComponentState(prev => ({ ...prev, refreshing: value }));
   }, []);
 
   // Refs for compatibility
@@ -2703,10 +2696,36 @@ const ClubEventCard = ({
         <TouchableOpacity onPress={toggleExpand} style={{width: '100%'}}>
           <View style={styles.imageContainer}>
             <Card.Cover 
-              source={event.coverImageUrl || event.imageUrl ?
-                { uri: event.coverImageUrl || event.imageUrl } : 
-                require('../../assets/universe_logo.png')
-              } 
+              source={(() => {
+                // Try multiple image field names
+                const imageFields = [
+                  event.coverImageUrl,
+                  event.imageUrl,
+                  event.image,
+                  event.coverImage,
+                  event.photoUrl,
+                  event.bannerUrl,
+                  event.headerImage,
+                  event.thumbnail,
+                  (event as any).coverPhoto,
+                  (event as any).eventImage,
+                  (event as any).cover,
+                  (event as any).photo
+                ];
+                
+                const imageUri = imageFields.find(uri => 
+                  uri && typeof uri === 'string' && uri.trim() !== ''
+                );
+                
+                console.log('🖼️ ClubEventCard image check:', {
+                  eventId: event.id,
+                  eventTitle: event.title,
+                  imageFields: imageFields.filter(f => f),
+                  selectedUri: imageUri
+                });
+                
+                return imageUri ? { uri: imageUri } : require('../../assets/universe_logo.png');
+              })()}
               style={styles.cardImage}
               resizeMode="cover"
             />

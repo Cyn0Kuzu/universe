@@ -86,41 +86,48 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     try {
       setModalState({ loading: true });
       
+      console.log(`📋 Loading notifications for user: ${userId}`);
+      
+      // Tüm bildirimleri al (recipientType filtresi olmadan)
       let snapshot;
       try {
-        // Yeni unified notification system için recipientType filter eklendi
         snapshot = await firebase.firestore()
           .collection('notifications')
           .where('recipientId', '==', userId)
-          .where('recipientType', '==', 'club') // Kulüp bildirimleri için
           .orderBy('createdAt', 'desc')
-          .limit(200) // Limiti artırdık
+          .limit(200)
           .get();
           
-        console.log(`📋 Loaded ${snapshot.size} club notifications (new system) for user ${userId}`);
+        console.log(`📋 Loaded ${snapshot.size} total notifications for user ${userId}`);
       } catch (orderError) {
         console.warn('OrderBy failed, trying without ordering:', orderError);
         snapshot = await firebase.firestore()
           .collection('notifications')
           .where('recipientId', '==', userId)
-          .where('recipientType', '==', 'club')
-          .limit(200) // Limiti artırdık
+          .limit(200)
           .get();
       }
 
       const fetchedNotifications: ClubNotification[] = [];
       
-      // Yeni sistem bildirimlerini ekle
+      // Tüm bildirimleri işle
       snapshot.docs.forEach((doc) => {
         const data = doc.data();
+        
+        // Client-side filtering: recipientType 'club' olanları veya recipientType olmayan eski bildirimleri al
+        const recipientType = data.recipientType;
+        if (recipientType && recipientType !== 'club') {
+          return; // Skip non-club notifications
+        }
+        
         const notification: ClubNotification = {
           id: doc.id,
           type: data.type || 'unknown',
           title: data.title || 'Bildirim',
           message: data.message || '',
           recipientId: data.recipientId,
-          userId: data.senderId || data.userId, // Yeni sistem senderId kullanır
-          userName: data.senderName || data.userName, // Yeni sistem senderName kullanır
+          userId: data.senderId || data.userId,
+          userName: data.senderName || data.userName,
           clubId: data.metadata?.clubId || data.clubId,
           eventId: data.metadata?.eventId || data.eventId,
           priority: data.priority || 'medium',
@@ -131,49 +138,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         fetchedNotifications.push(notification);
       });
 
-      // Eski sistem bildirimlerini de al (recipientType olmayan eski bildirimler için)
-      try {
-        console.log('📋 Loading legacy notifications (without recipientType)...');
-        const legacySnapshot = await firebase.firestore()
-          .collection('notifications')
-          .where('recipientId', '==', userId)
-          .orderBy('createdAt', 'desc')
-          .limit(100)
-          .get();
-
-        // Client-side filtering for legacy notifications without recipientType
-        legacySnapshot.docs.forEach((doc) => {
-          const data = doc.data();
-          
-          // Skip if this notification is already included (has recipientType)
-          if (data.recipientType) return;
-          
-          // Skip if we already have this notification ID
-          if (fetchedNotifications.some(n => n.id === doc.id)) return;
-
-          const notification: ClubNotification = {
-            id: doc.id,
-            type: data.type || 'unknown',
-            title: data.title || 'Bildirim',
-            message: data.message || '',
-            recipientId: data.recipientId,
-            userId: data.senderId || data.userId,
-            userName: data.senderName || data.userName,
-            clubId: data.metadata?.clubId || data.clubId,
-            eventId: data.metadata?.eventId || data.eventId,
-            priority: data.priority || 'medium',
-            read: data.read || false,
-            createdAt: data.createdAt,
-            data: data.metadata || data.data,
-          };
-          fetchedNotifications.push(notification);
-        });
-
-        console.log(`📋 Added ${legacySnapshot.size - snapshot.size} legacy notifications`);
-      } catch (legacyError) {
-        console.warn('Failed to load legacy notifications:', legacyError);
-      }
-
       // Sort by createdAt if not ordered by Firebase
       fetchedNotifications.sort((a, b) => {
         if (!a.createdAt || !b.createdAt) return 0;
@@ -182,8 +146,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
       if (isMounted()) {
         setModalState({ notifications: fetchedNotifications });
-        console.log(`✅ Successfully loaded ${fetchedNotifications.length} notifications`);
-        console.log('First notification:', fetchedNotifications[0]);
+        console.log(`✅ Successfully loaded ${fetchedNotifications.length} club notifications`);
+        if (fetchedNotifications.length > 0) {
+          console.log('First notification:', fetchedNotifications[0]);
+        }
       }
     } catch (error) {
       console.error('Error loading notifications:', error);

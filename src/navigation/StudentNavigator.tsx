@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { useDeviceLayout, getNavigationBarStyle, getNavigationLabelStyle, getNavigationIconStyle, getNavigationItemStyle } from '../utils/deviceLayoutUtils';
 
 // Öğrenci ekranları
 import HomeScreen from '../screens/Home/HomeScreen';
@@ -23,6 +24,7 @@ import ProfileFollowingScreen from '../screens/Profile/ProfileFollowingScreen';
 import StudentEventsListScreen from '../screens/Profile/StudentEventsListScreen';
 import NotificationScreen from '../screens/Home/NotificationScreen';
 import MyMembershipsScreen from '../screens/Profile/MyMembershipsScreen';
+// import AdminPanel from '../components/AdminPanel'; // Removed - not needed
 // import ClubProfileScreen from '../screens/Club/ClubProfileScreen'; // Import sorunu
 
 // Öğrenci navigasyonu için tipler
@@ -73,6 +75,7 @@ const StudentStack = createNativeStackNavigator<StudentStackParamList>();
 
 const StudentTabNavigator = () => {
   const theme = useTheme() as CustomTheme;
+  const deviceLayout = useDeviceLayout();
 
   return (
     <StudentTab.Navigator
@@ -80,23 +83,14 @@ const StudentTabNavigator = () => {
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
-        tabBarStyle: {
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
-          backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
-          elevation: 10,
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 3,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-        }
+        // Performance optimizations for tabs
+        lazy: true, // Only load screens when needed
+        tabBarStyle: getNavigationBarStyle(),
+        tabBarLabelStyle: getNavigationLabelStyle(),
+        tabBarIconStyle: getNavigationIconStyle(),
+        tabBarItemStyle: getNavigationItemStyle(),
+        tabBarShowLabel: true,
+        tabBarAllowFontScaling: false,
       }}
     >
       <StudentTab.Screen
@@ -105,7 +99,7 @@ const StudentTabNavigator = () => {
         options={{
           tabBarLabel: 'Ana Sayfa',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="home-variant" color={color} size={size} />
+            <MaterialCommunityIcons name="home-variant" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -115,7 +109,7 @@ const StudentTabNavigator = () => {
         options={{
           tabBarLabel: 'Kulüpler',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="account-group" color={color} size={size} />
+            <MaterialCommunityIcons name="account-group" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -125,7 +119,7 @@ const StudentTabNavigator = () => {
         options={{
           tabBarLabel: 'Etkinlikler',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="calendar" color={color} size={size} />
+            <MaterialCommunityIcons name="calendar" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -135,7 +129,7 @@ const StudentTabNavigator = () => {
         options={{
           tabBarLabel: 'Liderler',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="star-circle" color={color} size={size} />
+            <MaterialCommunityIcons name="star-circle" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -145,7 +139,7 @@ const StudentTabNavigator = () => {
         options={{
           tabBarLabel: 'Profil',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="account-circle" color={color} size={size} />
+            <MaterialCommunityIcons name="account-circle" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -155,10 +149,17 @@ const StudentTabNavigator = () => {
 
 const StudentNavigator = () => {
   return (
-    <StudentStack.Navigator 
-      screenOptions={{ 
+    <StudentStack.Navigator
+      screenOptions={{
         headerShown: false,
-        animation: 'slide_from_right'
+        // Performance optimizations
+        animation: 'default',
+        gestureEnabled: true,
+        gestureResponseDistance: 50 as any,
+        // Hardware acceleration
+        animationTypeForReplace: 'push',
+        // Reduce memory usage
+        freezeOnBlur: true,
       }}
     >
       <StudentStack.Screen name="StudentTabs" component={StudentTabNavigator} />

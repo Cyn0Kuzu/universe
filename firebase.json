@@ -5,5 +5,10 @@
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "react-native": {
+    "analytics_auto_collection_enabled": false,
+    "crashlytics_auto_collection_enabled": false,
+    "performance_monitoring_collection_enabled": false
   }
 }

@@ -1,4 +1,5 @@
-import { firestore, firebase } from './config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { userActivityService } from '../services/enhancedUserActivityService';
 import { ClubStatsService } from '../services/clubStatsService';
 import { ClubNotificationService } from '../services/clubNotificationService';
@@ -11,7 +12,7 @@ import { UnifiedNotificationService } from '../services/unifiedNotificationServi
  */
 export const getEventById = async (eventId: string): Promise<any | null> => {
   try {
-    const eventDoc = await firestore.collection('events').doc(eventId).get();
+    const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
     if (eventDoc.exists) {
       return { id: eventDoc.id, ...eventDoc.data() };
     }
@@ -32,7 +33,7 @@ export const likeEvent = async (userId: string, eventId: string): Promise<boolea
     }
 
     // Zaten beğenilmiş mi kontrol et
-    const likeQuery = await firestore.collection('eventLikes')
+    const likeQuery = await firebase.firestore().collection('eventLikes')
       .where('userId', '==', userId)
       .where('eventId', '==', eventId)
       .limit(1)
@@ -44,19 +45,19 @@ export const likeEvent = async (userId: string, eventId: string): Promise<boolea
     }
 
     // Firestore'a beğeni ekle
-    await firestore.collection('eventLikes').add({
+    await firebase.firestore().collection('eventLikes').add({
       userId,
       eventId,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
     // Event like count'unu artır
-    await firestore.collection('events').doc(eventId).update({
+    await firebase.firestore().collection('events').doc(eventId).update({
       likesCount: firebase.firestore.FieldValue.increment(1)
     });
 
     // Event data'sını al
-    const eventDoc = await firestore.collection('events').doc(eventId).get();
+    const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
     const eventData = eventDoc.data();
 
     // ✅ Event like statistics are tracked directly in Firebase collections
@@ -98,7 +99,7 @@ export const joinEvent = async (userId: string, eventId: string): Promise<boolea
     }
 
     // Zaten katılmış mı kontrol et
-    const attendeeQuery = await firestore.collection('eventAttendees')
+    const attendeeQuery = await firebase.firestore().collection('eventAttendees')
       .where('userId', '==', userId)
       .where('eventId', '==', eventId)
       .limit(1)
@@ -110,7 +111,7 @@ export const joinEvent = async (userId: string, eventId: string): Promise<boolea
     }
 
     // Firestore'a katılımcı ekle - hem global collection hem de subcollection
-    const userDoc = await firestore.collection('users').doc(userId).get();
+    const userDoc = await firebase.firestore().collection('users').doc(userId).get();
     const userData = userDoc.data();
     
     const attendeeData = {
@@ -124,13 +125,13 @@ export const joinEvent = async (userId: string, eventId: string): Promise<boolea
     };
 
     // 1. Global collection'a ekle (mevcut sistem)
-    await firestore.collection('eventAttendees').add(attendeeData);
+    await firebase.firestore().collection('eventAttendees').add(attendeeData);
     
     // 2. Event subcollection'a da ekle (ClubEventCard için)
-    await firestore.collection('events').doc(eventId).collection('attendees').doc(userId).set(attendeeData);
+    await firebase.firestore().collection('events').doc(eventId).collection('attendees').doc(userId).set(attendeeData);
 
     // Event attendee count'unu artır
-    await firestore.collection('events').doc(eventId).update({
+    await firebase.firestore().collection('events').doc(eventId).update({
       attendeesCount: firebase.firestore.FieldValue.increment(1)
     });
 
@@ -139,7 +140,7 @@ export const joinEvent = async (userId: string, eventId: string): Promise<boolea
 
     // Update club stats for participant count
     try {
-      const eventDoc = await firestore.collection('events').doc(eventId).get();
+      const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
       const eventData = eventDoc.data();
       
       // Event join statistics are tracked directly in Firebase collections
@@ -179,7 +180,7 @@ export const shareEvent = async (userId: string, eventId: string): Promise<boole
     }
 
     // Zaten paylaşılmış mı kontrol et
-    const shareQuery = await firestore.collection('eventShares')
+    const shareQuery = await firebase.firestore().collection('eventShares')
       .where('userId', '==', userId)
       .where('eventId', '==', eventId)
       .limit(1)
@@ -191,20 +192,20 @@ export const shareEvent = async (userId: string, eventId: string): Promise<boole
     }
 
     // Firestore'a paylaşım ekle
-    await firestore.collection('eventShares').add({
+    await firebase.firestore().collection('eventShares').add({
       userId,
       eventId,
       sharedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
     // Event share count'unu artır
-    await firestore.collection('events').doc(eventId).update({
+    await firebase.firestore().collection('events').doc(eventId).update({
       sharesCount: firebase.firestore.FieldValue.increment(1)
     });
 
     // Puanlama sistemi entegrasyonu
     try {
-      const eventDoc = await firestore.collection('events').doc(eventId).get();
+      const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
       const eventData = eventDoc.data();
       
       // Event share statistics are tracked directly in Firebase collections
@@ -212,7 +213,7 @@ export const shareEvent = async (userId: string, eventId: string): Promise<boole
 
       // Enhanced activity logging for user feed
       try {
-        const userDoc = await firestore.collection('users').doc(userId).get();
+        const userDoc = await firebase.firestore().collection('users').doc(userId).get();
         const userData = userDoc.data();
         await userActivityService.logEventShare(
           userId,
@@ -247,7 +248,7 @@ export const leaveEvent = async (userId: string, eventId: string): Promise<boole
     }
 
     // Katılımcıyı bul ve sil - hem global collection hem de subcollection
-    const attendeeQuery = await firestore.collection('eventAttendees')
+    const attendeeQuery = await firebase.firestore().collection('eventAttendees')
       .where('userId', '==', userId)
       .where('eventId', '==', eventId)
       .limit(1)
@@ -261,10 +262,10 @@ export const leaveEvent = async (userId: string, eventId: string): Promise<boole
       await attendeeQuery.docs[0].ref.delete();
       
       // 2. Event subcollection'dan da sil
-      await firestore.collection('events').doc(eventId).collection('attendees').doc(userId).delete();
+      await firebase.firestore().collection('events').doc(eventId).collection('attendees').doc(userId).delete();
 
       // Event attendee count'unu azalt
-      await firestore.collection('events').doc(eventId).update({
+      await firebase.firestore().collection('events').doc(eventId).update({
         attendeesCount: firebase.firestore.FieldValue.increment(-1)
       });
 
@@ -369,7 +370,7 @@ export const createEventWithScoring = async (
 
     console.log('💾 Adding document to Firestore events collection...');
     // Firestore'a etkinlik ekle
-    const docRef = await firestore.collection('events').add(newEventData);
+    const docRef = await firebase.firestore().collection('events').add(newEventData);
     
     console.log('✅ Event document created with ID:', docRef.id);
 
@@ -377,6 +378,34 @@ export const createEventWithScoring = async (
     
     // Event creation statistics are tracked directly in Firebase collections
     console.log('✅ Event creation statistics recorded');
+
+    // Firebase Functions ile etkinlik oluşturuldu bildirimi gönder
+    try {
+      const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+      
+      // Kulüp üyelerini al
+      const clubMembersQuery = await firebase.firestore()
+        .collection('clubMembers')
+        .where('clubId', '==', newEventData.clubId || creatorId)
+        .where('status', '==', 'approved')
+        .get();
+      
+      const memberIds = clubMembersQuery.docs.map(doc => doc.data().userId);
+      
+      if (memberIds.length > 0) {
+        const clubName = newEventData.clubName || 'Kulüp';
+        await FirebaseFunctionsService.sendEventCreatedNotification(
+          docRef.id,
+          newEventData.title,
+          newEventData.clubId || creatorId,
+          clubName,
+          memberIds
+        );
+        console.log('✅ Event created notification sent via Firebase Functions');
+      }
+    } catch (notificationError) {
+      console.warn('⚠️ Failed to send event created notification:', notificationError);
+    }
 
     // Update club stats for event count - ÖNEMLİ
     if (eventData.clubId) {
@@ -389,7 +418,7 @@ export const createEventWithScoring = async (
           console.log(`✅ Etkinlik sayısı arttırıldı`);
           
           // 2. ClubStats dokümanını kontrol et
-          const statsDoc = await firestore.collection('clubStats').doc(eventData.clubId).get();
+          const statsDoc = await firebase.firestore().collection('clubStats').doc(eventData.clubId).get();
           if (statsDoc.exists) {
             console.log(`📊 Mevcut istatistikler:`, statsDoc.data());
           } else {
@@ -406,7 +435,7 @@ export const createEventWithScoring = async (
           console.log(`✅ UserScores synced for leaderboard`);
           
           // 5. Son kez kontrol et
-          const finalStats = await firestore.collection('clubStats').doc(eventData.clubId).get();
+          const finalStats = await firebase.firestore().collection('clubStats').doc(eventData.clubId).get();
           console.log(`📊 SON KONTROL - İstatistikler:`, finalStats.data());
         } catch (statsError) {
           console.error(`❌ İstatistik güncellemede kritik hata:`, statsError);
@@ -428,7 +457,7 @@ export const createEventWithScoring = async (
       
       // Send notification to club followers/members about new event using comprehensive service
       try {
-        const clubDoc = await firestore.collection('users').doc(eventData.clubId).get();
+        const clubDoc = await firebase.firestore().collection('users').doc(eventData.clubId).get();
         const clubName = clubDoc.exists ? 
           (clubDoc.data()?.name || clubDoc.data()?.displayName || 'Kulüp') : 'Kulüp';
         
@@ -443,12 +472,12 @@ export const createEventWithScoring = async (
         );
         
         // 2. Send notification to club followers/members
-        const followersSnapshot = await firestore
+        const followersSnapshot = await firebase.firestore()
           .collection('clubFollowers')
           .where('clubId', '==', eventData.clubId)
           .get();
           
-        const membersSnapshot = await firestore
+        const membersSnapshot = await firebase.firestore()
           .collection('clubMembers')
           .where('clubId', '==', eventData.clubId)
           .get();
@@ -527,7 +556,7 @@ export const deleteEventSafely = async (eventId: string, userId: string): Promis
     }
 
     // Etkinlik var mı kontrol et
-    const eventDoc = await firestore.collection('events').doc(eventId).get();
+    const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
     if (!eventDoc.exists) {
       console.error('Etkinlik bulunamadı');
       return false;
@@ -555,8 +584,35 @@ export const deleteEventSafely = async (eventId: string, userId: string): Promis
       clubName: eventData.clubName
     });
 
+    // Firebase Functions ile etkinlik iptal bildirimi gönder
+    try {
+      const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+      
+      // Etkinlik katılımcılarını al
+      const attendeesQuery = await firebase.firestore()
+        .collection('eventAttendees')
+        .where('eventId', '==', eventId)
+        .get();
+      
+      const attendeeIds = attendeesQuery.docs.map(doc => doc.data().userId);
+      
+      if (attendeeIds.length > 0) {
+        const clubName = eventData.clubName || 'Kulüp';
+        await FirebaseFunctionsService.sendEventCancelledNotification(
+          eventId,
+          eventData.title,
+          eventData.clubId || userId,
+          clubName,
+          attendeeIds
+        );
+        console.log('✅ Event cancelled notification sent via Firebase Functions');
+      }
+    } catch (notificationError) {
+      console.warn('⚠️ Failed to send event cancelled notification:', notificationError);
+    }
+
     // Sonra etkinliği sil
-    await firestore.collection('events').doc(eventId).delete();
+    await firebase.firestore().collection('events').doc(eventId).delete();
 
     // Kulüp istatistiklerini güncelle
     if (eventData.clubId) {
@@ -571,7 +627,7 @@ export const deleteEventSafely = async (eventId: string, userId: string): Promis
     // Log club activity for event cancellation/deletion
     try {
       if (eventData.clubId) {
-        const actorDoc = await firestore.collection('users').doc(userId).get();
+        const actorDoc = await firebase.firestore().collection('users').doc(userId).get();
         const actorName = actorDoc.exists ? (actorDoc.data()?.displayName || actorDoc.data()?.name || 'Kullanıcı') : 'Kullanıcı';
         await clubActivityService.createEventActivity(
           'event_cancelled',
@@ -604,7 +660,7 @@ export const unlikeEvent = async (userId: string, eventId: string): Promise<bool
     }
 
     // Get event details first to have all necessary metadata
-    const eventDoc = await firestore.collection('events').doc(eventId).get();
+    const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
     const eventData = eventDoc.data();
 
     if (!eventDoc.exists || !eventData) {
@@ -613,7 +669,7 @@ export const unlikeEvent = async (userId: string, eventId: string): Promise<bool
     }
 
     // Firestore'dan beğeniyi kaldır
-    const likeQuery = await firestore.collection('eventLikes')
+    const likeQuery = await firebase.firestore().collection('eventLikes')
       .where('userId', '==', userId)
       .where('eventId', '==', eventId)
       .limit(1)
@@ -623,14 +679,14 @@ export const unlikeEvent = async (userId: string, eventId: string): Promise<bool
       await likeQuery.docs[0].ref.delete();
 
       // Event like count'u güncelle
-      await firestore.collection('events').doc(eventId).update({
+      await firebase.firestore().collection('events').doc(eventId).update({
         likesCount: firebase.firestore.FieldValue.increment(-1)
       });
 
       // Get club details if available
       let clubData = null;
       if (eventData.clubId) {
-        const clubDoc = await firestore.collection('clubs').doc(eventData.clubId).get();
+        const clubDoc = await firebase.firestore().collection('clubs').doc(eventData.clubId).get();
         clubData = clubDoc.data();
       }
 
@@ -670,7 +726,7 @@ export const unshareEvent = async (userId: string, eventId: string): Promise<boo
     }
 
     // Firestore'dan paylaşımı kaldır
-    const shareQuery = await firestore.collection('eventShares')
+    const shareQuery = await firebase.firestore().collection('eventShares')
       .where('userId', '==', userId)
       .where('eventId', '==', eventId)
       .limit(1)
@@ -680,18 +736,18 @@ export const unshareEvent = async (userId: string, eventId: string): Promise<boo
       await shareQuery.docs[0].ref.delete();
 
       // Event share count'u güncelle
-      await firestore.collection('events').doc(eventId).update({
+      await firebase.firestore().collection('events').doc(eventId).update({
         sharesCount: firebase.firestore.FieldValue.increment(-1)
       });
 
       // Event unshare statistics are tracked directly in Firebase collections
       console.log('✅ Event unshare statistics recorded');
       
-      const eventDoc = await firestore.collection('events').doc(eventId).get();
+      const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
       const eventData = eventDoc.data();
 
       try {
-        const userDoc = await firestore.collection('users').doc(userId).get();
+        const userDoc = await firebase.firestore().collection('users').doc(userId).get();
         const userData = userDoc.data();
         await userActivityService.logEventUnshare(
           userId,

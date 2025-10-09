@@ -4,7 +4,8 @@ import { Text, Button, IconButton, Appbar, useTheme } from 'react-native-paper';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClubStackParamList } from '../../navigation/ClubNavigator';
-import { firestore } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'react-native';
@@ -181,7 +182,7 @@ const ViewEventScreen = () => {
       setLikesModalVisible(true);
       
       const userPromises = event.likes.map(userId => 
-        firestore.collection('users').doc(userId).get()
+        firebase.firestore().collection('users').doc(userId).get()
           .then(doc => {
             if (doc.exists) {
               return { id: doc.id, ...doc.data() } as User;
@@ -217,7 +218,7 @@ const ViewEventScreen = () => {
       setAttendeesModalVisible(true);
       
       const userPromises = event.attendees.map(userId => 
-        firestore.collection('users').doc(userId).get()
+        firebase.firestore().collection('users').doc(userId).get()
           .then(doc => {
             if (doc.exists) {
               return { id: doc.id, ...doc.data() } as User;
@@ -262,7 +263,7 @@ const ViewEventScreen = () => {
       return;
     }
     setLoading(true);
-    const unsubscribe = firestore.collection('events').doc(eventId).onSnapshot(
+    const unsubscribe = firebase.firestore().collection('events').doc(eventId).onSnapshot(
       (eventDoc) => {
         try {
           if (!eventDoc.exists) {

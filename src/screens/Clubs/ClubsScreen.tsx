@@ -3,7 +3,8 @@ import { View, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator,
 import { Text, useTheme, Card, Avatar, Chip, Searchbar, Button, IconButton, Divider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { firestore, firebase } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UNIVERSITIES_DATA, CLUB_TYPES_DATA } from '../../constants';
 import { getClubCategories } from '../../constants/clubTypes';
@@ -71,7 +72,7 @@ const ClubsScreen: React.FC = () => {
   const fetchClubs = async () => {
     try {
       setLoading(true);
-      const db = firestore;
+      const db = firebase.firestore();
       
       // Query for all club accounts
       const clubsRef = db.collection('users')
@@ -96,7 +97,7 @@ const ClubsScreen: React.FC = () => {
           .where('status', '==', 'approved')
           .get();
         
-        joinedClubIds = membershipsQuery.docs.map(doc => doc.data().clubId);
+        joinedClubIds = membershipsQuery.docs.map((doc: any) => doc.data().clubId);
         setJoinedClubs(joinedClubIds);
       }
       
@@ -189,7 +190,7 @@ const ClubsScreen: React.FC = () => {
           const stats = await ClubStatsService.forceRefreshStats(club.id);
           
           // Kulüp dokümanını da güncelle
-          await firestore.collection('users').doc(club.id).update({
+          await firebase.firestore().collection('users').doc(club.id).update({
             memberCount: stats.totalMembers,
             eventCount: stats.totalEvents,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()

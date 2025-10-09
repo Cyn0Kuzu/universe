@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { useDeviceLayout, getNavigationBarStyle, getNavigationLabelStyle, getNavigationIconStyle, getNavigationItemStyle } from '../utils/deviceLayoutUtils';
 
 interface CustomTheme {
   colors: {
@@ -67,6 +68,7 @@ const ClubStack = createNativeStackNavigator<ClubStackParamList>();
 
 const ClubTabNavigator = () => {
   const theme = useTheme() as CustomTheme;
+  const deviceLayout = useDeviceLayout();
 
   return (
     <ClubTab.Navigator
@@ -74,23 +76,12 @@ const ClubTabNavigator = () => {
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
-        tabBarStyle: {
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
-          backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
-          elevation: 10,
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 3,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-        }
+        tabBarStyle: getNavigationBarStyle(),
+        tabBarLabelStyle: getNavigationLabelStyle(),
+        tabBarIconStyle: getNavigationIconStyle(),
+        tabBarItemStyle: getNavigationItemStyle(),
+        tabBarShowLabel: true,
+        tabBarAllowFontScaling: false,
       }}
     >
       <ClubTab.Screen
@@ -99,7 +90,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Ana Sayfa',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="home-variant" color={color} size={size} />
+            <MaterialCommunityIcons name="home-variant" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -109,7 +100,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Etkinlikler',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="calendar" color={color} size={size} />
+            <MaterialCommunityIcons name="calendar" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -119,7 +110,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Üyeler',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="account-group" color={color} size={size} />
+            <MaterialCommunityIcons name="account-group" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -129,7 +120,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Profil',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="account" color={color} size={size} />
+            <MaterialCommunityIcons name="account" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />

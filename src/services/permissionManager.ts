@@ -1,0 +1,271 @@
+/**
+ * Comprehensive Permission Manager
+ * Handles all app permissions including notifications and storage
+ */
+
+import { Platform, Alert, Linking, PermissionsAndroid } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import * as ImagePicker from 'expo-image-picker';
+
+export interface PermissionResult {
+  granted: boolean;
+  canAskAgain: boolean;
+  status: string;
+}
+
+export class PermissionManager {
+  private static instance: PermissionManager;
+
+  static getInstance(): PermissionManager {
+    if (!PermissionManager.instance) {
+      PermissionManager.instance = new PermissionManager();
+    }
+    return PermissionManager.instance;
+  }
+
+  /**
+   * Request all necessary permissions for the app
+   */
+  async requestAllPermissions(): Promise<{
+    notifications: PermissionResult;
+    storage: PermissionResult;
+    camera: PermissionResult;
+  }> {
+    console.log('🔐 Requesting all app permissions...');
+
+    const results = {
+      notifications: await this.requestNotificationPermissions(),
+      storage: await this.requestStoragePermissions(),
+      camera: await this.requestCameraPermissions(),
+    };
+
+    console.log('📋 Permission results:', results);
+    return results;
+  }
+
+  /**
+   * Request notification permissions with user-friendly prompts
+   */
+  async requestNotificationPermissions(): Promise<PermissionResult> {
+    try {
+      console.log('🔔 Requesting notification permissions...');
+
+      // Check current status
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      console.log(`📋 Current notification permission status: ${existingStatus}`);
+
+      if (existingStatus === 'granted') {
+        return { granted: true, canAskAgain: false, status: existingStatus };
+      }
+
+      // Show user-friendly explanation
+      const shouldRequest = await this.showPermissionDialog(
+        'Bildirim İzni',
+        'Universe Campus size etkinlik hatırlatmaları, yeni takipçiler ve önemli duyurular hakkında bildirim göndermek için bildirim iznine ihtiyaç duyar.',
+        'İzin Ver',
+        'Daha Sonra'
+      );
+
+      if (!shouldRequest) {
+        return { granted: false, canAskAgain: true, status: 'denied' };
+      }
+
+      // Request permission
+      const { status } = await Notifications.requestPermissionsAsync({
+        ios: {
+          allowAlert: true,
+          allowBadge: true,
+          allowSound: true,
+          allowAnnouncements: true,
+        },
+        android: {
+          allowAlert: true,
+          allowBadge: true,
+          allowSound: true,
+        },
+      });
+
+      console.log(`✅ Notification permission result: ${status}`);
+
+      if (status !== 'granted') {
+        await this.showPermissionDeniedDialog(
+          'Bildirim İzni',
+          'Bildirim izni olmadan etkinlik hatırlatmaları alamazsınız. Ayarlar > Uygulamalar > Universe Campus > Bildirimler bölümünden izni etkinleştirebilirsiniz.'
+        );
+      }
+
+      return { granted: status === 'granted', canAskAgain: status !== 'denied', status };
+    } catch (error) {
+      console.error('❌ Notification permission request failed:', error);
+      return { granted: false, canAskAgain: true, status: 'error' };
+    }
+  }
+
+  /**
+   * Request storage permissions
+   */
+  async requestStoragePermissions(): Promise<PermissionResult> {
+    try {
+      console.log('💾 Requesting storage permissions...');
+
+      if (Platform.OS === 'android') {
+        // Show user-friendly explanation
+        const shouldRequest = await this.showPermissionDialog(
+          'Depolama İzni',
+          'Profil fotoğrafı ve etkinlik fotoğrafları için depolama erişimi gereklidir.',
+          'İzin Ver',
+          'Daha Sonra'
+        );
+
+        if (!shouldRequest) {
+          return { granted: false, canAskAgain: true, status: 'denied' };
+        }
+
+        // Android 13+ (API 33+) uses scoped storage
+        if (Platform.Version >= 33) {
+          // For Android 13+, we use READ_MEDIA_IMAGES permission
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+            {
+              title: 'Medya İzni',
+              message: 'Fotoğraflara erişim için medya izni gereklidir.',
+              buttonNeutral: 'Daha Sonra',
+              buttonNegative: 'İptal',
+              buttonPositive: 'İzin Ver',
+            }
+          );
+
+          console.log(`📋 Media permission: ${granted}`);
+          return { granted: granted === PermissionsAndroid.RESULTS.GRANTED, canAskAgain: granted !== PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN, status: granted };
+        } else {
+          // Android 12 and below
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            {
+              title: 'Depolama İzni',
+              message: 'Profil fotoğrafı ve etkinlik fotoğrafları için depolama erişimi gereklidir.',
+              buttonNeutral: 'Daha Sonra',
+              buttonNegative: 'İptal',
+              buttonPositive: 'İzin Ver',
+            }
+          );
+
+          console.log(`📋 Storage permission: ${granted}`);
+          return { granted: granted === PermissionsAndroid.RESULTS.GRANTED, canAskAgain: granted !== PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN, status: granted };
+        }
+      }
+
+      // iOS uses photo library permission
+      const photoPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      console.log(`📋 Photo library permission: ${photoPermission.status}`);
+      
+      return { granted: photoPermission.granted, canAskAgain: photoPermission.canAskAgain, status: photoPermission.status };
+    } catch (error) {
+      console.error('❌ Storage permission request failed:', error);
+      return { granted: false, canAskAgain: true, status: 'error' };
+    }
+  }
+
+  /**
+   * Request camera permissions
+   */
+  async requestCameraPermissions(): Promise<PermissionResult> {
+    try {
+      console.log('📷 Requesting camera permissions...');
+
+      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+      console.log(`📋 Camera permission: ${cameraPermission.status}`);
+
+      if (!cameraPermission.granted) {
+        await this.showPermissionDeniedDialog(
+          'Kamera İzni',
+          'Kamera izni olmadan fotoğraf çekemezsiniz. Ayarlar > Uygulamalar > Universe Campus > İzinler bölümünden kamera iznini etkinleştirebilirsiniz.'
+        );
+      }
+
+      return { granted: cameraPermission.granted, canAskAgain: cameraPermission.canAskAgain, status: cameraPermission.status };
+    } catch (error) {
+      console.error('❌ Camera permission request failed:', error);
+      return { granted: false, canAskAgain: true, status: 'error' };
+    }
+  }
+
+  /**
+   * Show permission request dialog
+   */
+  private showPermissionDialog(
+    title: string,
+    message: string,
+    allowText: string,
+    denyText: string
+  ): Promise<boolean> {
+    return new Promise((resolve) => {
+      Alert.alert(
+        title,
+        message,
+        [
+          {
+            text: denyText,
+            style: 'cancel',
+            onPress: () => resolve(false),
+          },
+          {
+            text: allowText,
+            onPress: () => resolve(true),
+          },
+        ],
+        { cancelable: false }
+      );
+    });
+  }
+
+  /**
+   * Show permission denied dialog with settings link
+   */
+  private showPermissionDeniedDialog(title: string, message: string): Promise<void> {
+    return new Promise((resolve) => {
+      Alert.alert(
+        title,
+        message,
+        [
+          {
+            text: 'Tamam',
+            onPress: () => resolve(),
+          },
+          {
+            text: 'Ayarlara Git',
+            onPress: () => {
+              Linking.openSettings();
+              resolve();
+            },
+          },
+        ]
+      );
+    });
+  }
+
+  /**
+   * Check if all critical permissions are granted
+   */
+  async checkCriticalPermissions(): Promise<boolean> {
+    try {
+      const notificationStatus = await Notifications.getPermissionsAsync();
+      const storageStatus = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      const notificationsGranted = notificationStatus.status === 'granted';
+      const storageGranted = storageStatus.granted;
+
+      console.log('🔍 Critical permissions check:', {
+        notifications: notificationsGranted,
+        storage: storageGranted
+      });
+
+      return notificationsGranted && storageGranted;
+    } catch (error) {
+      console.error('❌ Permission check failed:', error);
+      return false;
+    }
+  }
+}
+
+export default PermissionManager;

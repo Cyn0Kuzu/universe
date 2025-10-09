@@ -4,15 +4,15 @@
     "slug": "universe-kampus",
     "version": "1.2.1",
     "orientation": "portrait",
-    "icon": "./assets/compact_icon.png",
+    "icon": "./assets/favicon.png",
     "userInterfaceStyle": "automatic",
     "description": "Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu. Kampüsünüzdeki tüm etkinlikleri takip edin, kulüplere üye olun ve sosyal ağınızı genişletin.",
     "privacy": "public",
     "primaryColor": "#6750A4",
     "splash": {
-      "image": "./assets/compact_icon.png",
+      "image": "./assets/favicon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#6750A4"
+      "backgroundColor": "#FFFFFF"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -43,11 +43,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/compact_icon.png",
-        "backgroundColor": "#6750A4"
+        "foregroundImage": "./assets/universe_logo2.png",
+        "backgroundColor": "#FFFFFF"
       },
-      "package": "com.universekampus.universeapp",
-      "versionCode": 12,
+      "package": "com.universekampus.universeapp2025",
+      "versionCode": 55,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
@@ -56,7 +56,9 @@
         "ACCESS_COARSE_LOCATION",
         "VIBRATE",
         "RECEIVE_BOOT_COMPLETED",
-        "WAKE_LOCK"
+        "WAKE_LOCK",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED"
       ],
       "useNextNotificationsApi": true
     },
@@ -68,14 +70,14 @@
           "cameraPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir."
         }
       ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/compact_icon.png",
-          "color": "#6750A4",
-          "defaultChannel": "default"
-        }
-      ],
+        [
+          "expo-notifications",
+          {
+            "icon": "./assets/favicon.png",
+            "color": "#6750A4",
+            "defaultChannel": "default"
+          }
+        ],
       [
         "expo-build-properties",
         {
@@ -97,7 +99,7 @@
         "expo-splash-screen",
         {
           "hideExpoLoadingScreen": true,
-          "backgroundColor": "#6750A4"
+          "backgroundColor": "#FFFFFF"
         }
       ],
       "expo-font"

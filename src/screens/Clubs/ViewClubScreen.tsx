@@ -5,7 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { firestore, firebase } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { 
   refreshUserProfileCounts,
   initializeUserFollowCounts
@@ -273,7 +274,7 @@ const ViewClubScreen: React.FC = () => {
       }
       
       // Güncel verileri getir
-      const clubDoc = await firestore.collection('users').doc(clubId).get();
+      const clubDoc = await firebase.firestore().collection('users').doc(clubId).get();
       
       if (clubDoc.exists) {
         const clubData = clubDoc.data() as ClubData;
@@ -297,13 +298,13 @@ const ViewClubScreen: React.FC = () => {
         // Gerçek zamanlı sayıları hesapla - tüm sayılar için
         const [followerQuery, eventQuery, memberQuery] = await Promise.all([
           // Gerçek takipçi sayısı (followers array length)
-          firestore.collection('users').doc(clubId).get(),
+          firebase.firestore().collection('users').doc(clubId).get(),
           
           // Gerçek etkinlik sayısı
-          firestore.collection('events').where('createdBy', '==', clubId).get(),
+          firebase.firestore().collection('events').where('createdBy', '==', clubId).get(),
           
           // Gerçek üye sayısı (zaten hesaplanıyor)
-          firestore.collection('clubMembers')
+          firebase.firestore().collection('clubMembers')
             .where('clubId', '==', clubId)
             .where('status', '==', 'approved')
             .get()
@@ -347,7 +348,7 @@ const ViewClubScreen: React.FC = () => {
           
         if (needsUpdate) {
           try {
-            await firestore.collection('users').doc(clubId).update({
+            await firebase.firestore().collection('users').doc(clubId).update({
               followerCount: realFollowerCount,
               eventCount: realEventCount,
               memberCount: realMemberCount,
@@ -374,7 +375,7 @@ const ViewClubScreen: React.FC = () => {
           if (localFollowingStatus === null) {
             // Local storage'da veri yoksa database'den kontrol et
             try {
-              const userDoc = await firestore.collection('users').doc(currentUser.uid).get();
+              const userDoc = await firebase.firestore().collection('users').doc(currentUser.uid).get();
               const userData = userDoc.data();
               
               if (userData) {
@@ -389,7 +390,7 @@ const ViewClubScreen: React.FC = () => {
           }
           
           // Kullanıcının aktif üye olup olmadığını kontrol et - doğru koleksiyon kullan
-          const memberDoc = await firestore.collection('clubMembers')
+          const memberDoc = await firebase.firestore().collection('clubMembers')
             .where('clubId', '==', clubId)
             .where('userId', '==', currentUser.uid)
             .where('status', '==', 'approved')
@@ -907,15 +908,15 @@ const ViewClubScreen: React.FC = () => {
     try {
       if (isMember) {
         // Kulüpten ayrıl
-        const membershipQuery = await firestore
+        const membershipQuery = await firebase.firestore()
           .collection('clubMemberships')
           .where('clubId', '==', clubId)
           .where('userId', '==', currentUser.uid)
           .get();
           
         if (!membershipQuery.empty) {
-          const batch = firestore.batch();
-          membershipQuery.forEach(doc => {
+          const batch = firebase.firestore().batch();
+          membershipQuery.forEach((doc: any) => {
             batch.delete(doc.ref);
           });
           await batch.commit();
@@ -926,7 +927,7 @@ const ViewClubScreen: React.FC = () => {
         }
       } else {
         // Kulübe üye ol
-        await firestore.collection('clubMemberships').add({
+        await firebase.firestore().collection('clubMemberships').add({
           clubId,
           userId: currentUser.uid,
           status: 'member', // veya 'pending' onay gerekiyorsa
@@ -1058,7 +1059,7 @@ const ViewClubScreen: React.FC = () => {
       const stats = await ClubStatsService.forceRefreshStats(clubId);
       
       // Kulüp dokümanını güncellenmiş sayılarla güncelle
-      await firestore.collection('users').doc(clubId).update({
+      await firebase.firestore().collection('users').doc(clubId).update({
         memberCount: stats.totalMembers,
         eventCount: stats.totalEvents,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()

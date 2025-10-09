@@ -55,7 +55,7 @@ const normalizeProfileDates = (profile: any) => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
   const [userProfile, setUserProfile] = useState<any | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // false olarak değiştirildi
+  const [loading, setLoading] = useState<boolean>(false);
   const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
   const userDocUnsubRef = React.useRef<null | (() => void)>(null);
 
@@ -242,17 +242,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Loading'i hemen false yap - splash screen kendi süresini yönetecek
     setLoading(false);
+    authInitialized = true; // Mark as initialized immediately to prevent blocking
     
     const initializeAuth = async () => {
       console.log('🚀 Starting enhanced auto sign-in system...');
       
       try {
-        // Network manager'ı başlat
+        // Network manager'ı başlat (lightweight)
         NetworkManager.init();
         
-        // Önce SecureStorage'dan kontrol et
-        console.log('🔍 DEBUG: Checking SecureStorage for user session...');
-        const storedSession = await SecureStorage.getUserSession();
+        // Delay auth operations until after splash screen completes (2+ seconds)
+        setTimeout(async () => {
+          try {
+            // Önce SecureStorage'dan kontrol et
+            console.log('🔍 DEBUG: Checking SecureStorage for user session...');
+            const storedSession = await SecureStorage.getUserSession();
         
   if (storedSession) {
           console.log('✅ Found valid user session in SecureStorage');
@@ -424,12 +428,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
         
+          } catch (error) {
+            console.error('❌ Auto sign-in system failed:', error);
+          }
+          
+          setLoading(false);
+          authInitialized = true;
+        }, 2500); // Delay auth operations until after splash screen completes (2+ seconds)
+        
       } catch (error) {
-        console.error('❌ Auto sign-in system failed:', error);
+        console.error('❌ Auth initialization failed:', error);
+        setLoading(false);
+        authInitialized = true;
       }
-      
-      setLoading(false);
-      authInitialized = true;
     };
 
     initializeAuth();
@@ -440,7 +451,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🔄 Auth state changed:', user ? `User: ${user.email} (UID: ${user.uid})` : 'No user');
 
       if (user) {
-        setCurrentUser(user);
+        setCurrentUser(user as any);
         setIsEmailVerified(user.emailVerified);
 
         try {

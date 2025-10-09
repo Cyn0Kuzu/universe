@@ -255,16 +255,20 @@ export class SearchService {
         data.displayName,
         data.firstName,
         data.lastName,
+        data.username,
+        data.email,
         data.university,
-        data.department
+        data.department,
+        data.bio
       ]);
 
       if (relevanceScore > 0) {
         results.push({
           id: doc.id,
           type: 'user',
-          title: data.displayName || `${data.firstName} ${data.lastName}`,
-          subtitle: `${data.university} - ${data.department}`,
+          title: data.displayName || `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.username || 'Kullanıcı',
+          subtitle: `${data.university || ''}${data.university && data.department ? ' • ' : ''}${data.department || ''}`,
+          description: data.bio || '',
           imageUrl: data.profileImage,
           avatarIcon: data.avatarIcon,
           avatarColor: data.avatarColor,

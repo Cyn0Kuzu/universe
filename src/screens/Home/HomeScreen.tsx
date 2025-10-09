@@ -14,7 +14,11 @@ import { followClub, unfollowClub } from '../../firebase/firestore';
 import ClubFollowSyncService from '../../services/clubFollowSyncService';
 import { unlikeEvent, leaveEvent } from '../../firebase/eventManagement';
 import { useNotificationCount } from '../../hooks/useNotificationCount';
-import { UniversalAvatar } from '../../components/common';
+import { UniversalAvatar, EnhancedSearchResultCard, EnhancedButton, EnhancedCard } from '../../components/common';
+import PerformanceOptimizer from '../../utils/performanceOptimizer';
+import PushNotificationService from '../../services/pushNotificationService';
+import { useResponsiveDesign } from '../../utils/responsiveDesignUtils';
+import AccessibilityUtils from '../../utils/accessibilityUtils';
 
 interface User {
   id: string;
@@ -101,6 +105,7 @@ const HomeScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<StudentStackParamList>>();
   const { currentUser } = useAuth();
+  const { fontSizes, spacing, shadows } = useResponsiveDesign();
   
   const [followedClubs, setFollowedClubs] = useState<Club[]>([]);
   const [followedClubEvents, setFollowedClubEvents] = useState<Event[]>([]);
@@ -783,13 +788,17 @@ const HomeScreen: React.FC = () => {
         const lastName = (user.lastName || '').toLowerCase();
         const email = (user.email || '').toLowerCase();
         const fullName = `${firstName} ${lastName}`.toLowerCase();
+        const university = (user.university || '').toLowerCase();
+        const department = (user.department || '').toLowerCase();
         
         return displayName.includes(queryLower) || 
                name.includes(queryLower) || 
                firstName.includes(queryLower) ||
                lastName.includes(queryLower) ||
                fullName.includes(queryLower) ||
-               email.includes(queryLower);
+               email.includes(queryLower) ||
+               university.includes(queryLower) ||
+               department.includes(queryLower);
       });
       
       // Eğer yerel verilerde yeterli sonuç yoksa, veritabanından daha fazla ara
@@ -938,10 +947,49 @@ const HomeScreen: React.FC = () => {
   
   // Navigate to user profile
   const handleViewUserProfile = (userId: string) => {
+    console.log('🔍 handleViewUserProfile called with userId:', userId);
+    console.log('🔍 Navigation object:', navigation);
+    console.log('🔍 Available routes:', navigation.getState()?.routes?.map(r => r.name));
+    
+    if (!userId) {
+      console.error('❌ No userId provided to handleViewUserProfile');
+      return;
+    }
+    
     setSearchQuery('');
     setShowSearchResults(false);
     setSearchResults([]);
-    navigation.navigate('ViewProfile', { userId });
+    
+    try {
+      console.log('🚀 Attempting navigation to ViewProfile with userId:', userId);
+      // Navigate to ViewProfile screen
+      navigation.navigate('ViewProfile', { userId });
+      console.log('✅ Navigation call completed successfully');
+    } catch (error) {
+      console.error('❌ Navigation error:', error);
+      console.error('❌ Error details:', {
+        name: (error as any)?.name,
+        message: (error as any)?.message,
+        stack: (error as any)?.stack?.substring(0, 200)
+      });
+    }
+  };
+
+  // Handle user press in search results
+  const handleUserPress = (user: User) => {
+    console.log('👤 handleUserPress called with user:', {
+      id: user.id,
+      displayName: user.displayName,
+      name: user.name,
+      userType: user.userType
+    });
+    
+    if (!user.id) {
+      console.error('❌ No user ID available for navigation');
+      return;
+    }
+    
+    handleViewUserProfile(user.id);
   };
 
   // Etkinlik sıralama fonksiyonu
@@ -1343,7 +1391,7 @@ const HomeScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top', 'left', 'right']}>
       <StatusBar style="dark" />
       
       {/* Header with notifications */}
@@ -1374,168 +1422,95 @@ const HomeScreen: React.FC = () => {
         </View>
       </View>
       
-      {/* Top Search Bar */}
-      <View style={styles.searchContainer}>
-        {showSearchResults && (
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={handleCloseSearch}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons 
-              name="arrow-left" 
-              size={24} 
-              color="#666" 
-            />
-          </TouchableOpacity>
-        )}
-        <Searchbar
-          placeholder="Öğrenci veya kullanıcı ara..."
-          value={searchQuery}
-          onChangeText={handleSearchChange}
-          onFocus={handleSearchFocus}
-          onBlur={handleSearchBlur}
-          style={[styles.searchBar, showSearchResults && styles.searchBarWithBack]}
-          inputStyle={{ fontSize: 14, color: '#333' }}
-          iconColor="#666"
-          placeholderTextColor="#999"
-        />
-        {(isSearching || loadingUsers) && (
-          <ActivityIndicator 
-            size="small" 
-            color="#1E88E5" 
-            style={{ position: 'absolute', right: 56, top: 20 }} 
-          />
-        )}
-      </View>
+      {/* Search bar - Same style as ClubsScreen */}
+      <Searchbar
+        placeholder="Öğrenci ara..."
+        onChangeText={handleSearchChange}
+        value={searchQuery}
+        style={styles.searchBar}
+        icon={() => <MaterialCommunityIcons name="magnify" size={20} color="#666" />}
+        clearIcon={() => <MaterialCommunityIcons name="close" size={20} color="#666" />}
+        onFocus={handleSearchFocus}
+        onBlur={handleSearchBlur}
+      />
       
-      {/* Search Results - Fixed height to prevent VirtualizedList issues */}
+      {/* Search Results - Inline Expanding Results */}
       {showSearchResults && (
-        <View style={styles.searchResultsContainer}>
-          <View style={styles.searchResultsHeader}>
-            <Text style={styles.searchResultsTitle}>
-              {searchQuery.trim() ? `"${searchQuery}" için sonuçlar` : 'Tüm Öğrenci Kullanıcılar'}
+        <View style={[styles.inlineSearchResults, { backgroundColor: theme.colors.surface }]}>
+          <View style={styles.inlineSearchHeader}>
+            <Text style={[styles.inlineSearchTitle, { color: theme.colors.onSurface }]}>
+              {searchQuery.trim() ? `"${searchQuery}" için sonuçlar` : 'Tüm Kullanıcılar'}
             </Text>
-            <Text style={styles.searchResultsCount}>
-              {searchResults.length} kişi bulundu
+            <Text style={[styles.inlineSearchSubtitle, { color: '#666' }]}>
+              {searchResults.length} kullanıcı bulundu
             </Text>
+            <TouchableOpacity 
+              style={styles.inlineSearchCloseButton}
+              onPress={handleCloseSearch}
+              activeOpacity={0.7}
+            >
+              <MaterialCommunityIcons 
+                name="close" 
+                size={20} 
+                color={theme.colors.onSurface} 
+              />
+            </TouchableOpacity>
           </View>
           
-          {isSearching || loadingUsers ? (
-            <ActivityIndicator size="large" color={theme.colors.primary} style={styles.searchLoader} />
-          ) : searchResults.length > 0 ? (
-            <View style={styles.searchResultsList}>
-              {searchResults.slice(0, 5).map((item) => (
-                <TouchableOpacity 
-                  key={item.id}
-                  style={styles.searchResultItem}
-                  onPress={() => handleViewUserProfile(item.id)}
-                  activeOpacity={0.7}
-                >
-                  <UniversalAvatar
-                    user={item}
-                    size={45}
-                    style={styles.searchResultAvatar}
-                  />
-                  <View style={styles.searchResultContent}>
-                    <Text style={styles.searchResultName}>
-                      {item.displayName || `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.name || 'İsimsiz Kullanıcı'}
-                    </Text>
-                    <Text style={styles.searchResultDetails} numberOfLines={2}>
-                      {item.university || ''}{item.university && item.department ? ' • ' : ''}{item.department || ''}
-                    </Text>
-                    {item.email && (
-                      <Text style={styles.searchResultEmail} numberOfLines={1}>
-                        {item.email}
-                      </Text>
-                    )}
-                  </View>
-                  <MaterialCommunityIcons name="chevron-right" size={24} color="#CCC" />
-                </TouchableOpacity>
-              ))}
-              {searchResults.length > 5 && (
-                <View style={styles.searchFooter}>
-                  <Text style={styles.searchFooterText}>
-                    ve {searchResults.length - 5} kişi daha...
-                  </Text>
-                </View>
-              )}
-            </View>
-          ) : (
-            <View style={styles.emptySearchResults}>
-              <MaterialCommunityIcons name="account-search" size={48} color="#e0e0e0" />
-              <Text style={styles.emptySearchTitle}>
-                {searchQuery.trim() ? 'Kullanıcı bulunamadı' : 'Henüz kullanıcı yok'}
-              </Text>
-              <Text style={styles.emptySearchText}>
-                {searchQuery.trim() ? 'Farklı bir arama terimi deneyin' : 'Kayıtlı öğrenci kullanıcı bulunmuyor'}
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
-      
-      <ScrollView 
-        style={[styles.scrollView, showSearchResults && { opacity: 0.3 }]}
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Header removed as requested */}
-        
-        {/* Removed duplicate search bar */}
-        
-        {/* Search Results */}
-        {showSearchResults && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Arama Sonuçları</Text>
-            </View>
-            
-            {searchResults.length === 0 ? (
-              <View style={styles.emptyState}>
-                <MaterialCommunityIcons name="account-search" size={48} color="#e0e0e0" />
-                <Text style={styles.emptyStateTitle}>Kullanıcı bulunamadı</Text>
-                <Text style={styles.emptyStateText}>Aradığın kritere uyan kullanıcı yok</Text>
-              </View>
-            ) : (
-              <View style={styles.usersList}>
-                {searchResults.slice(0, 10).map((item) => (
-                  <TouchableOpacity 
-                    key={item.id}
-                    style={styles.userCard}
-                    onPress={() => handleViewUserProfile(item.id)}
-                    activeOpacity={0.8}
-                  >
-                    <UniversalAvatar
+          <View style={styles.inlineSearchContent}>
+            {isSearching || loadingUsers ? (
+              <ActivityIndicator size="large" color={theme.colors.primary} style={styles.inlineSearchLoader} />
+            ) : searchResults.length > 0 ? (
+              <FlatList
+                data={searchResults}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => {
+                  console.log('🎯 Rendering search result item:', {
+                    id: item.id,
+                    displayName: item.displayName,
+                    name: item.name,
+                    userType: item.userType
+                  });
+                  return (
+                    <EnhancedSearchResultCard
                       user={item}
-                      size={50}
-                      style={styles.userImage}
+                      onPress={handleViewUserProfile}
+                      searchQuery={searchQuery}
                     />
-                    
-                    <View style={styles.userDetails}>
-                      <Text style={styles.userName} numberOfLines={1}>
-                        {item.displayName || item.name}
-                      </Text>
-                      {item.university && (
-                        <Text style={styles.userUniversity} numberOfLines={1}>
-                          {item.university}
-                        </Text>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))}
-                {searchResults.length > 10 && (
-                  <Text style={styles.moreResultsText}>
-                    ve {searchResults.length - 10} kişi daha...
-                  </Text>
-                )}
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.inlineSearchListContent}
+                {...PerformanceOptimizer.getFlatListOptimizationProps()}
+              />
+            ) : (
+              <View style={styles.inlineSearchEmptyState}>
+                <MaterialCommunityIcons name="account-search" size={48} color="#e0e0e0" />
+                <Text style={styles.inlineSearchEmptyTitle}>
+                  {searchQuery.trim() ? 'Kullanıcı bulunamadı' : 'Henüz kullanıcı yok'}
+                </Text>
+                <Text style={styles.inlineSearchEmptyText}>
+                  {searchQuery.trim() ? 'Farklı bir arama terimi deneyin' : 'Kayıtlı öğrenci kullanıcı bulunmuyor'}
+                </Text>
               </View>
             )}
           </View>
-        )}
+        </View>
+      )}
+      
+      {!showSearchResults && (
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          {...PerformanceOptimizer.getScrollViewOptimizationProps()}
+        >
+        {/* Header removed as requested */}
+        
+        {/* Removed duplicate search bar */}
         
         {/* Filter Buttons */}
         <View style={styles.filterContainer}>
@@ -1892,10 +1867,11 @@ const HomeScreen: React.FC = () => {
           </>
         )}
         
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Universe - Tüm etkinlikler bir arada</Text>
-        </View>
-      </ScrollView>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Universe - Tüm etkinlikler bir arada</Text>
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -1903,7 +1879,7 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
   scrollView: {
     flex: 1,
@@ -1917,7 +1893,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 8,
+    paddingBottom: 12,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
@@ -1966,8 +1943,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 3,
-    zIndex: 10,
+    elevation: 5,
+    zIndex: 1000,
   },
   backButton: {
     padding: 8,
@@ -1976,126 +1953,219 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   searchBar: {
-    flex: 1,
-    elevation: 0,
-    borderRadius: 12,
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    margin: 10,
+    borderRadius: 10,
+    elevation: 2,
   },
   searchBarWithBack: {
     flex: 1,
   },
-  searchResultsContainer: {
+  // Search Modal Styles
+  searchModalOverlay: {
     position: 'absolute',
-    top: 85, // Below the improved search bar
+    top: 0,
     left: 0,
     right: 0,
     bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    zIndex: 1000,
+    elevation: 20,
+  },
+  searchModalContainer: {
+    flex: 1,
     backgroundColor: '#fff',
-    zIndex: 5,
-    elevation: 5,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    marginTop: 80,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 30,
   },
-  searchResultsList: {
-    maxHeight: 300, // Fixed height to prevent VirtualizedList issues
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  searchResultItem: {
+  searchModalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
+    backgroundColor: '#f8f9fa',
   },
-  searchResultAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  searchModalBackButton: {
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  searchResultAvatarWrapper: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  searchResultAvatarText: {
-    backgroundColor: '#1E88E5',
-  },
-  searchResultContent: {
-    marginLeft: 12,
+  searchModalTitleContainer: {
     flex: 1,
+    alignItems: 'center',
+    marginHorizontal: 16,
   },
-  searchResultName: {
-    fontSize: 16,
-    fontWeight: '500',
+  searchModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
     color: '#333',
+    textAlign: 'center',
   },
-  searchResultDetails: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
-  searchResultEmail: {
-    fontSize: 13,
-    color: '#999',
-    marginTop: 2,
-    fontStyle: 'italic',
-  },
-  searchResultsHeader: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    backgroundColor: '#f8f8f8',
-  },
-  searchResultsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  searchResultsCount: {
+  searchModalSubtitle: {
     fontSize: 14,
     color: '#666',
     marginTop: 4,
+    textAlign: 'center',
   },
-  searchFooter: {
+  searchModalCloseButton: {
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  searchModalContent: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  searchModalLoader: {
+    marginTop: 50,
+  },
+  searchModalListContent: {
     paddingVertical: 16,
-    alignItems: 'center',
   },
-  searchFooterText: {
+  searchModalResultItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  searchModalResultAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  searchModalResultContent: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  searchModalResultName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  searchModalResultDetails: {
     fontSize: 14,
+    color: '#666',
+    marginBottom: 2,
+  },
+  searchModalResultEmail: {
+    fontSize: 13,
     color: '#999',
     fontStyle: 'italic',
   },
-  searchLoader: {
-    marginTop: 40,
-  },
-  emptySearchResults: {
+  searchModalEmptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 30,
-    paddingVertical: 50,
+    paddingHorizontal: 40,
+    paddingVertical: 60,
   },
-  emptySearchTitle: {
+  searchModalEmptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
-    marginTop: 16,
-  },
-  emptySearchText: {
-    fontSize: 14,
     color: '#666',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  searchModalEmptyText: {
+    fontSize: 14,
+    color: '#999',
     textAlign: 'center',
     marginTop: 8,
+    lineHeight: 20,
+  },
+
+  // Inline Search Styles
+  inlineSearchResults: {
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    maxHeight: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  inlineSearchHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#f8f9fa',
+  },
+  inlineSearchTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    flex: 1,
+  },
+  inlineSearchSubtitle: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 8,
+  },
+  inlineSearchCloseButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  inlineSearchContent: {
+    maxHeight: 320,
+  },
+  inlineSearchLoader: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  inlineSearchListContent: {
+    paddingVertical: 8,
+  },
+  inlineSearchEmptyState: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  inlineSearchEmptyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+    marginTop: 12,
+    textAlign: 'center',
+  },
+  inlineSearchEmptyText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
   },
   // Main content styles
   section: {

@@ -10,6 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { StudentStackParamList } from '../../navigation/StudentNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UniversalAvatar } from '../../components/common';
+import ImageZoomModal from '../../components/common/ImageZoomModal';
 import { ClubNotificationService } from '../../services/clubNotificationService';
 import { NotificationManagement } from '../../firebase/notificationManagement';
 import { EnhancedUserActivityService } from '../../services/enhancedUserActivityService';
@@ -93,6 +94,26 @@ const ViewProfileScreen: React.FC = () => {
     commentsRank: 0,
     participationsRank: 0
   });
+
+  // Image Zoom Modal States
+  const [imageZoomVisible, setImageZoomVisible] = useState(false);
+  const [zoomImageUri, setZoomImageUri] = useState('');
+  const [zoomImageTitle, setZoomImageTitle] = useState('');
+
+  // Image zoom functions
+  const handleImageZoom = useCallback((imageUri: string, title: string) => {
+    if (imageUri) {
+      setZoomImageUri(imageUri);
+      setZoomImageTitle(title);
+      setImageZoomVisible(true);
+    }
+  }, []);
+
+  const handleCloseImageZoom = useCallback(() => {
+    setImageZoomVisible(false);
+    setZoomImageUri('');
+    setZoomImageTitle('');
+  }, []);
 
   // Tarih formatlama fonksiyonu
   const formatJoinDate = useCallback((userProfile: any) => {
@@ -582,31 +603,41 @@ const ViewProfileScreen: React.FC = () => {
         <>
           {/* Cover Section */}
           <View style={styles.coverSection}>
-            {user?.coverImage ? (
-              <ImageBackground 
-                source={{ uri: user.coverImage }}
-                style={styles.coverBackground}
-                resizeMode="cover"
-              />
-            ) : user?.coverIcon ? (
-              <View style={[styles.coverBackground, { backgroundColor: user.coverColor || '#1E88E5' }]}>
-                <MaterialCommunityIcons 
-                  name={user.coverIcon as any} 
-                  size={180} 
-                  color="rgba(255,255,255,0.3)" 
-                  style={styles.coverIconStyle} 
+            <TouchableOpacity 
+              style={styles.coverBackground} 
+              onPress={() => {
+                if (user?.coverImage) {
+                  handleImageZoom(user.coverImage, 'Kapak Fotoğrafı');
+                }
+              }}
+              activeOpacity={0.9}
+            >
+              {user?.coverImage ? (
+                <ImageBackground 
+                  source={{ uri: user.coverImage }}
+                  style={styles.coverBackground}
+                  resizeMode="cover"
                 />
-              </View>
-            ) : (
-              <View style={[styles.coverBackground, { backgroundColor: '#1E88E5' }]}>
-                <MaterialCommunityIcons 
-                  name="city-variant" 
-                  size={180} 
-                  color="rgba(255,255,255,0.3)" 
-                  style={styles.coverIconStyle} 
-                />
-              </View>
-            )}
+              ) : user?.coverIcon ? (
+                <View style={[styles.coverBackground, { backgroundColor: user.coverColor || '#1E88E5' }]}>
+                  <MaterialCommunityIcons 
+                    name={user.coverIcon as any} 
+                    size={180} 
+                    color="rgba(255,255,255,0.3)" 
+                    style={styles.coverIconStyle} 
+                  />
+                </View>
+              ) : (
+                <View style={[styles.coverBackground, { backgroundColor: '#1E88E5' }]}>
+                  <MaterialCommunityIcons 
+                    name="city-variant" 
+                    size={180} 
+                    color="rgba(255,255,255,0.3)" 
+                    style={styles.coverIconStyle} 
+                  />
+                </View>
+              )}
+            </TouchableOpacity>
             
             {/* Header with back button and menu */}
             <View style={styles.headerOverlay}>
@@ -646,11 +677,20 @@ const ViewProfileScreen: React.FC = () => {
             
             {/* Avatar that overlaps the cover and content */}
             <View style={styles.avatarContainer}>
-              <UniversalAvatar
-                user={user}
-                size={96}
-                style={styles.avatar}
-              />
+              <TouchableOpacity 
+                onPress={() => {
+                  if (user?.profileImage) {
+                    handleImageZoom(user.profileImage, 'Profil Fotoğrafı');
+                  }
+                }}
+                activeOpacity={0.8}
+              >
+                <UniversalAvatar
+                  user={user}
+                  size={96}
+                  style={styles.avatar}
+                />
+              </TouchableOpacity>
             </View>
           </View>
           
@@ -835,6 +875,14 @@ const ViewProfileScreen: React.FC = () => {
           </ScrollView>
         </>
       )}
+      
+      {/* Image Zoom Modal */}
+      <ImageZoomModal
+        visible={imageZoomVisible}
+        imageUri={zoomImageUri}
+        title={zoomImageTitle}
+        onClose={handleCloseImageZoom}
+      />
     </View>
   );
 };

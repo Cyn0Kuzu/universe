@@ -5,7 +5,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClubStackParamList } from '../../navigation/ClubNavigator';
-import { firestore } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { deleteEventSafely } from '../../firebase/eventManagement';
 import { useAuth } from '../../contexts/AuthContext';
 import { eventCategories } from '../../constants';
@@ -196,7 +197,7 @@ const ClubEventsScreen = () => {
       const now = new Date();
       
       // Firestore'dan etkinlikleri çek
-      const eventsRef = firestore.collection('events');
+      const eventsRef = firebase.firestore().collection('events');
       let query = eventsRef.where('clubId', '==', userProfile.uid);
       
       // Basit sorgu - index hatasını önlemek için

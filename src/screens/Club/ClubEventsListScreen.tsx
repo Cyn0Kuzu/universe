@@ -6,7 +6,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClubStackParamList } from '../../navigation/ClubNavigator';
 import { StudentStackParamList } from '../../navigation/StudentNavigator';
-import { firestore } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 import ClubEventCard from '../../components/ClubEventCard';
 import { eventCategories } from '../../constants';
@@ -71,7 +72,7 @@ const ClubEventsListScreen = () => {
       const now = new Date();
       
   // Firestore'dan etkinlikleri çek
-  const eventsRef = firestore.collection('events');
+  const eventsRef = firebase.firestore().collection('events');
   // Şema uyumluluğu: birden fazla alanı kontrol ederek fetch et
   // Warn once per field to avoid log spam
   const warnedFieldsRef = (global as any).__clubEventsListWarnedFields || new Set<string>();

@@ -1,8 +1,8 @@
 // Professional Notification Management System - CLEAN VERSION
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { firebase } from './config';
 import { ClubNotificationService, ClubNotification } from '../services/clubNotificationService';
 import { SafeNotificationCreator } from '../utils/safeNotificationCreator';
+import PushNotificationService from '../services/pushNotificationService';
 
 export interface NotificationPreferences {
   userId: string;
@@ -126,6 +126,10 @@ export class NotificationManagement {
         .add(notification);
       
       console.log('✅ Notification sent successfully with ID:', docRef.id);
+      
+      // Push bildirim gönder
+      await this.sendPushNotification(userId, notification);
+      
       return true;
     } catch (error) {
       console.error('❌ Failed to send notification:', error);
@@ -134,8 +138,53 @@ export class NotificationManagement {
   }
 
   /**
-   * 👥 Send user follow notification
+   * Push bildirim gönder
    */
+  private static async sendPushNotification(userId: string, notification: any): Promise<void> {
+    try {
+      // Kullanıcının push token'larını al
+      const userDoc = await this.db.collection('users').doc(userId).get();
+      const userData = userDoc.data();
+      
+      if (!userData) {
+        console.log(`📱 User document not found for ${userId}`);
+        return;
+      }
+
+      // Check for both pushTokens array and expoPushToken for backward compatibility
+      const { pushTokens = [], expoPushToken } = userData;
+      
+      // Combine tokens, removing duplicates
+      const allTokens = [...new Set([...pushTokens, ...(expoPushToken ? [expoPushToken] : [])])];
+      
+      if (allTokens.length === 0) {
+        console.log(`📱 No push tokens found for user ${userId}`);
+        return;
+      }
+
+      const pushService = PushNotificationService.getInstance();
+      
+      // Push bildirim gönder
+      await pushService.sendPushNotification(
+        allTokens,
+        {
+          type: 'announcement',
+          title: notification.title,
+          body: notification.message,
+          data: {
+            notificationId: userId,
+            type: notification.type,
+            ...notification.data
+          }
+        }
+      );
+
+      console.log(`📱 Push notification sent to ${userId} with ${allTokens.length} tokens`);
+    } catch (error) {
+      console.error('Push notification failed:', error);
+      // Push bildirim hatası ana bildirim sistemini etkilemesin
+    }
+  }
   static async sendUserFollowNotification(
     followerId: string,
     followerName: string,

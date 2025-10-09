@@ -578,6 +578,13 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
 
   // Live organizer header component with real-time updates
   const LiveOrganizerHeader: React.FC<{ organizer: any; event: any }> = ({ organizer, event }) => {
+    console.log('🎯 LiveOrganizerHeader rendering with organizer:', organizer);
+    
+    if (!organizer || !organizer.id) {
+      console.warn('⚠️ LiveOrganizerHeader: No valid organizer data');
+      return null;
+    }
+    
     const { avatarData } = useUserAvatar(organizer?.id);
     const liveOrganizerName = avatarData?.displayName || organizer?.displayName || organizer?.name || 'Bilinmeyen Organizatör';
     const liveOrganizerImage = avatarData?.profileImage || organizer?.profileImage;
@@ -638,7 +645,10 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
       organizer,
       hasProfileImage: !!organizer?.profileImage,
       hasAvatarIcon: !!organizer?.avatarIcon,
-      avatarColor: organizer?.avatarColor
+      avatarColor: organizer?.avatarColor,
+      organizerId: organizer?.id,
+      eventClubId: event.clubId,
+      eventClubName: event.clubName
     });
     
     const loadClubData = async () => {
@@ -681,13 +691,18 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
   // Safe navigation: works both inside and outside NavigationContainer
   const navigation = useContext(NavigationContext as any) as { navigate?: (route: string, params?: any) => void } | null;
   const safeNavigate = useCallback((routeName: string, params?: any) => {
+    console.log('🚀 safeNavigate called with:', { routeName, params, hasNavigation: !!navigation });
     try {
       if (navigation && typeof navigation.navigate === 'function') {
+        console.log('✅ Navigation object available, calling navigate...');
         navigation.navigate(routeName as any, params);
+        console.log('✅ Navigation call completed');
         return true;
+      } else {
+        console.warn('⚠️ Navigation object not available or navigate function missing');
       }
     } catch (err) {
-      console.warn('Navigation failed:', err);
+      console.error('❌ Navigation failed:', err);
     }
     return false;
   }, [navigation]);
@@ -1430,21 +1445,23 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
                 ClubStatsService.incrementLikeCount(clubId)
                   .catch((error: any) => console.warn('Club stats update failed:', error));
                 
-                // Send notification to club
-                try {
-                  const userInfo = await UnifiedNotificationService.getUserInfo(currentUser.uid);
-                  await UnifiedNotificationService.notifyClubEventLiked(
-                    clubId,
-                    event.id,
-                    event.title || 'Etkinlik',
+              // Send notification to club owner
+              try {
+                const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+                const eventCreatorId = event.creatorId || event.organizer?.id;
+                
+                if (eventCreatorId && eventCreatorId !== currentUser.uid) {
+                  await FirebaseFunctionsService.sendLikeNotification(
                     currentUser.uid,
-                    userInfo.name,
-                    userInfo.image
+                    eventCreatorId,
+                    event.id,
+                    event.title || 'Etkinlik'
                   );
-                  console.log('✅ Club notification sent: Event liked');
-                } catch (notificationError) {
-                  console.warn('⚠️ Failed to send club like notification:', notificationError);
+                  console.log('✅ Like notification sent to event creator');
                 }
+              } catch (notificationError) {
+                console.warn('⚠️ Failed to send like notification:', notificationError);
+              }
               }
 
               // NOTE: Club owner notifications are handled automatically
@@ -1671,22 +1688,24 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
       
       // Event join statistics are recorded in Firebase collections automatically
       
-      // Send notification to club about the join
+      // Send notification to event creator
       const clubId = event.clubId || event.organizer?.id;
       if (clubId) {
         try {
-          const userInfo = await UnifiedNotificationService.getUserInfo(currentUser.uid);
-          await UnifiedNotificationService.notifyClubEventJoined(
-            clubId,
-            event.id,
-            event.title || 'Etkinlik',
-            currentUser.uid,
-            userInfo.name,
-            userInfo.image
-          );
-          console.log('✅ Club notification sent: Event joined');
+          const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+          const eventCreatorId = event.creatorId || event.organizer?.id;
+          
+          if (eventCreatorId && eventCreatorId !== currentUser.uid) {
+            await FirebaseFunctionsService.sendEventJoinNotification(
+              currentUser.uid,
+              eventCreatorId,
+              event.id,
+              event.title || 'Etkinlik'
+            );
+            console.log('✅ Event join notification sent to creator');
+          }
         } catch (notificationError) {
-          console.warn('⚠️ Failed to send club join notification:', notificationError);
+          console.warn('⚠️ Failed to send join notification:', notificationError);
         }
       }
 
@@ -1963,9 +1982,14 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
   };
 
   const handleClubProfileNavigation = () => {
+    console.log('🎯 handleClubProfileNavigation called with organizer:', organizer);
     if (organizer?.id) {
+      console.log('🎯 Navigating to club profile with ID:', organizer.id);
       // Navigate to club profile
-      safeNavigate('ViewClub', { clubId: organizer.id });
+      const success = safeNavigate('ViewClub', { clubId: organizer.id });
+      console.log('🎯 Navigation result:', success);
+    } else {
+      console.warn('⚠️ No organizer ID available for navigation');
     }
   };
   
@@ -2359,7 +2383,33 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
       {/* Event Image with Overlay */}
       <View style={styles.imageContainer}>
         {(() => {
-          const imageUri = event.imageUrl || (event as any).coverPhoto || (event as any).image || (event as any).eventImage || (event as any).cover || (event as any).photo;
+          // Try multiple image field names
+          const imageFields = [
+            event.imageUrl,
+            event.coverImageUrl,
+            event.image,
+            event.coverImage,
+            event.photoUrl,
+            event.bannerUrl,
+            event.headerImage,
+            event.thumbnail,
+            (event as any).coverPhoto,
+            (event as any).eventImage,
+            (event as any).cover,
+            (event as any).photo
+          ];
+          
+          const imageUri = imageFields.find(uri => 
+            uri && typeof uri === 'string' && uri.trim() !== ''
+          );
+          
+          console.log('🖼️ StudentEventCard image check:', {
+            eventId: event.id,
+            eventTitle: event.title,
+            imageFields: imageFields.filter(f => f),
+            selectedUri: imageUri
+          });
+          
           // If no image URI or image load failed, show default image
           if (!imageUri || imageLoadFailed) {
             return (

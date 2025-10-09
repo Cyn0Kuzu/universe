@@ -1,4 +1,5 @@
-import { firestore } from '../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 /**
  * Kulüp kullanıcı adlarını düzeltme migration scripti
@@ -7,7 +8,7 @@ export const fixClubUsernames = async () => {
   try {
     console.log('🔧 Kulüp kullanıcı adları düzeltme işlemi başlıyor...');
     
-    const clubsSnapshot = await firestore
+    const clubsSnapshot = await firebase.firestore()
       .collection('users')
       .where('userType', '==', 'club')
       .get();
@@ -19,11 +20,11 @@ export const fixClubUsernames = async () => {
 
     console.log(`📊 ${clubsSnapshot.size} kulüp kullanıcısı kontrol ediliyor...`);
     
-    const batch = firestore.batch();
+    const batch = firebase.firestore().batch();
     let fixedCount = 0;
     let skippedCount = 0;
 
-    clubsSnapshot.forEach((doc) => {
+    clubsSnapshot.forEach((doc: any) => {
       const data = doc.data();
       const hasUsername = data.username && data.username.trim() !== '';
       
@@ -89,7 +90,7 @@ export const checkUsernameUniqueness = async () => {
   try {
     console.log('🔍 Kullanıcı adı benzersizliği kontrol ediliyor...');
     
-    const usersSnapshot = await firestore
+    const usersSnapshot = await firebase.firestore()
       .collection('users')
       .get();
 
@@ -103,7 +104,7 @@ export const checkUsernameUniqueness = async () => {
       }>;
     }> = [];
 
-    usersSnapshot.forEach((doc) => {
+    usersSnapshot.forEach((doc: any) => {
       const data = doc.data();
       if (data.username) {
         const username = data.username.toLowerCase();

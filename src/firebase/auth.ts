@@ -1,4 +1,6 @@
-import { firebase, auth, firestore } from './config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 import { SecureStorage } from '../utils/secureStorage';
 import FirebaseAuthPersistenceManager from './authPersistenceManager';
 
@@ -39,7 +41,7 @@ export const registerUser = async (userData: UserRegistrationData): Promise<fire
     }
     
     // Create the user account with Firebase Authentication
-    const userCredential = await auth.createUserWithEmailAndPassword(
+    const userCredential = await firebase.auth().createUserWithEmailAndPassword(
       userData.email,
       userData.password
     );
@@ -94,14 +96,14 @@ export const registerUser = async (userData: UserRegistrationData): Promise<fire
         if ((userData as any)._preserveClubName) baseDoc._preserveClubName = (userData as any)._preserveClubName;
         if ((userData as any)._preserveDisplayName) baseDoc._preserveDisplayName = (userData as any)._preserveDisplayName;
       } catch {}
-      await firestore.collection('users').doc(user.uid).set(baseDoc, { merge: true });
+      await firebase.firestore().collection('users').doc(user.uid).set(baseDoc, { merge: true });
       // Also create mapping docs for username and email (best-effort)
       try {
         if (baseDoc.username) {
-          await firestore.collection('usernames').doc(String(baseDoc.username).toLowerCase()).set({ userId: user.uid, createdAt: new Date() });
+          await firebase.firestore().collection('usernames').doc(String(baseDoc.username).toLowerCase()).set({ userId: user.uid, createdAt: new Date() });
         }
         if (baseDoc.email) {
-          await firestore.collection('emails').doc(String(baseDoc.email).toLowerCase()).set({ userId: user.uid, createdAt: new Date() });
+          await firebase.firestore().collection('emails').doc(String(baseDoc.email).toLowerCase()).set({ userId: user.uid, createdAt: new Date() });
         }
       } catch (e) {
         console.warn('Non-fatal: failed to create username/email mapping docs during registerUser:', e);
@@ -115,13 +117,63 @@ export const registerUser = async (userData: UserRegistrationData): Promise<fire
 };
 
 // Sign in an existing user
-export const signIn = async (email: string, password: string): Promise<firebase.auth.UserCredential> => {
+export const signIn = async (email: string, password: string, rememberMe: boolean = false): Promise<{success: boolean, error?: string, userCredential?: firebase.auth.UserCredential}> => {
   try {
-    // Use safe sign in from persistence manager
-    const userCredential = await FirebaseAuthPersistenceManager.safeSignIn(email, password);
-    return userCredential;
-  } catch (error) {
-    throw error;
+    console.log('🔐 Starting sign in process...');
+    console.log('📧 Email:', email);
+    
+    // Email format kontrolü
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new Error('Geçersiz email formatı');
+    }
+
+    // Şifre kontrolü
+    if (!password || password.length < 6) {
+      throw new Error('Şifre en az 6 karakter olmalı');
+    }
+
+    // Direct Firebase sign in (simplified approach)
+    const userCredential = await firebase.auth().signInWithEmailAndPassword(email.trim().toLowerCase(), password);
+    
+    // Email verification check
+    if (userCredential.user && !userCredential.user.emailVerified) {
+      throw new Error('E-posta adresiniz doğrulanmamış');
+    }
+    
+    console.log('✅ Sign in successful');
+    return {
+      success: true,
+      userCredential
+    };
+  } catch (error: any) {
+    console.error('❌ Sign in failed:', error);
+    
+    let errorMessage = 'Bir hata oluştu, lütfen tekrar deneyin';
+    
+    // Firebase auth error codes
+    if (error.code === 'auth/user-not-found') {
+      errorMessage = 'Bu e-posta adresi ile kayıtlı kullanıcı bulunamadı';
+    } else if (error.code === 'auth/wrong-password') {
+      errorMessage = 'Şifre hatalı';
+    } else if (error.code === 'auth/invalid-email') {
+      errorMessage = 'Geçersiz e-posta adresi';
+    } else if (error.code === 'auth/user-disabled') {
+      errorMessage = 'Bu hesap devre dışı bırakılmış';
+    } else if (error.code === 'auth/too-many-requests') {
+      errorMessage = 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin';
+    } else if (error.code === 'auth/network-request-failed') {
+      errorMessage = 'İnternet bağlantısı yok';
+    } else if (error.message === 'E-posta adresiniz doğrulanmamış') {
+      errorMessage = 'E-posta adresiniz doğrulanmamış';
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 };
 
@@ -138,7 +190,7 @@ export const logOut = async (): Promise<void> => {
 // Check if email exists in database
 export const checkEmailExists = async (email: string): Promise<boolean> => {
   try {
-    const usersQuery = await firestore
+    const usersQuery = await firebase.firestore()
       .collection('users')
       .where('email', '==', email.toLowerCase().trim())
       .limit(1)
@@ -162,7 +214,7 @@ export const resetPasswordWithValidation = async (email: string): Promise<void> 
     }
     
     // If email exists, send reset link
-    await auth.sendPasswordResetEmail(email);
+    await firebase.auth().sendPasswordResetEmail(email);
   } catch (error) {
     throw error;
   }
@@ -171,7 +223,7 @@ export const resetPasswordWithValidation = async (email: string): Promise<void> 
 // Send password reset email
 export const resetPassword = async (email: string): Promise<void> => {
   try {
-    await auth.sendPasswordResetEmail(email);
+    await firebase.auth().sendPasswordResetEmail(email);
   } catch (error) {
     throw error;
   }
@@ -225,7 +277,7 @@ export const checkEmailVerification = async (): Promise<boolean> => {
         // Try to update the user's document in Firestore
         try {
           // Check if document exists first
-          const userDoc = await firestore.collection('users').doc(user.uid).get();
+          const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
           
           console.log('🔍 checkEmailVerification: Document check:', {
             exists: userDoc.exists,
@@ -242,7 +294,7 @@ export const checkEmailVerification = async (): Promise<boolean> => {
               totalFields: Object.keys(data).length
             });
             const currentUsername = (data.username || '').toLowerCase();
-            await firestore.collection('users').doc(user.uid).update({
+            await firebase.firestore().collection('users').doc(user.uid).update({
               emailVerified: true,
               verifiedAt: new Date(),
               ...(currentUsername && { username: currentUsername })
@@ -250,7 +302,7 @@ export const checkEmailVerification = async (): Promise<boolean> => {
             console.log('✅ User document updated with verification status - only updated emailVerified, verifiedAt, username');
             // Repair username mapping if missing
             if (currentUsername) {
-              const unameRef = firestore.collection('usernames').doc(currentUsername);
+              const unameRef = firebase.firestore().collection('usernames').doc(currentUsername);
               const unameDoc = await unameRef.get();
               if (!unameDoc.exists) {
                 await unameRef.set({ userId: user.uid, createdAt: new Date() });
@@ -304,10 +356,10 @@ export const checkEmailVerification = async (): Promise<boolean> => {
 
             // Merge create to avoid wiping preservation fields created during registration flow
             // Use merge to preserve any existing data from registration
-            await firestore.collection('users').doc(user.uid).set(baseDoc, { merge: true });
+            await firebase.firestore().collection('users').doc(user.uid).set(baseDoc, { merge: true });
             // Create username mapping
             if (baseDoc.username) {
-              await firestore.collection('usernames').doc(baseDoc.username.toLowerCase()).set({ userId: user.uid, createdAt: new Date() });
+              await firebase.firestore().collection('usernames').doc(baseDoc.username.toLowerCase()).set({ userId: user.uid, createdAt: new Date() });
             }
             console.log('✅ User document created with verification status');
           }
@@ -331,7 +383,7 @@ export const checkEmailVerification = async (): Promise<boolean> => {
 export const getUserProfile = async (userId: string) => {
   try {
     // Force fresh read from server (not cache)
-    const userDoc = await firestore.collection('users').doc(userId).get({ source: 'server' });
+    const userDoc = await firebase.firestore().collection('users').doc(userId).get({ source: 'server' });
     
     if (userDoc.exists) {
       // Firestore'dan profil bilgisini al
@@ -466,7 +518,7 @@ export const getUserProfile = async (userId: string) => {
               // Pending profile yoksa, usernames mapping'inden kurtarmayı dene
               try {
                 // Try finding a usernames doc that maps back to this userId
-                const unameSnap = await firestore
+                const unameSnap = await firebase.firestore()
                   .collection('usernames')
                   .where('userId', '==', userId)
                   .limit(1)
@@ -774,7 +826,7 @@ export const getUserProfile = async (userId: string) => {
         
         // Re-check latest snapshot to avoid overwriting fresh values (race-proofing)
         try {
-          const latest = await firestore.collection('users').doc(userId).get({ source: 'server' });
+          const latest = await firebase.firestore().collection('users').doc(userId).get({ source: 'server' });
           const latestData = latest.exists ? (latest.data() || {}) : {};
           // If displayName/fullName/name just got set by another flow, drop our generic fallback
           if (updatedFields.displayName && latestData.displayName && latestData.displayName !== profileData.displayName) {
@@ -789,13 +841,13 @@ export const getUserProfile = async (userId: string) => {
           }
         } catch {}
         if (Object.keys(updatedFields).length > 0) {
-          await firestore.collection('users').doc(userId).update(updatedFields);
+          await firebase.firestore().collection('users').doc(userId).update(updatedFields);
         }
         // Best-effort: if we just added a username, ensure mapping doc exists
         try {
           if (updatedFields.username) {
             const uname = String(updatedFields.username).toLowerCase();
-            const ref = firestore.collection('usernames').doc(uname);
+            const ref = firebase.firestore().collection('usernames').doc(uname);
             const doc = await ref.get();
             if (!doc.exists) {
               await ref.set({ userId, createdAt: new Date() });
@@ -810,7 +862,7 @@ export const getUserProfile = async (userId: string) => {
       return profileData;
     } else {
       // Get user from auth
-      const user = auth.currentUser;
+      const user = firebase.auth().currentUser;
       
       if (user) {
         // Create a basic profile if one doesn't exist
@@ -837,11 +889,11 @@ export const getUserProfile = async (userId: string) => {
         if (!basicProfile.name) basicProfile.name = basicProfile.displayName || basicProfile.fullName;
 
         // Save the basic profile
-        await firestore.collection('users').doc(userId).set(basicProfile, { merge: true });
+        await firebase.firestore().collection('users').doc(userId).set(basicProfile, { merge: true });
         
         // Ensure username mapping exists
         if (basicProfile.username) {
-          const unameRef = firestore.collection('usernames').doc(basicProfile.username.toLowerCase());
+          const unameRef = firebase.firestore().collection('usernames').doc(basicProfile.username.toLowerCase());
           const unameDoc = await unameRef.get();
           if (!unameDoc.exists) {
             await unameRef.set({ userId, createdAt: new Date() });

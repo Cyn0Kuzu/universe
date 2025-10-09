@@ -78,7 +78,7 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
+    // ndkVersion rootProject.ext.ndkVersion
 
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
@@ -94,18 +94,19 @@ android {
 
     namespace 'com.universekampus.universeapp'
     defaultConfig {
-        applicationId 'com.universekampus.universeapp'
+        applicationId 'com.universekampus.universeapp2025'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
+        versionCode 76
         versionName "1.2.1"
         
         // Optimize for AAB - bundle configuration
         multiDexEnabled true
         
-        ndk {
-            debugSymbolLevel 'FULL'
-        }
+        // Disable NDK debug symbols to avoid NDK issues
+        // ndk {
+        //     debugSymbolLevel 'FULL'
+        // }
 
         buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
     }
@@ -135,9 +136,10 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             
-            ndk {
-                debugSymbolLevel 'FULL'
-            }
+            // Disable NDK debug symbols to avoid NDK issues
+            // ndk {
+            //     debugSymbolLevel 'FULL'
+            // }
             
             // Ensure debug symbols are extracted
             debuggable false
@@ -195,6 +197,11 @@ dependencies {
     
     // MultiDex support for API 35
     implementation("androidx.multidex:multidex:2.0.1")
+    
+    // Firebase dependencies
+    implementation platform('com.google.firebase:firebase-bom:34.3.0')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
@@ -225,3 +232,6 @@ dependencies {
 
 apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
 applyNativeModulesAppBuildGradle(project)
+
+// Apply Google Services plugin
+apply plugin: 'com.google.gms.google-services'

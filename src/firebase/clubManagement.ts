@@ -1,4 +1,5 @@
-import { firestore, firebase } from './config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { ClubStatsService } from '../services/clubStatsService';
 import { DetailedNotificationService } from '../services/detailedNotificationService';
 
@@ -12,7 +13,7 @@ export const leaveClub = async (userId: string, clubId: string): Promise<boolean
     }
 
     // Firestore'dan üyeliği kaldır
-    const memberQuery = await firestore.collection('clubMembers')
+    const memberQuery = await firebase.firestore().collection('clubMembers')
       .where('userId', '==', userId)
       .where('clubId', '==', clubId)
       .limit(1)
@@ -22,7 +23,7 @@ export const leaveClub = async (userId: string, clubId: string): Promise<boolean
       await memberQuery.docs[0].ref.delete();
 
       // Club member count'u güncelle
-      await firestore.collection('clubs').doc(clubId).update({
+      await firebase.firestore().collection('clubs').doc(clubId).update({
         memberCount: firebase.firestore.FieldValue.increment(-1)
       });
 
@@ -61,7 +62,7 @@ export const unfollowClub = async (userId: string, clubId: string): Promise<bool
     }
 
     // Firestore'dan takibi kaldır
-    const followQuery = await firestore.collection('clubFollowers')
+    const followQuery = await firebase.firestore().collection('clubFollowers')
       .where('userId', '==', userId)
       .where('clubId', '==', clubId)
       .limit(1)
@@ -71,7 +72,7 @@ export const unfollowClub = async (userId: string, clubId: string): Promise<bool
       await followQuery.docs[0].ref.delete();
 
       // Club follower count'u güncelle
-      await firestore.collection('clubs').doc(clubId).update({
+      await firebase.firestore().collection('clubs').doc(clubId).update({
         followerCount: firebase.firestore.FieldValue.increment(-1)
       });
 
@@ -104,7 +105,7 @@ export const deleteClubSafely = async (clubId: string, userId: string): Promise<
     }
 
     // Kulüp var mı kontrol et
-    const clubDoc = await firestore.collection('clubs').doc(clubId).get();
+    const clubDoc = await firebase.firestore().collection('clubs').doc(clubId).get();
     if (!clubDoc.exists) {
       console.error('Kulüp bulunamadı');
       return false;
@@ -130,10 +131,10 @@ export const deleteClubSafely = async (clubId: string, userId: string): Promise<
     console.log('✅ Club deletion statistics recorded and synchronized');
 
     // İlgili koleksiyonları temizle
-    const batch = firestore.batch();
+    const batch = firebase.firestore().batch();
 
     // Kulüp üyelerini sil
-    const membersSnapshot = await firestore.collection('clubMembers')
+    const membersSnapshot = await firebase.firestore().collection('clubMembers')
       .where('clubId', '==', clubId)
       .get();
     membersSnapshot.docs.forEach(doc => {
@@ -141,7 +142,7 @@ export const deleteClubSafely = async (clubId: string, userId: string): Promise<
     });
 
     // Kulüp takipçilerini sil
-    const followersSnapshot = await firestore.collection('clubFollowers')
+    const followersSnapshot = await firebase.firestore().collection('clubFollowers')
       .where('clubId', '==', clubId)
       .get();
     followersSnapshot.docs.forEach(doc => {
@@ -149,7 +150,7 @@ export const deleteClubSafely = async (clubId: string, userId: string): Promise<
     });
 
     // Kulüp etkinliklerini sil
-    const eventsSnapshot = await firestore.collection('events')
+    const eventsSnapshot = await firebase.firestore().collection('events')
       .where('clubId', '==', clubId)
       .get();
     eventsSnapshot.docs.forEach(doc => {
@@ -157,7 +158,7 @@ export const deleteClubSafely = async (clubId: string, userId: string): Promise<
     });
 
     // Kulübü sil
-    batch.delete(firestore.collection('clubs').doc(clubId));
+    batch.delete(firebase.firestore().collection('clubs').doc(clubId));
 
     await batch.commit();
 
@@ -182,14 +183,14 @@ export const checkUserClubInteraction = async (userId: string, clubId: string): 
     }
 
     // Üyelik kontrolü
-    const memberQuery = await firestore.collection('clubMembers')
+    const memberQuery = await firebase.firestore().collection('clubMembers')
       .where('userId', '==', userId)
       .where('clubId', '==', clubId)
       .limit(1)
       .get();
 
     // Takip kontrolü
-    const followerQuery = await firestore.collection('clubFollowers')
+    const followerQuery = await firebase.firestore().collection('clubFollowers')
       .where('userId', '==', userId)
       .where('clubId', '==', clubId)
       .limit(1)

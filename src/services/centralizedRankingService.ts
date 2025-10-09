@@ -4,6 +4,8 @@
  */
 
 import { firebase } from '../firebase/config';
+import { performanceOptimizer } from '../utils/performanceOptimizer';
+import { optimizedFirebase } from './optimizedFirebaseService';
 
 export interface UserRankData {
   userId: string;
@@ -43,19 +45,17 @@ class CentralizedRankingService {
         }
       }
 
-      // Kullanıcının score bilgisini al
-      const userScoreDoc = await this.db.collection('userScores').doc(userId).get();
-      if (!userScoreDoc.exists) {
+      // Kullanıcının score bilgisini al - optimized
+      const userScoreData = await optimizedFirebase.readDocument('userScores', userId);
+      if (!userScoreData) {
         console.warn('⚠️ CentralizedRanking: No score data for user', userId);
         return null;
       }
 
-      const userScoreData = userScoreDoc.data();
-      if (!userScoreData) return null;
-
-      // Kullanıcının user tipini kontrol et
-      const userDoc = await this.db.collection('users').doc(userId).get();
-      const userData = userDoc.data();
+      // Kullanıcının user tipini kontrol et - optimized
+      const userData = await optimizedFirebase.readDocument('users', userId);
+      if (!userData) return null;
+      
       const userType = userData?.userType || userData?.accountType;
 
       console.log('🔍 CentralizedRanking: Getting rank for', userId, 'type:', userType, 'points:', userScoreData.totalPoints);

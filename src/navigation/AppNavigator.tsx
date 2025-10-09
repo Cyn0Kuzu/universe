@@ -21,25 +21,10 @@ const AppNavigator: React.FC = () => {
     }
   }, [currentUser, userProfile, isClubAccount]);
 
-  // Kullanıcı profili yüklenirken loading göster
+  // Kullanıcı profili yüklenirken AuthNavigator'a geri dön (splash screen gösterilsin)
   if (loading || !userProfile) {
-    return (
-      <View style={{ 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        backgroundColor: theme.colors.background 
-      }}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={{ 
-          color: theme.colors.text, 
-          marginTop: 16,
-          fontSize: 16
-        }}>
-          Profil yükleniyor...
-        </Text>
-      </View>
-    );
+    console.log('⏳ AppNavigator - Profile loading, returning to AuthNavigator');
+    return null; // AuthNavigator splash screen'i gösterecek
   }
 
   // Kullanıcı tipine göre doğru navigator'ı göster

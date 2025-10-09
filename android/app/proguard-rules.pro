@@ -104,6 +104,10 @@
 -keep class com.swmansion.rnscreens.** { *; }
 -keepclassmembers class com.swmansion.rnscreens.** { *; }
 
+# React Native Fast Image
+-keep class com.dylanvann.fastimage.** { *; }
+-keepclassmembers class com.dylanvann.fastimage.** { *; }
+
 # React Native Gesture Handler
 -keep class com.swmansion.gesturehandler.** { *; }
 -keepclassmembers class com.swmansion.gesturehandler.** { *; }

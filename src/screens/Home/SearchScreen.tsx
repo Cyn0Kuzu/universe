@@ -140,16 +140,28 @@ const SearchScreen: React.FC = () => {
 
   // Handle result press
   const handleResultPress = (result: SearchResult) => {
-    switch (result.type) {
-      case 'event':
-        (navigation as any).navigate('ViewEvent', { eventId: result.id });
-        break;
-      case 'club':
-        (navigation as any).navigate('ViewClub', { clubId: result.id });
-        break;
-      case 'user':
-        (navigation as any).navigate('ViewProfile', { userId: result.id });
-        break;
+    console.log('🔍 Search result pressed:', result.type, result.id, result.title);
+    
+    try {
+      switch (result.type) {
+        case 'event':
+          console.log('📅 Navigating to event:', result.id);
+          (navigation as any).navigate('ViewEvent', { eventId: result.id });
+          break;
+        case 'club':
+          console.log('🏢 Navigating to club:', result.id);
+          (navigation as any).navigate('ViewClub', { clubId: result.id });
+          break;
+        case 'user':
+          console.log('👤 Navigating to user profile:', result.id);
+          (navigation as any).navigate('ViewProfile', { userId: result.id });
+          break;
+        default:
+          console.warn('Unknown result type:', result.type);
+      }
+    } catch (error) {
+      console.error('Error navigating to result:', error);
+      Alert.alert('Hata', 'Sayfa açılırken bir hata oluştu.');
     }
   };
 

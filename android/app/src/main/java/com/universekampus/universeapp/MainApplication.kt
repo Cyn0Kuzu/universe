@@ -2,6 +2,7 @@ package com.universekampus.universeapp
 
 import android.app.Application
 import android.content.res.Configuration
+import android.os.StrictMode
 import androidx.annotation.NonNull
 
 import com.facebook.react.PackageList
@@ -44,17 +45,47 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    
+    // Debug modda StrictMode'u devre dışı bırak (performans için)
+    if (BuildConfig.DEBUG) {
+      StrictMode.setThreadPolicy(
+        StrictMode.ThreadPolicy.Builder()
+          .detectAll()
+          .penaltyLog()
+          .build()
+      )
+      StrictMode.setVmPolicy(
+        StrictMode.VmPolicy.Builder()
+          .detectAll()
+          .penaltyLog()
+          .build()
+      )
+    }
+    
+    // Firebase'i başlat (crash'lerden kaçınmak için try-catch)
+    try {
+      // Firebase initialization will be handled by google-services.json
+      // No need to manually initialize here
+    } catch (e: Exception) {
+      // Firebase already initialized or error occurred
+      android.util.Log.w("MainApplication", "Firebase initialization note: ${e.message}")
+    }
+    
     SoLoader.init(this, false)
+    
     if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
       ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
     }
+    
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
+    
     if (BuildConfig.DEBUG) {
       ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
     }
+    
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
   }
 

@@ -5,6 +5,7 @@
 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import PushNotificationService from './pushNotificationService';
 
 export interface BaseNotification {
   id?: string;
@@ -577,9 +578,62 @@ export class UnifiedNotificationService {
 
       await this.db.collection('notifications').add(notificationData);
       console.log(`✅ Notification sent to ${notification.recipientType}: ${notification.recipientId}`);
+
+      // Push bildirim gönder
+      await this.sendPushNotification(notification);
     } catch (error) {
       console.error('Send notification failed:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Push bildirim gönder
+   */
+  private static async sendPushNotification(notification: Omit<BaseNotification, 'id' | 'read' | 'createdAt'>): Promise<void> {
+    try {
+      // Kullanıcının push token'larını al
+      const userDoc = await this.db.collection('users').doc(notification.recipientId).get();
+      const userData = userDoc.data();
+      
+      if (!userData) {
+        console.log(`📱 User document not found for ${notification.recipientId}`);
+        return;
+      }
+
+      // Check for both pushTokens array and expoPushToken for backward compatibility
+      const { pushTokens = [], expoPushToken } = userData;
+      
+      // Combine tokens, removing duplicates
+      const allTokens = [...new Set([...pushTokens, ...(expoPushToken ? [expoPushToken] : [])])];
+      
+      if (allTokens.length === 0) {
+        console.log(`📱 No push tokens found for user ${notification.recipientId}`);
+        return;
+      }
+
+      const pushService = PushNotificationService.getInstance();
+      
+      // Push bildirim gönder
+      await pushService.sendPushNotification(
+        allTokens,
+        {
+          type: notification.category === 'events' ? 'event' : 
+                notification.category === 'membership' ? 'club' : 'announcement',
+          title: notification.title,
+          body: notification.message,
+          data: {
+            notificationId: notification.recipientId,
+            type: notification.type,
+            ...notification.metadata
+          }
+        }
+      );
+
+      console.log(`📱 Push notification sent to ${notification.recipientId} with ${allTokens.length} tokens`);
+    } catch (error) {
+      console.error('Push notification failed:', error);
+      // Push bildirim hatası ana bildirim sistemini etkilemesin
     }
   }
 

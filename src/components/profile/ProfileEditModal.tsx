@@ -15,7 +15,9 @@ import {
   FlatList,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { auth, firestore } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 import { userActivityService } from '../../services/enhancedUserActivityService';
 import { centralizedRankingService } from '../../services/centralizedRankingService';
 import { usernameValidationService } from '../../services/usernameValidationService';
@@ -114,7 +116,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
     console.log('🚀 Starting database update process...');
     setLoading(true);
     try {
-      const userId = auth.currentUser?.uid;
+      const userId = firebase.auth().currentUser?.uid;
       console.log('👤 User ID:', userId);
       
       if (!userId) {
@@ -159,9 +161,9 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       
       // Username güncellemesi için transaction işlemi
       if (field === 'username' && typeof value === 'string') {
-        await firestore.runTransaction(async (transaction) => {
+        await firebase.firestore().runTransaction(async (transaction) => {
           // Yeni username'in mevcut olup olmadığını kontrol et
-          const newUsernameRef = firestore.collection('usernames').doc(value.toLowerCase());
+          const newUsernameRef = firebase.firestore().collection('usernames').doc(value.toLowerCase());
           const newUsernameDoc = await transaction.get(newUsernameRef);
           
           // Eğer username başka bir kullanıcıya aitse hata ver
@@ -173,7 +175,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
           }
           
           // Users collection'ı güncelle
-          const userRef = firestore.collection('users').doc(userId);
+          const userRef = firebase.firestore().collection('users').doc(userId);
           transaction.update(userRef, updateData);
           
           // Yeni username'i kaydet
@@ -184,7 +186,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
           
           // Eski username'i varsa sil (eğer farklıysa)
           if (currentValue && typeof currentValue === 'string' && currentValue !== value.toLowerCase()) {
-            const oldUsernameRef = firestore.collection('usernames').doc(currentValue);
+            const oldUsernameRef = firebase.firestore().collection('usernames').doc(currentValue);
             transaction.delete(oldUsernameRef);
           }
         });
@@ -192,7 +194,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
         console.log('✅ Username transaction update successful');
       } else {
         // Normal güncelleme
-        await firestore.collection('users').doc(userId).update(updateData);
+        await firebase.firestore().collection('users').doc(userId).update(updateData);
         console.log('✅ Database update successful');
       }
       console.log('🔄 Calling onUpdate callback');
@@ -200,7 +202,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       onUpdate(field, finalValue);
       // Log profile update activity (followers_only visibility handled in service)
       try {
-        const userDoc = await firestore.collection('users').doc(userId).get();
+        const userDoc = await firebase.firestore().collection('users').doc(userId).get();
         const userData = userDoc.data();
         await userActivityService.logProfileUpdate(
           userId,
