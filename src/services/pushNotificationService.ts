@@ -227,8 +227,18 @@ class PushNotificationService {
       const db = firebase.firestore();
       const userRef = db.collection('users').doc(user.uid);
       
-      // Update user document with push token
-      await userRef.update({
+      // Get FCM token as well
+      let fcmToken = null;
+      try {
+        const messaging = firebase.messaging();
+        fcmToken = await messaging.getToken();
+        console.log('📱 FCM Token obtained:', fcmToken ? `${fcmToken.substring(0, 20)}...` : 'null');
+      } catch (fcmError) {
+        console.warn('⚠️ FCM token not available:', fcmError);
+      }
+      
+      // Update user document with both tokens
+      const updateData: any = {
         expoPushToken: expoToken,
         pushTokens: firebase.firestore.FieldValue.arrayUnion(expoToken),
         lastTokenUpdate: firebase.firestore.FieldValue.serverTimestamp(),
@@ -237,9 +247,16 @@ class PushNotificationService {
           version: Platform.Version,
           isDevice: Device.isDevice,
         },
-      });
+      };
 
-      console.log('✅ Push token saved to user profile');
+      if (fcmToken) {
+        updateData.fcmToken = fcmToken;
+        updateData.pushTokens = firebase.firestore.FieldValue.arrayUnion(expoToken, fcmToken);
+      }
+
+      await userRef.update(updateData);
+
+      console.log('✅ Push tokens saved to user profile');
     } catch (error) {
       console.error('❌ Failed to save push token to user profile:', error);
     }

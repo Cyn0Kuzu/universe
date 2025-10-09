@@ -71,13 +71,17 @@ const App: React.FC = () => {
           // Initialize push notifications if permission granted or if it's first launch
           if (permissionResults.notifications.granted || permissionResults.notifications.status === 'skipped') {
             console.log('🔔 Initializing push notifications...');
-            const { PushNotificationService } = require('./services/pushNotificationService');
-            const pushService = PushNotificationService.getInstance();
-            const token = await pushService.initialize();
-            if (token) {
-              console.log('✅ Push notifications initialized successfully');
-            } else {
-              console.warn('⚠️ Push notifications initialization failed');
+            try {
+              const { PushNotificationService } = require('./services/pushNotificationService');
+              const pushService = PushNotificationService.getInstance();
+              const token = await pushService.initialize();
+              if (token) {
+                console.log('✅ Push notifications initialized successfully with token:', token.substring(0, 20) + '...');
+              } else {
+                console.warn('⚠️ Push notifications initialization failed - no token received');
+              }
+            } catch (pushError) {
+              console.error('❌ Push notification initialization error:', pushError);
             }
           } else {
             console.warn('⚠️ Notification permission not granted - skipping push notification initialization');

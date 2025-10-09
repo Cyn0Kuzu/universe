@@ -138,6 +138,27 @@ export class NotificationManagement {
   }
 
   /**
+   * Get notification type for push notifications
+   */
+  private static getNotificationType(type: string): 'event' | 'club' | 'announcement' | 'reminder' {
+    switch (type) {
+      case 'user_follow':
+      case 'user_unfollow':
+      case 'club_follow':
+      case 'club_unfollow':
+        return 'club';
+      case 'event_like':
+      case 'event_comment':
+      case 'event_attendance':
+        return 'event';
+      case 'announcement':
+        return 'announcement';
+      default:
+        return 'announcement';
+    }
+  }
+
+  /**
    * Push bildirim gönder
    */
   private static async sendPushNotification(userId: string, notification: any): Promise<void> {
@@ -168,7 +189,7 @@ export class NotificationManagement {
       await pushService.sendPushNotification(
         allTokens,
         {
-          type: 'announcement',
+          type: this.getNotificationType(notification.type),
           title: notification.title,
           body: notification.message,
           data: {
