@@ -33,10 +33,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { eventCategories, UNIVERSITIES_DATA } from '../constants';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-// 🚀 Performance optimization imports
-import { 
-  useMountedState
-} from '../utils/performanceOptimizer';
+// 🚀 Performance optimization imports removed - using standard React hooks
 import { useAuth } from '../contexts/AuthContext';
 import { firebase } from '../firebase';
 import { UnifiedNotificationService } from '../services/unifiedNotificationService';
@@ -321,8 +318,15 @@ const ClubEventCard = ({
   const theme = useTheme();
   const navigation = useNavigation<any>();
   const { currentUser, userProfile, isClubAccount } = useAuth();
-  const isMounted = useMountedState();
+  const [isMounted, setIsMounted] = useState(true);
   const cardRef = useRef<View>(null);
+  
+  // Component mount/unmount tracking
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
   
   // 🚀 Performance: Render time tracking (disabled to reduce warnings)
   // useRenderTime(`ClubEventCard-${event.id}`);

@@ -62,7 +62,7 @@ const App: React.FC = () => {
         // Request all necessary permissions (only on first launch)
         try {
           console.log('🔐 Checking app permissions...');
-          const { PermissionManager } = require('./services/permissionManager');
+          const PermissionManager = require('./services/permissionManager').default;
           const permissionManager = PermissionManager.getInstance();
           const permissionResults = await permissionManager.requestAllPermissions();
           

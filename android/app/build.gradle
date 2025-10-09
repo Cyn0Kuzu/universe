@@ -97,7 +97,7 @@ android {
         applicationId 'com.universekampus.universeapp2025'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 76
+        versionCode 77
         versionName "1.2.1"
         
         // Optimize for AAB - bundle configuration
