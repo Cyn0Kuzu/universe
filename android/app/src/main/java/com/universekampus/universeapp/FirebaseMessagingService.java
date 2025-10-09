@@ -58,7 +58,19 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     public void onNewToken(String token) {
         super.onNewToken(token);
         Log.d(TAG, "New FCM token: " + token);
-        // Token'ı sunucunuza gönderin
+        
+        // Token'ı Firestore'a kaydet
+        saveTokenToFirestore(token);
+    }
+    
+    private void saveTokenToFirestore(String token) {
+        try {
+            // Bu metod React Native tarafından handle edilecek
+            // Şimdilik sadece log'layalım
+            Log.d(TAG, "FCM token should be saved to Firestore: " + token.substring(0, 20) + "...");
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving FCM token", e);
+        }
     }
 
     private void showNotification(String title, String body) {
