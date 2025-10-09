@@ -39,7 +39,7 @@ class PushNotificationService {
   }
 
   /**
-   * Initialize push notifications with comprehensive error handling
+   * Initialize push notifications (simplified and reliable)
    */
   async initialize(): Promise<string | null> {
     try {
@@ -50,81 +50,29 @@ class PushNotificationService {
 
       console.log('🚀 Starting push notification initialization...');
 
-      // Request Expo notifications permissions with retry logic
-      let finalStatus = 'undetermined';
-      let retryCount = 0;
-      const maxRetries = 3;
+      // Check current permission status
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      console.log(`📋 Current notification permission status: ${existingStatus}`);
 
-      while (retryCount < maxRetries && finalStatus !== 'granted') {
-        try {
-          const { status: existingStatus } = await Notifications.getPermissionsAsync();
-          console.log(`📋 Current notification permission status: ${existingStatus} (attempt ${retryCount + 1})`);
-          
-          finalStatus = existingStatus;
-
-          if (existingStatus !== 'granted') {
-            console.log('🔔 Requesting notification permissions...');
-            
-            // Try multiple permission request strategies
-            let permissionGranted = false;
-            
-            // Strategy 1: Standard request
-            try {
-              const { status } = await Notifications.requestPermissionsAsync({
-                ios: {
-                  allowAlert: true,
-                  allowBadge: true,
-                  allowSound: true,
-                  allowAnnouncements: true,
-                },
-                android: {
-                  allowAlert: true,
-                  allowBadge: true,
-                  allowSound: true,
-                },
-              });
-              finalStatus = status;
-              permissionGranted = status === 'granted';
-              console.log(`✅ Permission request result: ${finalStatus}`);
-            } catch (permissionError) {
-              console.warn('⚠️ Standard permission request failed:', permissionError);
-            }
-            
-            // Strategy 2: If still not granted, try again with different approach
-            if (!permissionGranted) {
-              try {
-                console.log('🔄 Retrying permission request...');
-                const { status } = await Notifications.requestPermissionsAsync();
-                finalStatus = status;
-                permissionGranted = status === 'granted';
-                console.log(`🔄 Retry permission result: ${finalStatus}`);
-              } catch (retryError) {
-                console.warn('⚠️ Retry permission request failed:', retryError);
-              }
-            }
-            
-            // Strategy 3: Show user-friendly message
-            if (!permissionGranted) {
-              console.log('📱 Notification permissions not granted - user needs to enable manually');
-              // Don't return null here - continue with limited functionality
-            }
-          }
-          
-          retryCount++;
-          if (finalStatus !== 'granted' && retryCount < maxRetries) {
-            console.log(`⏳ Waiting 2 seconds before retry ${retryCount + 1}/${maxRetries}...`);
-            await new Promise(resolve => setTimeout(resolve, 2000));
-          }
-        } catch (error) {
-          console.error(`❌ Permission request attempt ${retryCount + 1} failed:`, error);
-          retryCount++;
-        }
-      }
-
-      // Continue even if permissions not granted - user can enable later
-      if (finalStatus !== 'granted') {
-        console.warn('⚠️ Push notification permissions not granted - continuing with limited functionality');
-        // Don't return null - continue with token generation
+      // If not granted, request permission
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        console.log('🔔 Requesting notification permissions...');
+        const { status } = await Notifications.requestPermissionsAsync({
+          ios: {
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+            allowAnnouncements: true,
+          },
+          android: {
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+          },
+        });
+        finalStatus = status;
+        console.log(`✅ Permission request result: ${finalStatus}`);
       }
 
       // Configure notification channels for Android
@@ -132,41 +80,20 @@ class PushNotificationService {
         await this.setupAndroidNotificationChannels();
       }
 
-      // Get Expo push token with multiple strategies
+      // Get Expo push token
       try {
         const projectId = 'universe-a6f60'; // Firebase project ID
         console.log('🔑 Getting Expo push token with project ID:', projectId);
         
-        let token = null;
-        let tokenAttempts = 0;
-        const maxTokenAttempts = 3;
-
-        while (!token && tokenAttempts < maxTokenAttempts) {
-          try {
-            tokenAttempts++;
-            console.log(`🔑 Token attempt ${tokenAttempts}/${maxTokenAttempts}`);
-            
-            const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
-            token = tokenData.data;
-
-            if (token) {
-              console.log('📱 Expo Token obtained:', `${token.substring(0, 20)}...`);
-              break;
-            }
-          } catch (tokenError) {
-            console.warn(`⚠️ Token attempt ${tokenAttempts} failed:`, tokenError);
-            if (tokenAttempts < maxTokenAttempts) {
-              console.log(`⏳ Waiting 3 seconds before token retry...`);
-              await new Promise(resolve => setTimeout(resolve, 3000));
-            }
-          }
-        }
+        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+        const token = tokenData.data;
 
         if (!token) {
-          console.error('❌ Failed to obtain Expo push token after all attempts');
+          console.error('❌ Failed to obtain Expo push token');
           return null;
         }
 
+        console.log('📱 Expo Token obtained:', `${token.substring(0, 20)}...`);
         this.expoPushToken = token;
         
         // Save token to user profile

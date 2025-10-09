@@ -83,7 +83,11 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .setFullScreenIntent(pendingIntent, true)
+                .setOngoing(false)
+                .setShowWhen(true)
+                .setWhen(System.currentTimeMillis());
 
         NotificationManager notificationManager =
             (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -107,6 +111,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             channel.enableVibration(true);
             channel.setShowBadge(true);
             channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
+            channel.setBypassDnd(true);
+            channel.setSound(null, null);
+            channel.enableVibration(true);
             
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);

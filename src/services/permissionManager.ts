@@ -3,7 +3,7 @@
  * Handles all app permissions including notifications and storage
  */
 
-import { Platform, Alert, Linking, PermissionsAndroid } from 'react-native';
+import { Platform, Alert, Linking, PermissionsAndroid, AsyncStorage } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -15,6 +15,7 @@ export interface PermissionResult {
 
 export class PermissionManager {
   private static instance: PermissionManager;
+  private static readonly PERMISSIONS_REQUESTED_KEY = 'permissions_requested';
 
   static getInstance(): PermissionManager {
     if (!PermissionManager.instance) {
@@ -24,14 +25,51 @@ export class PermissionManager {
   }
 
   /**
-   * Request all necessary permissions for the app
+   * Check if permissions have been requested before
+   */
+  private async havePermissionsBeenRequested(): Promise<boolean> {
+    try {
+      const requested = await AsyncStorage.getItem(PermissionManager.PERMISSIONS_REQUESTED_KEY);
+      return requested === 'true';
+    } catch (error) {
+      console.error('❌ Error checking permission status:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Mark permissions as requested
+   */
+  private async markPermissionsAsRequested(): Promise<void> {
+    try {
+      await AsyncStorage.setItem(PermissionManager.PERMISSIONS_REQUESTED_KEY, 'true');
+    } catch (error) {
+      console.error('❌ Error marking permissions as requested:', error);
+    }
+  }
+
+  /**
+   * Request all necessary permissions for the app (only on first launch)
    */
   async requestAllPermissions(): Promise<{
     notifications: PermissionResult;
     storage: PermissionResult;
     camera: PermissionResult;
   }> {
-    console.log('🔐 Requesting all app permissions...');
+    console.log('🔐 Checking if permissions should be requested...');
+
+    // Check if permissions have been requested before
+    const alreadyRequested = await this.havePermissionsBeenRequested();
+    if (alreadyRequested) {
+      console.log('ℹ️ Permissions already requested before, skipping...');
+      return {
+        notifications: { granted: false, canAskAgain: true, status: 'skipped' },
+        storage: { granted: false, canAskAgain: true, status: 'skipped' },
+        camera: { granted: false, canAskAgain: true, status: 'skipped' },
+      };
+    }
+
+    console.log('🔐 Requesting all app permissions for the first time...');
 
     const results = {
       notifications: await this.requestNotificationPermissions(),
@@ -39,12 +77,15 @@ export class PermissionManager {
       camera: await this.requestCameraPermissions(),
     };
 
+    // Mark permissions as requested
+    await this.markPermissionsAsRequested();
+
     console.log('📋 Permission results:', results);
     return results;
   }
 
   /**
-   * Request notification permissions with user-friendly prompts
+   * Request notification permissions (native Android system only)
    */
   async requestNotificationPermissions(): Promise<PermissionResult> {
     try {
@@ -58,19 +99,7 @@ export class PermissionManager {
         return { granted: true, canAskAgain: false, status: existingStatus };
       }
 
-      // Show user-friendly explanation
-      const shouldRequest = await this.showPermissionDialog(
-        'Bildirim İzni',
-        'Universe Campus size etkinlik hatırlatmaları, yeni takipçiler ve önemli duyurular hakkında bildirim göndermek için bildirim iznine ihtiyaç duyar.',
-        'İzin Ver',
-        'Daha Sonra'
-      );
-
-      if (!shouldRequest) {
-        return { granted: false, canAskAgain: true, status: 'denied' };
-      }
-
-      // Request permission
+      // Request permission directly (native Android dialog)
       const { status } = await Notifications.requestPermissionsAsync({
         ios: {
           allowAlert: true,
@@ -86,14 +115,6 @@ export class PermissionManager {
       });
 
       console.log(`✅ Notification permission result: ${status}`);
-
-      if (status !== 'granted') {
-        await this.showPermissionDeniedDialog(
-          'Bildirim İzni',
-          'Bildirim izni olmadan etkinlik hatırlatmaları alamazsınız. Ayarlar > Uygulamalar > Universe Campus > Bildirimler bölümünden izni etkinleştirebilirsiniz.'
-        );
-      }
-
       return { granted: status === 'granted', canAskAgain: status !== 'denied', status };
     } catch (error) {
       console.error('❌ Notification permission request failed:', error);
@@ -102,25 +123,13 @@ export class PermissionManager {
   }
 
   /**
-   * Request storage permissions
+   * Request storage permissions (native Android system only)
    */
   async requestStoragePermissions(): Promise<PermissionResult> {
     try {
       console.log('💾 Requesting storage permissions...');
 
       if (Platform.OS === 'android') {
-        // Show user-friendly explanation
-        const shouldRequest = await this.showPermissionDialog(
-          'Depolama İzni',
-          'Profil fotoğrafı ve etkinlik fotoğrafları için depolama erişimi gereklidir.',
-          'İzin Ver',
-          'Daha Sonra'
-        );
-
-        if (!shouldRequest) {
-          return { granted: false, canAskAgain: true, status: 'denied' };
-        }
-
         // Android 13+ (API 33+) uses scoped storage
         if (Platform.Version >= 33) {
           // For Android 13+, we use READ_MEDIA_IMAGES permission
@@ -167,7 +176,7 @@ export class PermissionManager {
   }
 
   /**
-   * Request camera permissions
+   * Request camera permissions (native Android system only)
    */
   async requestCameraPermissions(): Promise<PermissionResult> {
     try {
@@ -176,13 +185,6 @@ export class PermissionManager {
       const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
       console.log(`📋 Camera permission: ${cameraPermission.status}`);
 
-      if (!cameraPermission.granted) {
-        await this.showPermissionDeniedDialog(
-          'Kamera İzni',
-          'Kamera izni olmadan fotoğraf çekemezsiniz. Ayarlar > Uygulamalar > Universe Campus > İzinler bölümünden kamera iznini etkinleştirebilirsiniz.'
-        );
-      }
-
       return { granted: cameraPermission.granted, canAskAgain: cameraPermission.canAskAgain, status: cameraPermission.status };
     } catch (error) {
       console.error('❌ Camera permission request failed:', error);
@@ -190,59 +192,6 @@ export class PermissionManager {
     }
   }
 
-  /**
-   * Show permission request dialog
-   */
-  private showPermissionDialog(
-    title: string,
-    message: string,
-    allowText: string,
-    denyText: string
-  ): Promise<boolean> {
-    return new Promise((resolve) => {
-      Alert.alert(
-        title,
-        message,
-        [
-          {
-            text: denyText,
-            style: 'cancel',
-            onPress: () => resolve(false),
-          },
-          {
-            text: allowText,
-            onPress: () => resolve(true),
-          },
-        ],
-        { cancelable: false }
-      );
-    });
-  }
-
-  /**
-   * Show permission denied dialog with settings link
-   */
-  private showPermissionDeniedDialog(title: string, message: string): Promise<void> {
-    return new Promise((resolve) => {
-      Alert.alert(
-        title,
-        message,
-        [
-          {
-            text: 'Tamam',
-            onPress: () => resolve(),
-          },
-          {
-            text: 'Ayarlara Git',
-            onPress: () => {
-              Linking.openSettings();
-              resolve();
-            },
-          },
-        ]
-      );
-    });
-  }
 
   /**
    * Check if all critical permissions are granted

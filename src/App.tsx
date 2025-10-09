@@ -59,17 +59,17 @@ const App: React.FC = () => {
         // Wait for auth check to complete
         await authCheckPromise;
         
-        // Request all necessary permissions
+        // Request all necessary permissions (only on first launch)
         try {
-          console.log('🔐 Requesting app permissions...');
+          console.log('🔐 Checking app permissions...');
           const { PermissionManager } = require('./services/permissionManager');
           const permissionManager = PermissionManager.getInstance();
           const permissionResults = await permissionManager.requestAllPermissions();
           
           console.log('📋 Permission results:', permissionResults);
           
-          // Initialize push notifications if permission granted
-          if (permissionResults.notifications.granted) {
+          // Initialize push notifications if permission granted or if it's first launch
+          if (permissionResults.notifications.granted || permissionResults.notifications.status === 'skipped') {
             console.log('🔔 Initializing push notifications...');
             const { PushNotificationService } = require('./services/pushNotificationService');
             const pushService = PushNotificationService.getInstance();
