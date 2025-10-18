@@ -1,11 +1,11 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { firebase } from '../firebase/config';
 import { 
   ActionType, 
   EntityType, 
   ScoringMetadata, 
   ScoringResponse
 } from '../types/index';
+import hybridPushService from './hybridPushNotificationService';
 // Import services from index to avoid circular dependencies
 // import { SafeNotificationCreator } from './SafeNotificationCreator';
 // import { UserStatsManagementService } from './userStatsManagement';
@@ -230,7 +230,7 @@ export class CleanModernScoringEngine {
     
     // Store notification data for future implementation
     try {
-      await this.db.collection('notifications').add({
+      const notification = {
         type: type,
         title: title,
         message: message,
@@ -243,12 +243,63 @@ export class CleanModernScoringEngine {
         },
         read: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      };
+
+      await this.db.collection('notifications').add(notification);
+      
+      // Send push notification
+      await this.sendPushNotification(userId, notification);
     } catch (error) {
       console.error('Error creating notification:', error);
     }
 
     console.log(`📱 Unified user notification sent: ${type} (${points} points)`);
+  }
+
+  /**
+   * Send push notification
+   */
+  private async sendPushNotification(userId: string, notification: any): Promise<void> {
+    try {
+      // Use hybrid push notification service
+      await hybridPushService.sendToUser(
+        userId,
+        {
+          type: this.getNotificationType(notification.type),
+          title: notification.title,
+          body: notification.message,
+          data: {
+            notificationId: userId,
+            type: notification.type,
+            ...notification.metadata
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Push notification failed:', error);
+    }
+  }
+
+  /**
+   * Get notification type for push notifications
+   */
+  private getNotificationType(type: string): 'event' | 'club' | 'announcement' | 'reminder' {
+    switch (type) {
+      case 'user_follow':
+      case 'user_unfollow':
+      case 'club_follow':
+      case 'club_unfollow':
+        return 'club';
+      case 'event_like':
+      case 'event_comment':
+      case 'event_attendance':
+        return 'event';
+      case 'achievement':
+      case 'score':
+        return 'announcement';
+      default:
+        return 'announcement';
+    }
   }
 
   /**
@@ -287,9 +338,9 @@ export class CleanModernScoringEngine {
     // Simple notification logging
     console.log(`🎯 Target notification: ${title} - ${message} (${points} points)`);
     
-    // Store notification data
+    // Store notification data and send push notification
     try {
-      await this.db.collection('notifications').add({
+      const notification = {
         type: type,
         title: title,
         message: message,
@@ -302,7 +353,12 @@ export class CleanModernScoringEngine {
         },
         read: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      };
+
+      await this.db.collection('notifications').add(notification);
+      
+      // Send push notification
+      await this.sendPushNotification(targetUserId, notification);
     } catch (error) {
       console.error('Error creating target notification:', error);
     }
@@ -356,9 +412,9 @@ export class CleanModernScoringEngine {
     // Simple notification logging
     console.log(`🏛️ Club notification: ${title} - ${message} (${points} points)`);
     
-    // Store notification data
+    // Store notification data and send push notification
     try {
-      await this.db.collection('notifications').add({
+      const notification = {
         type: type,
         title: title,
         message: message,
@@ -371,7 +427,12 @@ export class CleanModernScoringEngine {
         },
         read: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      };
+
+      await this.db.collection('notifications').add(notification);
+      
+      // Send push notification
+      await this.sendPushNotification(clubOwnerId, notification);
     } catch (error) {
       console.error('Error creating club notification:', error);
     }

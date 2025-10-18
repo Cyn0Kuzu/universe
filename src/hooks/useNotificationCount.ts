@@ -17,10 +17,10 @@ export const useNotificationCount = () => {
     try {
       const db = firebase.firestore();
       
-      // Database'den bildirimleri al
+      // Database'den tüm bildirimleri al (recipientType filtresi olmadan)
       const notificationsSnapshot = await db
         .collection('notifications')
-        .where('recipientId', '==', currentUser.uid) // recipientId kullan (hem student hem club için)
+        .where('recipientId', '==', currentUser.uid)
         .get();
 
       // AsyncStorage'dan okunmuş bildirim durumlarını al

@@ -6,7 +6,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { auth } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import { sendEmailVerification, resetPasswordWithValidation } from '../../firebase/auth';
 import { useAuth } from '../../contexts/AuthContext';
 import { CustomTheme } from '../../types/theme';
@@ -90,7 +91,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     
     try {
       // Temporarily sign in to get the user
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
       const user = userCredential.user;
       
       if (user) {
@@ -102,7 +103,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       }
       
       // Sign out after sending verification email
-      await auth.signOut();
+      await firebase.auth().signOut();
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Doğrulama e-postası gönderilemedi.';
       Alert.alert("Hata", errorMsg);

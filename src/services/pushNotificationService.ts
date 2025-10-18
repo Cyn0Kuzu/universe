@@ -1,10 +1,13 @@
+/**
+ * Fixed Push Notification Service
+ * Comprehensive push notification service with error handling
+ */
+
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
-import { getFirestore, doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { auth } from '../firebase/config';
-import { logger } from '../utils/logger';
+import { firebase } from '../firebase/config';
 
 // Notification handler configuration
 Notifications.setNotificationHandler({
@@ -36,73 +39,195 @@ class PushNotificationService {
   }
 
   /**
-   * Initialize push notifications
+   * Initialize push notifications (simplified and reliable)
    */
   async initialize(): Promise<string | null> {
     try {
       if (!Device.isDevice) {
-        throw new Error('Push notifications only work on physical devices');
+        console.warn('Push notifications only work on physical devices');
+        return null;
       }
 
-      // Request permissions
+      console.log('🚀 Starting push notification initialization...');
+
+      // Check current permission status
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      console.log(`📋 Current notification permission status: ${existingStatus}`);
+
+      // If not granted, request permission
       let finalStatus = existingStatus;
-
       if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
+        console.log('🔔 Requesting notification permissions...');
+        const { status } = await Notifications.requestPermissionsAsync({
+          ios: {
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+            allowAnnouncements: true,
+          },
+          android: {
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+          },
+        });
         finalStatus = status;
+        console.log(`✅ Permission request result: ${finalStatus}`);
       }
 
+      // If still not granted after request, return early
       if (finalStatus !== 'granted') {
-        throw new Error('Push notification permissions not granted');
+        console.warn('⚠️ Notification permission denied by user');
+        return null;
       }
 
-      // Configure notification channel for Android
+      // Configure notification channels for Android
       if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-          name: 'Default',
-          importance: Notifications.AndroidImportance.MAX,
-          vibrationPattern: [0, 250, 250, 250],
-          lightColor: '#FF231F7C',
-          sound: 'default',
-        });
+        await this.setupAndroidNotificationChannels();
+      }
 
-        await Notifications.setNotificationChannelAsync('events', {
-          name: 'Events',
-          importance: Notifications.AndroidImportance.HIGH,
-          description: 'Event notifications',
-          vibrationPattern: [0, 250, 250, 250],
-          sound: 'default',
-        });
-
-        await Notifications.setNotificationChannelAsync('clubs', {
-          name: 'Clubs',
-          importance: Notifications.AndroidImportance.DEFAULT,
-          description: 'Club updates and announcements',
-          sound: 'default',
-        });
+      // Initialize FCM token service for Android
+      if (Platform.OS === 'android') {
+        try {
+          const FCMTokenService = require('./fcmTokenService').default;
+          const fcmService = FCMTokenService.getInstance();
+          const fcmToken = await fcmService.initialize();
+          console.log('✅ FCM service initialized:', fcmToken ? 'Token obtained' : 'No token');
+        } catch (fcmError) {
+          console.warn('⚠️ FCM initialization failed (continuing with Expo tokens):', fcmError);
+        }
       }
 
       // Get Expo push token
-      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
-      if (!projectId) {
-        throw new Error('EAS project ID not configured');
+      try {
+        // Use EAS project ID from app.json
+        const projectId = Constants.expoConfig?.extra?.eas?.projectId || '87915ccc-6506-4464-8a60-1573cbc33a76';
+        console.log('🔑 Getting Expo push token with EAS project ID:', projectId);
+        
+        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+        const token = tokenData.data;
+
+        if (!token) {
+          console.error('❌ Failed to obtain Expo push token');
+          return null;
+        }
+
+        console.log('📱 Expo Token obtained:', `${token.substring(0, 20)}...`);
+        this.expoPushToken = token;
+        
+        // Save token to user profile
+        await this.saveTokenToUserProfile(token);
+        
+        // Setup notification listeners
+        this.setupNotificationListeners();
+
+        console.log('✅ Push notifications initialized successfully');
+        return token;
+      } catch (tokenError) {
+        console.error('❌ Failed to get Expo push token:', tokenError);
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Failed to initialize push notifications:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Setup Android notification channels with comprehensive error handling
+   */
+  private async setupAndroidNotificationChannels(): Promise<void> {
+    try {
+      console.log('🔧 Setting up Android notification channels...');
+      
+      // Default channel with retry logic
+      let channelSetupSuccess = false;
+      let channelAttempts = 0;
+      const maxChannelAttempts = 3;
+
+      while (!channelSetupSuccess && channelAttempts < maxChannelAttempts) {
+        try {
+          channelAttempts++;
+          console.log(`🔧 Channel setup attempt ${channelAttempts}/${maxChannelAttempts}`);
+          
+          await Notifications.setNotificationChannelAsync('default', {
+            name: 'Universe Campus',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#6750A4',
+            sound: 'default',
+            description: 'General notifications from Universe Campus',
+            enableLights: true,
+            enableVibrate: true,
+            showBadge: true,
+          });
+          
+          channelSetupSuccess = true;
+          console.log('✅ Default notification channel setup successful');
+        } catch (channelError) {
+          console.warn(`⚠️ Channel setup attempt ${channelAttempts} failed:`, channelError);
+          if (channelAttempts < maxChannelAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
       }
 
-      const pushTokenData = await Notifications.getExpoPushTokenAsync({
-        projectId,
+      // Events channel
+      await Notifications.setNotificationChannelAsync('events', {
+        name: 'Etkinlikler',
+        importance: Notifications.AndroidImportance.HIGH,
+        description: 'Event notifications and reminders',
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#6750A4',
+        sound: 'default',
+        enableLights: true,
+        enableVibrate: true,
+        showBadge: true,
       });
 
-      this.expoPushToken = pushTokenData.data;
+      // Club channel
+      await Notifications.setNotificationChannelAsync('clubs', {
+        name: 'Kulüpler',
+        importance: Notifications.AndroidImportance.HIGH,
+        description: 'Club notifications and updates',
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#6750A4',
+        sound: 'default',
+        enableLights: true,
+        enableVibrate: true,
+        showBadge: true,
+      });
+
+      console.log('✅ Android notification channels configured');
+    } catch (error) {
+      console.error('❌ Failed to setup Android notification channels:', error);
+    }
+  }
+
+  /**
+   * Get Expo push token with retry logic
+   */
+  private async getExpoPushToken(): Promise<string | null> {
+    try {
+      const projectId = (Constants as any)?.expoConfig?.extra?.eas?.projectId || 
+                       (Constants as any)?.easConfig?.projectId;
       
-      // Save token to user profile
-      if (this.expoPushToken) {
-        await this.saveTokenToUserProfile(this.expoPushToken);
+      if (!projectId) {
+        console.error('❌ EAS project ID not found in configuration');
+        return null;
       }
 
-      return this.expoPushToken;
+      const tokenData = await Notifications.getExpoPushTokenAsync({ projectId } as any);
+      const token = (tokenData as any)?.data ?? null;
+
+      if (!token) {
+        console.error('❌ Failed to obtain Expo push token');
+        return null;
+      }
+
+      return token;
     } catch (error) {
-      logger.error('Failed to initialize push notifications:', error);
+      console.error('❌ Error getting Expo push token:', error);
       return null;
     }
   }
@@ -110,151 +235,203 @@ class PushNotificationService {
   /**
    * Save push token to user's Firestore profile
    */
-  private async saveTokenToUserProfile(token: string): Promise<void> {
+  private async saveTokenToUserProfile(expoToken: string): Promise<void> {
     try {
-      const user = auth.currentUser;
-      if (!user) return;
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        console.warn('No authenticated user found for push token save');
+        return;
+      }
 
-      const db = getFirestore();
-      const userRef = doc(db, 'users', user.uid);
+      const db = firebase.firestore();
+      const userRef = db.collection('users').doc(user.uid);
       
-      await updateDoc(userRef, {
-        pushTokens: arrayUnion(token),
-        lastTokenUpdate: new Date(),
-      });
+      console.log('📱 Saving Expo push token for cross-platform compatibility');
+      
+      // Update user document with Expo token
+      const updateData: any = {
+        expoPushToken: expoToken,
+        pushTokens: firebase.firestore.FieldValue.arrayUnion(expoToken),
+        lastTokenUpdate: firebase.firestore.FieldValue.serverTimestamp(),
+        deviceInfo: {
+          platform: Platform.OS,
+          version: Platform.Version,
+          isDevice: Device.isDevice,
+        },
+      };
+
+      // Try to update the user document
+      try {
+        await userRef.update(updateData);
+        console.log('✅ Push tokens saved to user profile');
+      } catch (updateError: any) {
+        // If update fails (document might not exist), use set with merge
+        if (updateError?.code === 'not-found') {
+          await userRef.set(updateData, { merge: true });
+          console.log('✅ Push tokens merged to user profile');
+        } else {
+          throw updateError;
+        }
+      }
     } catch (error) {
-      logger.error('Failed to save push token:', error);
+      console.error('❌ Failed to save push token to user profile:', error);
     }
   }
 
   /**
-   * Schedule a local notification
+   * Setup notification listeners
    */
-  async scheduleLocalNotification(
-    notification: NotificationData,
-    trigger?: Notifications.NotificationTriggerInput
-  ): Promise<string> {
-    const identifier = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: notification.title,
-        body: notification.body,
-        data: notification.data || {},
-        sound: true,
-        priority: Notifications.AndroidNotificationPriority.HIGH,
-      },
-      trigger: trigger || null,
-    });
+  private setupNotificationListeners(): void {
+    try {
+      // Handle notifications received while app is in foreground
+      Notifications.addNotificationReceivedListener(notification => {
+        console.log('📱 Notification received in foreground:', notification);
+        
+        // Show local notification when app is in foreground
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: notification.request.content.title,
+            body: notification.request.content.body,
+            data: notification.request.content.data,
+          },
+          trigger: null, // Show immediately
+        });
+      });
 
-    return identifier;
-  }
+      // Handle notification taps
+      Notifications.addNotificationResponseReceivedListener(response => {
+        console.log('📱 Notification tapped:', response);
+        // Handle navigation based on notification data
+        this.handleNotificationTap(response);
+      });
 
-  /**
-   * Schedule event reminder
-   */
-  async scheduleEventReminder(
-    eventId: string,
-    eventTitle: string,
-    eventDate: Date,
-    reminderMinutes: number = 30
-  ): Promise<string> {
-    const reminderDate = new Date(eventDate.getTime() - reminderMinutes * 60 * 1000);
-    
-    if (reminderDate <= new Date()) {
-      throw new Error('Event reminder time has already passed');
+      console.log('✅ Notification listeners setup completed');
+    } catch (error) {
+      console.error('❌ Failed to setup notification listeners:', error);
     }
-
-    return this.scheduleLocalNotification(
-      {
-        type: 'reminder',
-        title: 'Etkinlik Hatırlatması',
-        body: `"${eventTitle}" etkinliği ${reminderMinutes} dakika sonra başlayacak!`,
-        data: { eventId, type: 'event_reminder' },
-      },
-      { date: reminderDate }
-    );
   }
 
   /**
-   * Cancel a scheduled notification
+   * Handle notification tap
    */
-  async cancelNotification(identifier: string): Promise<void> {
-    await Notifications.cancelScheduledNotificationAsync(identifier);
+  private handleNotificationTap(response: Notifications.NotificationResponse): void {
+    try {
+      const { data } = response.notification.request.content;
+      console.log('📱 Handling notification tap with data:', data);
+      
+      // Navigate based on notification type
+      if (data?.type === 'event' && data?.eventId) {
+        // Navigate to event detail
+        console.log('📱 Navigating to event:', data.eventId);
+      } else if (data?.type === 'club' && data?.clubId) {
+        // Navigate to club detail
+        console.log('📱 Navigating to club:', data.clubId);
+      }
+    } catch (error) {
+      console.error('❌ Error handling notification tap:', error);
+    }
   }
 
   /**
-   * Cancel all scheduled notifications
-   */
-  async cancelAllNotifications(): Promise<void> {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-  }
-
-  /**
-   * Get scheduled notifications
-   */
-  async getScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
-    return await Notifications.getAllScheduledNotificationsAsync();
-  }
-
-  /**
-   * Handle notification response (when user taps notification)
-   */
-  addNotificationResponseListener(
-    listener: (response: Notifications.NotificationResponse) => void
-  ): Notifications.Subscription {
-    return Notifications.addNotificationResponseReceivedListener(listener);
-  }
-
-  /**
-   * Handle foreground notifications
-   */
-  addNotificationReceivedListener(
-    listener: (notification: Notifications.Notification) => void
-  ): Notifications.Subscription {
-    return Notifications.addNotificationReceivedListener(listener);
-  }
-
-  /**
-   * Get current push token
-   */
-  getPushToken(): string | null {
-    return this.expoPushToken;
-  }
-
-  /**
-   * Send push notification via Expo's push service
+   * Send push notification via Expo's push service with retry mechanism
    */
   async sendPushNotification(
     tokens: string[],
     notification: NotificationData
   ): Promise<void> {
-    const messages = tokens.map(token => ({
+    if (!tokens || tokens.length === 0) {
+      console.warn('No tokens provided for push notification');
+      return;
+    }
+
+    // Validate tokens
+    const validTokens = tokens.filter(token => {
+      if (!token || typeof token !== 'string') {
+        console.warn('Invalid token found:', token);
+        return false;
+      }
+      if (!token.startsWith('ExponentPushToken[') && !token.startsWith('ExpoPushToken[')) {
+        console.warn('Token format invalid:', token.substring(0, 20) + '...');
+        return false;
+      }
+      return true;
+    });
+
+    if (validTokens.length === 0) {
+      console.warn('No valid tokens found for push notification');
+      return;
+    }
+
+    const messages = validTokens.map(token => ({
       to: token,
       sound: 'default',
       title: notification.title,
       body: notification.body,
       data: notification.data || {},
       channelId: this.getChannelForType(notification.type),
+      priority: 'high',
+      badge: 1,
     }));
 
-    try {
-      const response = await fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Accept-encoding': 'gzip, deflate',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(messages),
-      });
+    // Retry mechanism
+    let attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts) {
+      try {
+        console.log(`Sending push notification to ${validTokens.length} tokens (attempt ${attempts + 1}): ${notification.title}`);
+        
+        const response = await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messages),
+        });
 
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(`Push notification failed: ${JSON.stringify(result)}`);
+        const result = await response.json();
+        
+        if (!response.ok) {
+          console.error(`Push notification failed: ${response.status} - ${JSON.stringify(result)}`);
+          if (attempts === maxAttempts - 1) {
+            throw new Error(`Push notification failed after ${maxAttempts} attempts: ${JSON.stringify(result)}`);
+          }
+          attempts++;
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempts)); // Exponential backoff
+          continue;
+        }
+
+        // Log successful sends
+        if (result.data) {
+          const successCount = result.data.filter((item: any) => item.status === 'ok').length;
+          const errorCount = result.data.filter((item: any) => item.status === 'error').length;
+          
+          console.log(`✅ Push notification sent successfully: ${successCount} success, ${errorCount} errors`);
+          
+          // Log any errors for debugging
+          result.data.forEach((item: any, index: number) => {
+            if (item.status === 'error') {
+              console.error(`❌ Push notification error for token ${index}: ${item.message}`);
+            }
+          });
+        }
+        
+        return; // Success, exit retry loop
+        
+      } catch (error) {
+        console.error(`❌ Push notification attempt ${attempts + 1} failed:`, error);
+        attempts++;
+        
+        if (attempts >= maxAttempts) {
+          console.error('❌ Push notification failed after all retry attempts');
+          throw error;
+        }
+        
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
       }
-    } catch (error) {
-      logger.error('Failed to send push notification:', error);
-      throw error;
     }
   }
 
@@ -264,13 +441,58 @@ class PushNotificationService {
   private getChannelForType(type: string): string {
     switch (type) {
       case 'event':
-      case 'reminder':
         return 'events';
       case 'club':
-      case 'announcement':
         return 'clubs';
+      case 'announcement':
+      case 'reminder':
       default:
         return 'default';
+    }
+  }
+
+  /**
+   * Get current Expo token for testing
+   */
+  getCurrentExpoToken(): string | null {
+    return this.expoPushToken;
+  }
+
+  /**
+   * Check if push notifications are available
+   */
+  async isAvailable(): Promise<boolean> {
+    try {
+      const { status } = await Notifications.getPermissionsAsync();
+      return status === 'granted' && Device.isDevice;
+    } catch (error) {
+      console.error('Error checking notification availability:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Clear all notifications
+   */
+  async clearAllNotifications(): Promise<void> {
+    try {
+      await Notifications.dismissAllNotificationsAsync();
+      console.log('✅ All notifications cleared');
+    } catch (error) {
+      console.error('❌ Failed to clear notifications:', error);
+    }
+  }
+
+  /**
+   * Get notification count
+   */
+  async getNotificationCount(): Promise<number> {
+    try {
+      const notifications = await Notifications.getPresentedNotificationsAsync();
+      return notifications.length;
+    } catch (error) {
+      console.error('❌ Failed to get notification count:', error);
+      return 0;
     }
   }
 }

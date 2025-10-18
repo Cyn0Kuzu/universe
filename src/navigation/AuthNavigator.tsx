@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, View } from 'react-native';
 import WelcomeScreen from '../screens/Auth/WelcomeScreen';
@@ -39,7 +39,6 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 const AuthNavigator: React.FC = () => {
   const { currentUser, loading, isEmailVerified, userProfile } = useAuth();
   const theme = useTheme() as CustomTheme;
-  const [showSplash, setShowSplash] = useState(true);
 
   // Debug bilgileri
   useEffect(() => {
@@ -47,23 +46,11 @@ const AuthNavigator: React.FC = () => {
       hasUser: !!currentUser,
       isEmailVerified,
       hasProfile: !!userProfile,
-      loading,
-      showSplash
+      loading
     });
-  }, [currentUser, isEmailVerified, userProfile, loading, showSplash]);
+  }, [currentUser, isEmailVerified, userProfile, loading]);
 
-  // Her zaman önce splash screen göster
-  if (showSplash) {
-    return (
-      <SplashScreen 
-        onFinish={() => setShowSplash(false)} 
-      />
-    );
-  }
-
-  // Auth durumu kontrolü
-  // Kullanıcı login ve email verified ise AppNavigator'a git
-  // Ancak userProfile yüklenmeyi bekle
+  // Kullanıcı login ve email verified ise direkt AppNavigator'a git
   if (currentUser && isEmailVerified) {
     console.log('✅ User authenticated and verified - routing to AppNavigator');
     return <AppNavigator />;

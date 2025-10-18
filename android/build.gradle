@@ -9,7 +9,8 @@ buildscript {
         // Using Kotlin 1.9.22 for API 35 compatibility
         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.22'
 
-        ndkVersion = "26.1.10909125"
+        // NDK disabled to avoid platforms folder issue
+        // ndkVersion = "25.1.8937393"
     }
     repositories {
         google()
@@ -19,6 +20,7 @@ buildscript {
         classpath('com.android.tools.build:gradle:8.5.2')
         classpath('com.facebook.react:react-native-gradle-plugin')
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        classpath('com.google.gms:google-services:4.4.4')
     }
 }
 

@@ -3,7 +3,8 @@
  * Yorum işlemleri ve detaylı bildirim sistemi entegrasyonu
  */
 
-import { firestore, firebase } from './config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { ClubStatsService } from '../services/clubStatsService';
 import { ClubNotificationService } from '../services/clubNotificationService';
 import { activityLogger } from '../services/activityLogger';
@@ -84,7 +85,7 @@ export const addEventComment = async (
     console.log('🔍 [DEBUG] Adding comment to both collections...');
     
     // 1. Global eventComments collection'a ekle
-    const docRef = await firestore.collection('eventComments').add(commentData);
+    const docRef = await firebase.firestore().collection('eventComments').add(commentData);
     console.log('✅ [DEBUG] Comment added to global collection:', docRef.id);
     
     // 2. Event subcollection'a da ekle (real-time listener'lar için)
@@ -93,17 +94,17 @@ export const addEventComment = async (
       timestamp: firebase.firestore.FieldValue.serverTimestamp(), // timestamp field for ordering
     };
     
-    await firestore.collection('events').doc(eventId).collection('comments').doc(docRef.id).set(eventSubcollectionData);
+    await firebase.firestore().collection('events').doc(eventId).collection('comments').doc(docRef.id).set(eventSubcollectionData);
     console.log('✅ [DEBUG] Comment added to event subcollection:', docRef.id);
 
     // Event'in comment count'unu artır
-    await firestore.collection('events').doc(eventId).update({
+    await firebase.firestore().collection('events').doc(eventId).update({
       commentsCount: firebase.firestore.FieldValue.increment(1)
     });
 
     // Puanlama sistemi entegrasyonu - Comprehensive Scoring System kullan
     try {
-      const eventDoc = await firestore.collection('events').doc(eventId).get();
+      const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
       const eventData = eventDoc.data();
       
       if (eventData?.clubId) {
@@ -115,10 +116,23 @@ export const addEventComment = async (
         });
 
         // Send detailed comment notification
-        await DetailedNotificationService.notifyEventCommented(eventId, userId, content);
-
-        // Synchronize event statistics
-        await DetailedNotificationService.syncEventStatistics(eventId);
+        try {
+          const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+          const eventCreatorId = eventData?.creatorId || eventData?.clubId;
+          
+          if (eventCreatorId && eventCreatorId !== userId) {
+            await FirebaseFunctionsService.sendCommentNotification(
+              userId,
+              eventCreatorId,
+              eventId,
+              eventData?.title || 'Etkinlik',
+              content.trim()
+            );
+            console.log('✅ Comment notification sent to event creator');
+          }
+        } catch (notificationError) {
+          console.warn('⚠️ Failed to send comment notification:', notificationError);
+        }
 
         console.log('✅ Event comment statistics recorded and synchronized');
 
@@ -264,7 +278,7 @@ export const deleteEventComment = async (
     if (eventId) {
       // EventId verilmişse önce o event'in subcollection'ında ara
       console.log('🔍 [DEBUG] Searching in specific event subcollection:', eventId);
-      commentDoc = await firestore
+      commentDoc = await firebase.firestore()
         .collection('events')
         .doc(eventId)
         .collection('comments')
@@ -290,7 +304,7 @@ export const deleteEventComment = async (
     // Global collection'da ara (eventId yoksa veya subcollection'da bulunamazsa)
     if (!commentData) {
       console.log('🔍 [DEBUG] Searching in global eventComments collection');
-      commentDoc = await firestore.collection('eventComments').doc(commentId).get();
+      commentDoc = await firebase.firestore().collection('eventComments').doc(commentId).get();
       
       if (commentDoc.exists) {
         commentData = commentDoc.data() as CommentData;
@@ -303,10 +317,10 @@ export const deleteEventComment = async (
       console.log('🔍 [DEBUG] Comment not found in global collection, checking all event subcollections...');
       
       try {
-        const eventsSnapshot = await firestore.collection('events').limit(50).get(); // Limit for performance
+        const eventsSnapshot = await firebase.firestore().collection('events').limit(50).get(); // Limit for performance
         
         for (const eventDoc of eventsSnapshot.docs) {
-          const subCommentDoc = await firestore
+          const subCommentDoc = await firebase.firestore()
             .collection('events')
             .doc(eventDoc.id)
             .collection('comments')
@@ -350,11 +364,11 @@ export const deleteEventComment = async (
     
     try {
       // 1. Global collection'dan sil
-      await firestore.collection('eventComments').doc(commentId).delete();
+      await firebase.firestore().collection('eventComments').doc(commentId).delete();
       console.log('✅ [DEBUG] Comment deleted from global collection');
       
       // 2. Event subcollection'dan da sil
-      await firestore
+      await firebase.firestore()
         .collection('events')
         .doc(commentData.eventId)
         .collection('comments')
@@ -367,14 +381,14 @@ export const deleteEventComment = async (
     }
 
     // Event'in comment count'unu azalt
-    await firestore.collection('events').doc(commentData.eventId).update({
+    await firebase.firestore().collection('events').doc(commentData.eventId).update({
       commentsCount: firebase.firestore.FieldValue.increment(-1)
     });
 
     // Get event and user data for comprehensive processing
-    const eventDoc = await firestore.collection('events').doc(commentData.eventId).get();
+    const eventDoc = await firebase.firestore().collection('events').doc(commentData.eventId).get();
     const eventData = eventDoc.data();
-    const userDoc = await firestore.collection('users').doc(userId).get();
+    const userDoc = await firebase.firestore().collection('users').doc(userId).get();
     const userData = userDoc.data();
     const userName = userData?.displayName || userData?.firstName || 'Bilinmeyen kullanıcı';
 
@@ -470,7 +484,7 @@ export const likeEventComment = async (
     }
 
     // Zaten beğenilmiş mi kontrol et
-    const likeQuery = await firestore.collection('commentLikes')
+    const likeQuery = await firebase.firestore().collection('commentLikes')
       .where('commentId', '==', commentId)
       .where('userId', '==', userId)
       .limit(1)
@@ -482,14 +496,14 @@ export const likeEventComment = async (
     }
 
     // Beğeni ekle
-    await firestore.collection('commentLikes').add({
+    await firebase.firestore().collection('commentLikes').add({
       commentId,
       userId,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
     // Comment like count'unu artır
-    await firestore.collection('eventComments').doc(commentId).update({
+    await firebase.firestore().collection('eventComments').doc(commentId).update({
       likesCount: firebase.firestore.FieldValue.increment(1)
     });
 
@@ -498,19 +512,19 @@ export const likeEventComment = async (
       // Enhanced activity logging with context if available
       try {
         // Try to enrich with event metadata
-        const commentDoc = await firestore.collection('eventComments').doc(commentId).get();
+        const commentDoc = await firebase.firestore().collection('eventComments').doc(commentId).get();
         const eventId = commentDoc.data()?.eventId;
         let eventTitle: string | undefined = undefined;
         let clubId: string | undefined = undefined;
         let clubName: string | undefined = undefined;
         if (eventId) {
-          const eventDoc = await firestore.collection('events').doc(eventId).get();
+          const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
           const eventData = eventDoc.data();
           eventTitle = eventData?.title;
           clubId = eventData?.clubId;
           clubName = eventData?.clubName;
         }
-        const userDoc = await firestore.collection('users').doc(userId).get();
+        const userDoc = await firebase.firestore().collection('users').doc(userId).get();
         const userData = userDoc.data();
         await userActivityService.logLikeComment(
           userId,
@@ -550,7 +564,7 @@ export const unlikeEventComment = async (
     }
 
     // Beğeniyi bul ve sil
-    const likeQuery = await firestore.collection('commentLikes')
+    const likeQuery = await firebase.firestore().collection('commentLikes')
       .where('commentId', '==', commentId)
       .where('userId', '==', userId)
       .limit(1)
@@ -565,7 +579,7 @@ export const unlikeEventComment = async (
     await likeQuery.docs[0].ref.delete();
 
     // Comment like count'unu azalt
-    await firestore.collection('eventComments').doc(commentId).update({
+    await firebase.firestore().collection('eventComments').doc(commentId).update({
       likesCount: firebase.firestore.FieldValue.increment(-1)
     });
 
@@ -573,19 +587,19 @@ export const unlikeEventComment = async (
     try {
       // Enhanced activity logging with context if available
       try {
-        const commentDoc = await firestore.collection('eventComments').doc(commentId).get();
+        const commentDoc = await firebase.firestore().collection('eventComments').doc(commentId).get();
         const eventId = commentDoc.data()?.eventId;
         let eventTitle: string | undefined = undefined;
         let clubId: string | undefined = undefined;
         let clubName: string | undefined = undefined;
         if (eventId) {
-          const eventDoc = await firestore.collection('events').doc(eventId).get();
+          const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
           const eventData = eventDoc.data();
           eventTitle = eventData?.title;
           clubId = eventData?.clubId;
           clubName = eventData?.clubName;
         }
-        const userDoc = await firestore.collection('users').doc(userId).get();
+        const userDoc = await firebase.firestore().collection('users').doc(userId).get();
         const userData = userDoc.data();
         await userActivityService.logUnlikeComment(
           userId,
@@ -627,7 +641,7 @@ export const getEventComments = async (
     console.log('🔍 [DEBUG] Getting comments for eventId:', eventId);
 
     // Event subcollection'dan yorumları al (real-time listener'larla uyumlu)
-    const querySnapshot = await firestore
+    const querySnapshot = await firebase.firestore()
       .collection('events')
       .doc(eventId)
       .collection('comments')
@@ -635,7 +649,7 @@ export const getEventComments = async (
       .limit(limit)
       .get();
 
-    const comments = querySnapshot.docs.map(doc => {
+    const comments = querySnapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -673,7 +687,7 @@ export const getEventCommentCount = async (eventId: string): Promise<number> => 
       return 0;
     }
 
-    const querySnapshot = await firestore.collection('eventComments')
+    const querySnapshot = await firebase.firestore().collection('eventComments')
       .where('eventId', '==', eventId)
       .get();
 

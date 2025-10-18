@@ -201,7 +201,7 @@ const componentStyles = {
   },
 } as const;
 
-// Modern Theme Configuration
+// Modern Theme Configuration with enhanced accessibility
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -217,14 +217,14 @@ const theme = {
     error: semanticColors.error,
     info: semanticColors.info,
     
-    // Neutral Colors
+    // Neutral Colors with improved contrast
     background: neutralColors.gray50,
     surface: neutralColors.white,
     surfaceVariant: neutralColors.gray100,
-    text: neutralColors.gray700,
-    onSurface: neutralColors.gray600,
-    onSurfaceVariant: neutralColors.gray500,
-    placeholder: neutralColors.gray400,
+    text: neutralColors.gray800, // Improved contrast
+    onSurface: neutralColors.gray700, // Improved contrast
+    onSurfaceVariant: neutralColors.gray600, // Improved contrast
+    placeholder: neutralColors.gray500,
     disabled: neutralColors.gray300,
     backdrop: 'rgba(0, 0, 0, 0.5)',
     notification: brandColors.accent,
@@ -233,6 +233,13 @@ const theme = {
     brand: brandColors,
     semantic: semanticColors,
     neutral: neutralColors,
+    
+    // Additional accessibility colors
+    onDisabled: neutralColors.gray500,
+    onBackground: neutralColors.gray800,
+    onPrimary: neutralColors.white,
+    outline: neutralColors.gray300,
+    outlineVariant: neutralColors.gray200,
   },
   
   // Typography

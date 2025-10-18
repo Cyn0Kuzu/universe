@@ -392,7 +392,15 @@ export class EnhancedUserActivityService {
           console.log(`🔄 Real-time update: ${activities.length} activities for user ${userId}`);
         },
         (error) => {
-          console.error(`❌ Error in user activities listener for ${userId}:`, error);
+          // Handle permission denied errors gracefully
+          if (error.code === 'permission-denied') {
+            console.warn(`⚠️ [UserActivityService] Permission denied for ${userId} - using cached data`);
+            // Use cached data if available
+            const cachedActivities = this.cache.get(userId) || [];
+            callback(cachedActivities);
+          } else {
+            console.error(`❌ Error in user activities listener for ${userId}:`, error);
+          }
         }
       );
 

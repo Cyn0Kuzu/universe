@@ -1,11 +1,29 @@
-import { firebase, firestore } from './config';
-// Modern scoring system available globally
+import { firestore } from './config';
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where, 
+  orderBy, 
+  limit, 
+  doc, 
+  getDoc, 
+  updateDoc, 
+  increment, 
+  arrayUnion, 
+  arrayRemove, 
+  serverTimestamp, 
+  FieldPath,
+  documentId,
+  Timestamp 
+} from 'firebase/firestore';
 
 // Export firestore instance
 export { firestore };
 
 // Type alias for Timestamp
-type Timestamp = firebase.firestore.Timestamp;
+type FirestoreTimestamp = Timestamp;
 
 // Types
 export interface PostData {
@@ -13,7 +31,7 @@ export interface PostData {
   content: string;
   authorId: string;
   authorName: string;
-  createdAt?: Timestamp;
+  createdAt?: FirestoreTimestamp;
   likes?: number;
   comments?: number;
   media?: string[];
@@ -26,7 +44,7 @@ export interface CommentData {
   content: string;
   authorId: string;
   authorName: string;
-  createdAt?: Timestamp;
+  createdAt?: FirestoreTimestamp;
 }
 
 export interface EventData {
@@ -34,12 +52,12 @@ export interface EventData {
   title: string;
   description: string;
   location: string;
-  startDate: Timestamp;
-  endDate: Timestamp;
+  startDate: FirestoreTimestamp;
+  endDate: FirestoreTimestamp;
   organizerId: string;
   organizerName: string;
   university: string;
-  createdAt?: Timestamp;
+  createdAt?: FirestoreTimestamp;
   attendees?: number;
   coverImage?: string;
 }
@@ -66,11 +84,11 @@ export const createPost = async (postData: PostData) => {
   try {
     const newPost = {
       ...postData,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: serverTimestamp(),
       likes: 0,
       comments: 0
     };
-    return await firestore.collection('posts').add(newPost);
+    return await addDoc(collection(firestore, 'posts'), newPost);
   } catch (error) {
     throw error;
   }
@@ -78,11 +96,13 @@ export const createPost = async (postData: PostData) => {
 
 export const getUniversityPosts = async (universityId: string, limitCount = 20) => {
   try {
-    const querySnapshot = await firestore.collection('posts')
-      .where('university', '==', universityId)
-      .orderBy('createdAt', 'desc')
-      .limit(limitCount)
-      .get();
+    const q = query(
+      collection(firestore, 'posts'),
+      where('university', '==', universityId),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+    const querySnapshot = await getDocs(q);
     
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
@@ -96,25 +116,25 @@ export const getUniversityPosts = async (universityId: string, limitCount = 20) 
 export const likePost = async (postId: string, userId: string) => {
   try {
     // First check if user already liked the post
-    const likeRef = firestore.collection('likes').doc(`${postId}_${userId}`);
-    const likeDoc = await likeRef.get();
+    const likeRef = doc(firestore, 'likes', `${postId}_${userId}`);
+    const likeDoc = await getDoc(likeRef);
     
-    if (!likeDoc.exists) {
+    if (!likeDoc.exists()) {
       // Add like document
-      await firestore.collection('likes').add({
+      await addDoc(collection(firestore, 'likes'), {
         postId,
         userId,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: serverTimestamp()
       });
       
       // Update post like count
-      const postRef = firestore.collection('posts').doc(postId);
-      const postDoc = await postRef.get();
+      const postRef = doc(firestore, 'posts', postId);
+      const postDoc = await getDoc(postRef);
       
-      if (postDoc.exists) {
+      if (postDoc.exists()) {
         const postData = postDoc.data();
         const currentLikes = postData?.likes || 0;
-        await postRef.update({
+        await updateDoc(postRef, {
           likes: currentLikes + 1
         });
       }
@@ -132,10 +152,10 @@ export const createEvent = async (eventData: EventData) => {
   try {
     const newEvent = {
       ...eventData,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: serverTimestamp(),
       attendees: 0
     };
-    return await firestore.collection('events').add(newEvent);
+    return await addDoc(collection(firestore, 'events'), newEvent);
   } catch (error) {
     throw error;
   }
@@ -143,11 +163,13 @@ export const createEvent = async (eventData: EventData) => {
 
 export const getUniversityEvents = async (universityId: string, limitCount = 20) => {
   try {
-    const querySnapshot = await firestore.collection('events')
-      .where('university', '==', universityId)
-      .orderBy('startDate', 'asc')
-      .limit(limitCount)
-      .get();
+    const q = query(
+      collection(firestore, 'events'),
+      where('university', '==', universityId),
+      orderBy('startDate', 'asc'),
+      limit(limitCount)
+    );
+    const querySnapshot = await getDocs(q);
     
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
@@ -161,25 +183,25 @@ export const getUniversityEvents = async (universityId: string, limitCount = 20)
 export const attendEvent = async (eventId: string, userId: string) => {
   try {
     // First check if user already attending the event
-    const attendeeRef = firestore.collection('attendees').doc(`${eventId}_${userId}`);
-    const attendeeDoc = await attendeeRef.get();
+    const attendeeRef = doc(firestore, 'attendees', `${eventId}_${userId}`);
+    const attendeeDoc = await getDoc(attendeeRef);
     
-    if (!attendeeDoc.exists) {
+    if (!attendeeDoc.exists()) {
       // Add attendee document
-      await firestore.collection('attendees').add({
+      await addDoc(collection(firestore, 'attendees'), {
         eventId,
         userId,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: serverTimestamp()
       });
       
       // Update event attendee count
-      const eventRef = firestore.collection('events').doc(eventId);
-      const eventDoc = await eventRef.get();
+      const eventRef = doc(firestore, 'events', eventId);
+      const eventDoc = await getDoc(eventRef);
       
-      if (eventDoc.exists) {
+      if (eventDoc.exists()) {
         const eventData = eventDoc.data();
         const currentAttendees = eventData?.attendees || 0;
-        await eventRef.update({
+        await updateDoc(eventRef, {
           attendees: currentAttendees + 1
         });
       }
@@ -197,10 +219,8 @@ export const followUser = async (currentUserId: string, targetUserId: string) =>
   if (currentUserId === targetUserId) return;
   
   try {
-    const db = firebase.firestore();
-    
     // First check if already following
-    const currentUserDoc = await db.collection('users').doc(currentUserId).get();
+    const currentUserDoc = await getDoc(doc(firestore, 'users', currentUserId));
     const userData = currentUserDoc.data() || {};
     const following = userData.following || [];
     
@@ -209,23 +229,20 @@ export const followUser = async (currentUserId: string, targetUserId: string) =>
       return true;
     }
     
-    const batch = db.batch();
-    
     // Update current user's following list and count
-    const currentUserRef = db.collection('users').doc(currentUserId);
-    batch.update(currentUserRef, {
-      following: firebase.firestore.FieldValue.arrayUnion(targetUserId),
-      followingCount: firebase.firestore.FieldValue.increment(1)
+    const currentUserRef = doc(firestore, 'users', currentUserId);
+    await updateDoc(currentUserRef, {
+      following: arrayUnion(targetUserId),
+      followingCount: increment(1)
     });
     
     // Update target user's followers list and count
-    const targetUserRef = db.collection('users').doc(targetUserId);
-    batch.update(targetUserRef, {
-      followers: firebase.firestore.FieldValue.arrayUnion(currentUserId),
-      followerCount: firebase.firestore.FieldValue.increment(1)
+    const targetUserRef = doc(firestore, 'users', targetUserId);
+    await updateDoc(targetUserRef, {
+      followers: arrayUnion(currentUserId),
+      followerCount: increment(1)
     });
     
-    await batch.commit();
     console.log('Successfully followed user - updated both users');
     return true;
   } catch (error) {
@@ -238,10 +255,8 @@ export const unfollowUser = async (currentUserId: string, targetUserId: string) 
   if (currentUserId === targetUserId) return;
   
   try {
-    const db = firebase.firestore();
-    
     // First check if actually following
-    const currentUserDoc = await db.collection('users').doc(currentUserId).get();
+    const currentUserDoc = await getDoc(doc(firestore, 'users', currentUserId));
     const userData = currentUserDoc.data() || {};
     const following = userData.following || [];
     
@@ -250,23 +265,20 @@ export const unfollowUser = async (currentUserId: string, targetUserId: string) 
       return true;
     }
     
-    const batch = db.batch();
-    
     // Update current user's following list and count
-    const currentUserRef = db.collection('users').doc(currentUserId);
-    batch.update(currentUserRef, {
-      following: firebase.firestore.FieldValue.arrayRemove(targetUserId),
-      followingCount: firebase.firestore.FieldValue.increment(-1)
+    const currentUserRef = doc(firestore, 'users', currentUserId);
+    await updateDoc(currentUserRef, {
+      following: arrayRemove(targetUserId),
+      followingCount: increment(-1)
     });
     
     // Update target user's followers list and count
-    const targetUserRef = db.collection('users').doc(targetUserId);
-    batch.update(targetUserRef, {
-      followers: firebase.firestore.FieldValue.arrayRemove(currentUserId),
-      followerCount: firebase.firestore.FieldValue.increment(-1)
+    const targetUserRef = doc(firestore, 'users', targetUserId);
+    await updateDoc(targetUserRef, {
+      followers: arrayRemove(currentUserId),
+      followerCount: increment(-1)
     });
     
-    await batch.commit();
     console.log('Successfully unfollowed user - updated both users');
     return true;
   } catch (error) {
@@ -285,20 +297,6 @@ export const followClub = async (userId: string, clubId: string) => {
     // For now, just return success to update UI state
     // Database operations are disabled to avoid permission issues
     // When permissions are properly configured, enable full database sync
-    
-    console.log('Follow club completed (local state only)');
-    return true;
-    
-    // TEMPORARILY DISABLED: Puanlama sistemi entegrasyonu - follow club
-    // try {
-    //   const clubDoc = await clubRef.get();
-    //   const clubData = clubDoc.data();
-    //   await unifiedScoringService.followClub(userId, clubId, {
-    //     clubName: clubData?.clubName || clubData?.displayName
-    //   });
-    // } catch (scoringError) {
-    //   console.warn('Follow club scoring failed:', scoringError);
-    // }
     
     console.log('Follow club completed (local state only)');
     return true;
@@ -330,7 +328,7 @@ export const unfollowClub = async (userId: string, clubId: string) => {
 // Get followers list
 export const getFollowers = async (userId: string) => {
   try {
-    const userDoc = await firestore.collection('users').doc(userId).get();
+    const userDoc = await getDoc(doc(firestore, 'users', userId));
     const userData = userDoc.data();
     
     if (!userData || !userData.followers || !Array.isArray(userData.followers)) {
@@ -349,9 +347,11 @@ export const getFollowers = async (userId: string) => {
     
     for (let i = 0; i < followerIds.length; i += batchSize) {
       const batch = followerIds.slice(i, i + batchSize);
-      const querySnapshot = await firestore.collection('users')
-        .where(firebase.firestore.FieldPath.documentId(), 'in', batch)
-        .get();
+      const q = query(
+        collection(firestore, 'users'),
+        where(documentId(), 'in', batch)
+      );
+      const querySnapshot = await getDocs(q);
       
       const batchFollowers = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -371,7 +371,7 @@ export const getFollowers = async (userId: string) => {
 // Get following list
 export const getFollowing = async (userId: string) => {
   try {
-    const userDoc = await firestore.collection('users').doc(userId).get();
+    const userDoc = await getDoc(doc(firestore, 'users', userId));
     const userData = userDoc.data();
     
     if (!userData || !userData.following || !Array.isArray(userData.following)) {
@@ -390,9 +390,11 @@ export const getFollowing = async (userId: string) => {
     
     for (let i = 0; i < followingIds.length; i += batchSize) {
       const batch = followingIds.slice(i, i + batchSize);
-      const querySnapshot = await firestore.collection('users')
-        .where(firebase.firestore.FieldPath.documentId(), 'in', batch)
-        .get();
+      const q = query(
+        collection(firestore, 'users'),
+        where(documentId(), 'in', batch)
+      );
+      const querySnapshot = await getDocs(q);
       
       const batchFollowing = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -412,7 +414,7 @@ export const getFollowing = async (userId: string) => {
 // Get followed clubs
 export const getFollowedClubs = async (userId: string) => {
   try {
-    const userDoc = await firestore.collection('users').doc(userId).get();
+    const userDoc = await getDoc(doc(firestore, 'users', userId));
     const userData = userDoc.data();
     
     if (!userData || !userData.followedClubs || !Array.isArray(userData.followedClubs)) {
@@ -431,9 +433,11 @@ export const getFollowedClubs = async (userId: string) => {
     
     for (let i = 0; i < clubIds.length; i += batchSize) {
       const batch = clubIds.slice(i, i + batchSize);
-      const querySnapshot = await firestore.collection('users')
-        .where(firebase.firestore.FieldPath.documentId(), 'in', batch)
-        .get();
+      const q = query(
+        collection(firestore, 'users'),
+        where(documentId(), 'in', batch)
+      );
+      const querySnapshot = await getDocs(q);
       
       const batchClubs = querySnapshot.docs.map(doc => ({
         id: doc.id,

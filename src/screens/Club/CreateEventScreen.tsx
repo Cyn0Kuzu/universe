@@ -7,13 +7,15 @@ import {
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { firestore, firebase } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { createEventWithScoring as createEventService } from '../../firebase/eventManagement';
 import { getUserProfile as fetchUserProfile } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 // Use our custom DateTimePicker implementation to avoid native module issues
 import DateTimePicker from '../../components/CustomDateTimePicker';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { eventCategories } from '../../constants';
 import { CustomTheme } from '../../types/theme';
@@ -199,7 +201,27 @@ const CreateEventScreen: React.FC = () => {
     });
     
     if (!result.canceled && result.assets && result.assets[0].uri) {
-      setEventImage(result.assets[0].uri);
+      try {
+        // Resmi Base64'e çevir ve kaydet
+        const manipulateResult = await ImageManipulator.manipulateAsync(
+          result.assets[0].uri,
+          [{ resize: { width: 800, height: 450 } }], // 16:9 aspect ratio
+          { format: ImageManipulator.SaveFormat.JPEG, compress: 0.7, base64: true }
+        );
+        
+        if (manipulateResult.base64) {
+          // Base64 veriyi URL formatında oluştur
+          const base64Image = `data:image/jpeg;base64,${manipulateResult.base64}`;
+          setEventImage(base64Image);
+          console.log('✅ Event cover image processed and saved as base64');
+        } else {
+          throw new Error('Resim base64 formatına dönüştürülemedi');
+        }
+      } catch (error) {
+        console.error('❌ Error processing event image:', error);
+        setSnackbarMessage('Resim işlenirken hata oluştu!');
+        setSnackbarVisible(true);
+      }
     }
   };
 
@@ -215,7 +237,7 @@ const CreateEventScreen: React.FC = () => {
         if (__DEV__) {
           console.log('🔄 Etkinlik verileri yükleniyor:', eventId);
         }
-        const eventDoc = await firestore.collection('events').doc(eventId).get();
+        const eventDoc = await firebase.firestore().collection('events').doc(eventId).get();
         
         if (!eventDoc.exists) {
           setSnackbarMessage('Etkinlik bulunamadı');
@@ -504,6 +526,8 @@ const CreateEventScreen: React.FC = () => {
         status: 'active',
         university: effectiveProfile.university || null,
         imageUrl: eventImage || null,
+        coverImage: eventImage || null,
+        coverImageUrl: eventImage || null,
       };
 
       console.log('📋 Event data object built successfully:', {
@@ -528,7 +552,34 @@ const CreateEventScreen: React.FC = () => {
         delete (updateData as any).attendeesCount; // Mevcut katılımcı sayısını koru
         delete (updateData as any).attendees; // Mevcut katılımcıları koru
         
-        await firestore.collection('events').doc(eventId).update(updateData);
+        await firebase.firestore().collection('events').doc(eventId).update(updateData);
+        
+        // Firebase Functions ile etkinlik güncellendi bildirimi gönder
+        try {
+          const FirebaseFunctionsService = require('../../services/firebaseFunctionsService').default;
+          
+          // Etkinlik katılımcılarını al
+          const attendeesQuery = await firebase.firestore()
+            .collection('eventAttendees')
+            .where('eventId', '==', eventId)
+            .get();
+          
+          const attendeeIds = attendeesQuery.docs.map(doc => doc.data().userId);
+          
+          if (attendeeIds.length > 0) {
+            const clubName = effectiveProfile.clubName || effectiveProfile.displayName || 'Kulüp';
+            await FirebaseFunctionsService.sendEventUpdatedNotification(
+              eventId,
+              eventData.title,
+              effectiveProfile.uid,
+              clubName,
+              attendeeIds
+            );
+            console.log('✅ Event updated notification sent via Firebase Functions');
+          }
+        } catch (notificationError) {
+          console.warn('⚠️ Failed to send event updated notification:', notificationError);
+        }
         
         setSnackbarMessage('Etkinlik başarıyla güncellendi');
         setSnackbarVisible(true);

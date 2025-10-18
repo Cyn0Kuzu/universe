@@ -7,7 +7,9 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../contexts/AuthContext';
-import { auth, firestore, firebase } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 import { refreshUserProfileCounts } from '../../firebase/userProfile';
 import { ClubStatsService } from '../../services/clubStatsService';
 import { centralizedRankingService } from '../../services/centralizedRankingService';
@@ -18,16 +20,24 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClubStackParamList } from '../../navigation/ClubNavigator';
 import { StatusBar } from 'expo-status-bar';
 import { UNIVERSITIES_DATA as universities, CLUB_TYPES_DATA as clubTypes, DEPARTMENTS_DATA, CLASS_LEVELS_DATA } from '../../constants';
-import { UniversalAvatar } from '../../components/common';
+import { UniversalAvatar, EnhancedButton, EnhancedCard } from '../../components/common';
+import { useResponsiveDesign } from '../../utils/responsiveDesignUtils';
+import AccessibilityUtils from '../../utils/accessibilityUtils';
 import ProfileEditModal from '../../components/profile/ProfileEditModal';
 import { CustomTheme } from '../../types/theme';
 import AccountDeletionService from '../../services/accountDeletionService';
+import ImageZoomModal from '../../components/common/ImageZoomModal';
+import { globalRealtimeSyncService } from '../../services/globalRealtimeSyncService';
+import { enhancedRealtimeSyncService } from '../../services/enhancedRealtimeSyncService';
+import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
+import { clubDataSyncService } from '../../services/clubDataSyncService';
 
 const ClubProfileScreen: React.FC = () => {
   const baseTheme = useTheme();
   const theme = baseTheme as unknown as CustomTheme;
   const { currentUser, refreshUserProfile, refreshUserData, signOut } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<ClubStackParamList>>();
+  const { fontSizes, spacing, shadows } = useResponsiveDesign();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
   const [deleteAccountDialogVisible, setDeleteAccountDialogVisible] = useState(false);
@@ -68,6 +78,18 @@ const ClubProfileScreen: React.FC = () => {
   const [editField, setEditField] = useState('');
   const [editValue, setEditValue] = useState('');
   
+  // Image zoom modal state
+  const [imageZoomVisible, setImageZoomVisible] = useState<boolean>(false);
+  const [imageZoomUri, setImageZoomUri] = useState<string>('');
+  const [imageZoomTitle, setImageZoomTitle] = useState<string>('');
+  
+  // Image zoom handler
+  const handleImageZoom = (imageUri: string, title: string) => {
+    setImageZoomUri(imageUri);
+    setImageZoomTitle(title);
+    setImageZoomVisible(true);
+  };
+
   // Değer -> Etiket dönüşümü için fonksiyon
   const getDisplayValue = (fieldType: string, value: string | undefined): string => {
     if (!value) return 'Belirtilmemiş';
@@ -207,20 +229,19 @@ const ClubProfileScreen: React.FC = () => {
     
     try {
       setLoading(true);
-      const db = firebase.firestore();
       
       // Kullanıcı sayılarını güncelle
       await refreshUserProfileCounts(currentUser.uid);
       
-      // Güncel bilgileri getir
-      const userDoc = await db.collection('users').doc(currentUser.uid).get();
-      if (userDoc.exists) {
-        const userData = userDoc.data();
-        setUserProfile({ ...userData, uid: currentUser.uid });
+      // Use club data sync service for consistent data
+      const clubData = await clubDataSyncService.getClubData(currentUser.uid, true);
+      
+      if (clubData) {
+        setUserProfile({ ...clubData, uid: currentUser.uid });
         
         // Güncel sayıları al
-        setFollowerCount(userData?.followerCount || 0);
-        setFollowingCount(userData?.followingCount || 0);
+        setFollowerCount(clubData?.followerCount || 0);
+        setFollowingCount(clubData?.followingCount || 0);
         
         // Etkinlik sayısını stats service'den al
         try {
@@ -231,19 +252,20 @@ const ClubProfileScreen: React.FC = () => {
           setEventCount(actualEventCount);
         } catch (eventError) {
           console.error('Etkinlik sayısını alırken hata:', eventError);
-          setEventCount(userData?.eventCount || 0);
+          setEventCount(clubData?.eventCount || 0);
         }
         
         // Aktif üye sayısını hesapla
+        const db = firebase.firestore();
         const activeMemberQuery = await db.collection('clubMembers')
           .where('clubId', '==', currentUser.uid)
           .get();
         setMemberCount(activeMemberQuery.size);
         
         console.log('Kulüp profil sayıları güncellendi:', {
-          followerCount: userData?.followerCount || 0,
-          followingCount: userData?.followingCount || 0,
-          eventCount: userData?.eventCount || 0,
+          followerCount: clubData?.followerCount || 0,
+          followingCount: clubData?.followingCount || 0,
+          eventCount: clubData?.eventCount || 0,
           memberCount: activeMemberQuery.size
         });
       }
@@ -383,6 +405,31 @@ const ClubProfileScreen: React.FC = () => {
     }
   }, [currentUser]);
   
+  // Enhanced gerçek zamanlı profil senkronizasyonu
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+
+    console.log('🔄 Setting up enhanced real-time profile sync for ClubProfileScreen');
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === currentUser.uid) {
+        console.log('🔄 Enhanced club profile update received, refreshing all data');
+        fetchClubProfile();
+        loadClubStats();
+        loadClubStatistics();
+      }
+    };
+
+    // Use both services for maximum reliability
+    globalRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    enhancedRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      globalRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      enhancedRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+    };
+  }, [currentUser?.uid, fetchClubProfile, loadClubStats, loadClubStatistics]);
+
   // Sayfa her açıldığında sayıları güncelle
   useFocusEffect(
     useCallback(() => {
@@ -446,6 +493,36 @@ const ClubProfileScreen: React.FC = () => {
       }
     }, [currentUser, fetchClubProfile])
   );
+
+  // Enhanced real-time synchronization for club profile updates
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === currentUser.uid) {
+        console.log('🔄 ClubProfile: Club profile updated via comprehensive sync, refreshing...');
+        fetchClubProfile();
+        loadClubStats();
+        loadClubStatistics();
+      }
+    };
+
+    const handleClubDataUpdate = (clubData: any) => {
+      console.log('🔄 ClubProfile: Club data updated via club sync service, refreshing...');
+      setUserProfile({ ...clubData, uid: currentUser.uid });
+    };
+
+    // Subscribe to comprehensive sync service
+    comprehensiveDataSyncService.subscribe('ClubProfileScreen', handleProfileUpdate);
+    
+    // Subscribe to club data sync service
+    clubDataSyncService.subscribe(currentUser.uid, handleClubDataUpdate);
+
+    return () => {
+      comprehensiveDataSyncService.unsubscribe('ClubProfileScreen', handleProfileUpdate);
+      clubDataSyncService.unsubscribe(currentUser.uid, handleClubDataUpdate);
+    };
+  }, [currentUser?.uid, fetchClubProfile, loadClubStats, loadClubStatistics]);
   
   // İlk yüklemede profili getir ve gerekirse düzelt
   useEffect(() => {
@@ -565,7 +642,7 @@ const ClubProfileScreen: React.FC = () => {
     if (needsUpdate) {
       try {
         console.log('Profil verileri güncelleniyor:', updates);
-        await firestore.collection('users').doc(userProfile.uid).update(updates);
+        await firebase.firestore().collection('users').doc(userProfile.uid).update(updates);
         console.log('Profil başarıyla güncellendi!');
       } catch (error) {
         console.error('Profil güncellenirken hata:', error);
@@ -713,7 +790,7 @@ const ClubProfileScreen: React.FC = () => {
   // Handle delete account
   const handleDeleteAccount = async () => {
     try {
-      const user = auth.currentUser;
+      const user = firebase.auth().currentUser;
       if (!user || !userProfile) {
         Alert.alert('Hata', 'Oturum açmanız gerekiyor.');
         return;
@@ -900,7 +977,7 @@ const ClubProfileScreen: React.FC = () => {
             console.log('Base64 resim oluşturuldu, boyut:', base64Image.length);
             
             // Direkt olarak Firestore'a kaydet
-            await firestore.collection('users').doc(currentUser.uid).update({
+            await firebase.firestore().collection('users').doc(currentUser.uid).update({
               [fieldToUpdate]: base64Image,
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             });
@@ -1034,11 +1111,21 @@ const ClubProfileScreen: React.FC = () => {
       {/* Cover Section */}
       <View style={styles.coverSection}>
         {userProfile?.coverImage ? (
-          <ImageBackground 
-            source={{ uri: userProfile.coverImage }}
+          <TouchableOpacity 
             style={styles.coverBackground}
-            resizeMode="cover"
-          />
+            onPress={() => {
+              if (userProfile.coverImage) {
+                handleImageZoom(userProfile.coverImage, 'Kulüp Kapak Fotoğrafı');
+              }
+            }}
+            activeOpacity={0.9}
+          >
+            <ImageBackground 
+              source={{ uri: userProfile.coverImage }}
+              style={styles.coverBackground}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
         ) : userProfile?.coverIcon ? (
           <View style={[styles.coverBackground, { backgroundColor: userProfile.coverColor || '#1E88E5' }]}>
             <MaterialCommunityIcons 
@@ -1081,11 +1168,20 @@ const ClubProfileScreen: React.FC = () => {
         
         {/* Avatar that overlaps the cover and content */}
         <View style={styles.avatarContainer}>
-          <UniversalAvatar
-            user={userProfile}
-            size={96}
-            style={styles.avatar}
-          />
+          <TouchableOpacity 
+            onPress={() => {
+              if (userProfile?.profileImage) {
+                handleImageZoom(userProfile.profileImage, 'Kulüp Profil Fotoğrafı');
+              }
+            }}
+            activeOpacity={0.8}
+          >
+            <UniversalAvatar
+              user={userProfile}
+              size={96}
+              style={styles.avatar}
+            />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.editAvatarButton} onPress={() => handleEditProfile('profile')}>
             <MaterialCommunityIcons name="camera" size={16} color="#FFF" />
           </TouchableOpacity>
@@ -1103,33 +1199,7 @@ const ClubProfileScreen: React.FC = () => {
         <View style={styles.profileHeader}>
           <View style={styles.editableRow}>
             <Text style={styles.name}>
-              {(() => {
-                // Debug: Kulüp adı alternatifleri
-                if (__DEV__) {
-                  console.log('🏢 Kulüp Adı Debug:', {
-                    clubName: userProfile?.clubName,
-                    name: userProfile?.name,
-                    fullName: userProfile?.fullName,
-                    displayName: userProfile?.displayName,
-                    currentUserDisplayName: currentUser?.displayName,
-                    email: userProfile?.email
-                  });
-                }
-                
-                // Öncelik sırası: clubName > displayName > name > fullName
-                let clubDisplayName = userProfile?.clubName || 
-                                     userProfile?.displayName || 
-                                     userProfile?.name || 
-                                     userProfile?.fullName || 
-                                     currentUser?.displayName;
-                
-                // Eğer hiçbiri yoksa veya email adresi geliyorsa, genel isim belirle
-                if (!clubDisplayName || clubDisplayName.includes('@')) {
-                  clubDisplayName = 'Fizik Kulübü'; // Varsayılan kulüp adı
-                }
-                
-                return clubDisplayName;
-              })()}
+              {clubDataSyncService.getClubDisplayName(userProfile)}
             </Text>
             <IconButton
               icon="pencil"
@@ -1453,6 +1523,14 @@ const ClubProfileScreen: React.FC = () => {
           label={getFieldLabel(editField)}
         />
       </Portal>
+      
+      {/* Image Zoom Modal */}
+      <ImageZoomModal
+        visible={imageZoomVisible}
+        imageUri={imageZoomUri}
+        onClose={() => setImageZoomVisible(false)}
+        title={imageZoomTitle}
+      />
     </View>
   );
 };

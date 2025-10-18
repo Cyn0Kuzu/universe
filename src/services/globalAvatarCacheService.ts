@@ -1,4 +1,5 @@
-import { firestore } from '../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
@@ -68,7 +69,7 @@ class GlobalAvatarCacheService {
    */
   private async fetchAndCacheUserData(userId: string): Promise<UserAvatarData | null> {
     try {
-      const userDoc = await firestore.collection('users').doc(userId).get();
+      const userDoc = await firebase.firestore().collection('users').doc(userId).get();
       
       if (userDoc.exists) {
         const userData = userDoc.data();
@@ -187,7 +188,7 @@ class GlobalAvatarCacheService {
       return; // Zaten listener var
     }
 
-    const unsubscribe = firestore.collection('users').doc(userId)
+    const unsubscribe = firebase.firestore().collection('users').doc(userId)
       .onSnapshot(
         (doc) => {
           if (doc.exists) {
@@ -314,7 +315,7 @@ class GlobalAvatarCacheService {
     try {
       // Firestore'dan toplu veri al
       const userDocs = await Promise.all(
-        userIds.map(userId => firestore.collection('users').doc(userId).get())
+        userIds.map(userId => firebase.firestore().collection('users').doc(userId).get())
       );
 
       for (let i = 0; i < userDocs.length; i++) {

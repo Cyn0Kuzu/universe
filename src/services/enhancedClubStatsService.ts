@@ -385,7 +385,7 @@ class EnhancedClubStatsService {
   // ============================================================================
 
   onStatsChange(clubId: string, callback: (stats: ClubStats | null) => void): Function {
-    // Silent listener setup
+    // Silent listener setup with permission error handling
 
     try {
       // Try to set up Firebase real-time listener
@@ -401,8 +401,20 @@ class EnhancedClubStatsService {
             }
           },
           (error) => {
-            console.error(`❌ [ClubStatsService] Listener error for ${clubId}:`, error);
-            callback(null);
+            // Handle permission denied errors gracefully
+            if (error.code === 'permission-denied') {
+              console.warn(`⚠️ [ClubStatsService] Permission denied for ${clubId} - using cached data`);
+              // Use cached data if available
+              const cachedStats = this.statsCache.get(clubId);
+              if (cachedStats) {
+                callback(cachedStats);
+              } else {
+                callback(null);
+              }
+            } else {
+              console.error(`❌ [ClubStatsService] Listener error for ${clubId}:`, error);
+              callback(null);
+            }
           }
         );
 

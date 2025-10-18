@@ -1,258 +1,295 @@
 /**
- * 🚀 Performance Optimization Utilities
- * Akıcı ekran deneyimi için optimizasyon araçları
+ * Performance Optimization Utilities
+ * Reduces React Native warnings and improves app performance
  */
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import * as firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import React from 'react';
+import { InteractionManager, Platform } from 'react-native';
 
-// 🎯 Debounce hook - Çok sık tetiklenen fonksiyonları yavaşlatır
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
+export class PerformanceOptimizer {
+  /**
+   * Optimize FlatList performance with enhanced settings
+   */
+  static getFlatListOptimizationProps() {
+    return {
+      removeClippedSubviews: true,
+      maxToRenderPerBatch: Platform.OS === 'ios' ? 8 : 4, // Reduced for better performance
+      updateCellsBatchingPeriod: Platform.OS === 'ios' ? 30 : 50, // Faster updates
+      initialNumToRender: Platform.OS === 'ios' ? 8 : 4, // Reduced initial render
+      windowSize: Platform.OS === 'ios' ? 8 : 4, // Smaller window size
+      getItemLayout: undefined, // Let FlatList calculate
+      keyExtractor: (item: any, index: number) => item.id || index.toString(),
+      // Additional optimizations
+      disableVirtualization: false,
+      legacyImplementation: false,
+      maintainVisibleContentPosition: undefined,
+      // Performance improvements
+      onEndReachedThreshold: 0.5,
+      scrollEventThrottle: 16, // 60fps
+      decelerationRate: 'normal',
     };
-  }, [value, delay]);
+  }
 
-  return debouncedValue;
-}
+  /**
+   * Optimize ScrollView performance with enhanced settings
+   */
+  static getScrollViewOptimizationProps() {
+    return {
+      removeClippedSubviews: true,
+      scrollEventThrottle: 16,
+      decelerationRate: Platform.OS === 'ios' ? 0.998 : 0.985,
+      showsVerticalScrollIndicator: false,
+      showsHorizontalScrollIndicator: false,
+      // Additional optimizations
+      keyboardShouldPersistTaps: 'handled',
+      nestedScrollEnabled: true,
+    };
+  }
 
-// 🎯 Throttle hook - Belirli aralıklarla çalışan fonksiyonlar için
-export function useThrottle<T extends (...args: any[]) => any>(
-  fn: T,
-  delay: number
-): T {
-  const lastRun = useRef<number>(Date.now());
-  
-  return useCallback(
-    ((...args: any[]) => {
-      if (Date.now() - lastRun.current >= delay) {
-        fn(...args);
-        lastRun.current = Date.now();
-      }
-    }) as T,
-    [fn, delay]
-  );
-}
-
-// 🎯 Memoized state - Gereksiz re-render'ları önler
-export function useMemoizedState<T>(
-  initialValue: T,
-  compareFn?: (prev: T, next: T) => boolean
-) {
-  const [state, setState] = useState<T>(initialValue);
-  
-  const memoizedSetState = useCallback((newValue: T | ((prev: T) => T)) => {
-    setState(prevValue => {
-      const nextValue = typeof newValue === 'function' 
-        ? (newValue as (prev: T) => T)(prevValue)
-        : newValue;
-        
-      if (compareFn) {
-        return compareFn(prevValue, nextValue) ? prevValue : nextValue;
-      }
-      
-      return Object.is(prevValue, nextValue) ? prevValue : nextValue;
+  /**
+   * Run heavy operations after interactions complete
+   */
+  static runAfterInteractions(callback: () => void) {
+    InteractionManager.runAfterInteractions(() => {
+      callback();
     });
-  }, [compareFn]);
-  
-  return [state, memoizedSetState] as const;
-}
+  }
 
-// 🎯 Firestore listener optimization - Tek listener, çoklu callback
-export class OptimizedFirestoreListener {
-  private listeners: Map<string, {
-    unsubscribe: () => void;
-    callbacks: Set<(data: any) => void>;
-  }> = new Map();
-
-  addListener(
-    path: string,
-    callback: (data: any) => void,
-    query: () => any // Firestore Query type - avoid compat issues
-  ) {
-    if (this.listeners.has(path)) {
-      // Var olan listener'a callback ekle
-      this.listeners.get(path)!.callbacks.add(callback);
-    } else {
-      // Yeni listener oluştur
-      const unsubscribe = query().onSnapshot((snapshot: any) => {
-        const data = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        const listener = this.listeners.get(path);
-        if (listener) {
-          listener.callbacks.forEach(cb => cb(data));
+  /**
+   * Prevent main thread blocking by deferring heavy operations
+   */
+  static deferHeavyOperation<T>(operation: () => T): Promise<T> {
+    return new Promise((resolve) => {
+      InteractionManager.runAfterInteractions(() => {
+        // Use requestIdleCallback if available, otherwise setTimeout
+        if (typeof requestIdleCallback !== 'undefined') {
+          requestIdleCallback(() => {
+            resolve(operation());
+          });
+        } else {
+          setTimeout(() => {
+            resolve(operation());
+          }, 0);
         }
       });
-
-      this.listeners.set(path, {
-        unsubscribe,
-        callbacks: new Set([callback])
-      });
-    }
-  }
-
-  removeListener(path: string, callback: (data: any) => void) {
-    const listener = this.listeners.get(path);
-    if (listener) {
-      listener.callbacks.delete(callback);
-      
-      // Eğer hiç callback kalmadıysa listener'ı kapat
-      if (listener.callbacks.size === 0) {
-        listener.unsubscribe();
-        this.listeners.delete(path);
-      }
-    }
-  }
-
-  cleanup() {
-    this.listeners.forEach(listener => listener.unsubscribe());
-    this.listeners.clear();
-  }
-}
-
-// Global listener manager
-export const globalFirestoreListener = new OptimizedFirestoreListener();
-
-// 🎯 Component state batching - Çoklu state update'lerini batch'ler
-export function useBatchedState<T extends Record<string, any>>(initialState: T) {
-  const [state, setState] = useState<T>(initialState);
-  const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const pendingUpdatesRef = useRef<Partial<T>>({});
-
-  const batchedSetState = useCallback((updates: Partial<T> | ((prev: T) => Partial<T>)) => {
-    const updatesToApply = typeof updates === 'function' ? updates(state) : updates;
-    
-    // Pending updates'e ekle
-    Object.assign(pendingUpdatesRef.current, updatesToApply);
-    
-    // Önceki timeout'u iptal et
-    if (batchTimeoutRef.current) {
-      clearTimeout(batchTimeoutRef.current);
-    }
-    
-    // Yeni timeout başlat - 16ms (1 frame) sonra batch apply et
-    batchTimeoutRef.current = setTimeout(() => {
-      setState(prev => ({ ...prev, ...pendingUpdatesRef.current }));
-      pendingUpdatesRef.current = {};
-      batchTimeoutRef.current = null;
-    }, 16);
-  }, [state]);
-
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (batchTimeoutRef.current) {
-        clearTimeout(batchTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  return [state, batchedSetState] as const;
-}
-
-// 🎯 Lazy component loading - Sadece görünür olduğunda yükle
-export function useIntersectionObserver(
-  elementRef: React.RefObject<Element>,
-  { threshold = 0, rootMargin = '0px' }: IntersectionObserverInit = {}
-) {
-  const [isIntersecting, setIsIntersecting] = useState(false);
-
-  useEffect(() => {
-    const element = elementRef.current;
-    if (!element) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsIntersecting(entry.isIntersecting),
-      { threshold, rootMargin }
-    );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [elementRef, threshold, rootMargin]);
-
-  return isIntersecting;
-}
-
-// 🎯 Memory leak prevention - Component unmount kontrolü
-export function useMountedState() {
-  const mountedRef = useRef(true);
-  
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-  
-  return useCallback(() => mountedRef.current, []);
-}
-
-// 🎯 Performance metrics - Render sürelerini ölç (optimized)
-export function useRenderTime(componentName: string) {
-  const startTime = useRef<number>(0);
-  const renderCount = useRef<number>(0);
-  
-  // Only measure every 10th render to avoid performance impact
-  const shouldMeasure = useMemo(() => {
-    renderCount.current++;
-    return renderCount.current % 10 === 1; // Only measure 1 in 10 renders
-  }, []);
-  
-  if (shouldMeasure) {
-    startTime.current = performance.now();
-  }
-  
-  // Component render bitişi
-  useEffect(() => {
-    if (shouldMeasure && startTime.current > 0) {
-      const endTime = performance.now();
-      const renderTime = endTime - startTime.current;
-      
-      if (renderTime > 200) { // Only warn for very seriously slow renders (increased threshold further)
-        console.warn(`🐌 ${componentName} render took ${renderTime.toFixed(2)}ms (sample measurement)`);
-      }
-    }
-  });
-}
-
-// 🎯 Firestore data caching - Aynı veriyi tekrar çekmeyi önle
-class FirestoreCache {
-  private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
-  
-  set(key: string, data: any, ttlMs: number = 300000) { // 5 dk default TTL
-    this.cache.set(key, {
-      data,
-      timestamp: Date.now(),
-      ttl: ttlMs
     });
   }
-  
-  get(key: string): any | null {
-    const cached = this.cache.get(key);
-    if (!cached) return null;
+
+  /**
+   * Batch multiple operations to prevent main thread blocking
+   */
+  static batchOperations<T>(operations: (() => T)[]): Promise<T[]> {
+    return new Promise((resolve) => {
+      InteractionManager.runAfterInteractions(() => {
+        const results: T[] = [];
+        let index = 0;
+
+        const processNext = () => {
+          if (index < operations.length) {
+            results.push(operations[index]());
+            index++;
+            // Use setTimeout to yield control back to main thread
+            setTimeout(processNext, 0);
+          } else {
+            resolve(results);
+          }
+        };
+
+        processNext();
+      });
+    });
+  }
+
+  /**
+   * Debounce function calls
+   */
+  static debounce<T extends (...args: any[]) => any>(
+    func: T,
+    wait: number
+  ): (...args: Parameters<T>) => void {
+    let timeout: NodeJS.Timeout;
+    return (...args: Parameters<T>) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  }
+
+  /**
+   * Throttle function calls
+   */
+  static throttle<T extends (...args: any[]) => any>(
+    func: T,
+    limit: number
+  ): (...args: Parameters<T>) => void {
+    let inThrottle: boolean;
+    return (...args: Parameters<T>) => {
+      if (!inThrottle) {
+        func(...args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
+  }
+
+  /**
+   * Optimize image loading with caching
+   */
+  static getImageOptimizationProps() {
+    return {
+      resizeMode: 'cover' as const,
+      loadingIndicatorSource: undefined,
+      progressiveRenderingEnabled: true,
+      cachePolicy: 'memory-disk' as const,
+    };
+  }
+
+  /**
+   * Execute async operations with performance monitoring
+   */
+  static async executeAsync<T>(
+    operation: () => Promise<T>,
+    priority: 'high' | 'normal' | 'low' = 'normal'
+  ): Promise<T> {
+    const startTime = Date.now();
     
-    const isExpired = Date.now() - cached.timestamp > cached.ttl;
-    if (isExpired) {
+    try {
+      const result = await operation();
+      const duration = Date.now() - startTime;
+      
+      if (duration > 1000) {
+        console.warn(`⚠️ Slow operation detected: ${duration}ms`);
+      }
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`❌ Operation failed after ${duration}ms:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Memory usage monitoring
+   */
+  static getMemoryInfo() {
+    if (Platform.OS === 'android' && (global as any).performance?.memory) {
+      const memory = (global as any).performance.memory;
+      return {
+        used: memory.usedJSHeapSize,
+        total: memory.totalJSHeapSize,
+        limit: memory.jsHeapSizeLimit,
+      };
+    }
+    return null;
+  }
+
+  /**
+   * Batched state updates hook
+   */
+  static useBatchedState<T>(initialState: T) {
+    const [state, setState] = React.useState(initialState);
+    const batchRef = React.useRef<(() => void)[]>([]);
+    
+    const batchedSetState = React.useCallback((updater: (prev: T) => T) => {
+      batchRef.current.push(() => setState(updater));
+      
+      if (batchRef.current.length === 1) {
+        setTimeout(() => {
+          batchRef.current.forEach(fn => fn());
+          batchRef.current = [];
+        }, 0);
+      }
+    }, []);
+    
+    return [state, batchedSetState] as const;
+  }
+
+  /**
+   * Debounce hook
+   */
+  static useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
+    
+    React.useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+      
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+    
+    return debouncedValue;
+  }
+
+  /**
+   * Mounted state hook
+   */
+  static useMountedState(): React.MutableRefObject<boolean> {
+    const mountedRef = React.useRef<boolean>(true);
+    
+    React.useEffect(() => {
+      return () => {
+        mountedRef.current = false;
+      };
+    }, []);
+    
+    return mountedRef;
+  }
+
+  /**
+   * Throttle hook
+   */
+  static useThrottle<T extends (...args: any[]) => any>(
+    callback: T,
+    delay: number
+  ): T {
+    const lastRun = React.useRef(Date.now());
+    
+    return React.useCallback(
+      ((...args) => {
+        if (Date.now() - lastRun.current >= delay) {
+          callback(...args);
+          lastRun.current = Date.now();
+        }
+      }) as T,
+      [callback, delay]
+    );
+  }
+
+  /**
+   * Firestore cache utility
+   */
+  static firestoreCache = {
+    cache: new Map<string, { data: any; timestamp: number }>(),
+    ttl: 5 * 60 * 1000, // 5 minutes
+    
+    get(key: string) {
+      const item = this.cache.get(key);
+      if (item && Date.now() - item.timestamp < this.ttl) {
+        return item.data;
+      }
       this.cache.delete(key);
       return null;
-    }
+    },
     
-    return cached.data;
-  }
-  
-  clear() {
-    this.cache.clear();
-  }
-  
-  size() {
-    return this.cache.size;
-  }
+    set(key: string, data: any) {
+      this.cache.set(key, { data, timestamp: Date.now() });
+    },
+    
+    clear() {
+      this.cache.clear();
+    }
+  };
 }
 
-export const firestoreCache = new FirestoreCache();
+// Export individual utilities for easier imports
+export const useBatchedState = PerformanceOptimizer.useBatchedState;
+export const useDebounce = PerformanceOptimizer.useDebounce;
+export const useMountedState = PerformanceOptimizer.useMountedState;
+export const useThrottle = PerformanceOptimizer.useThrottle;
+export const firestoreCache = PerformanceOptimizer.firestoreCache;
+export const performanceOptimizer = PerformanceOptimizer;
+
+export default PerformanceOptimizer;

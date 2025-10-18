@@ -36,6 +36,8 @@ import { UniversalAvatar } from '../../components/common';
 import { useAuth } from '../../contexts/AuthContext';
 import { getUniversityName } from '../../constants/universities';
 import unifiedStatisticsService from '../../services/unifiedStatisticsService';
+import { enhancedStatisticsService } from '../../services/enhancedStatisticsService';
+import realTimeDataSyncService from '../../services/realTimeDataSyncService';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -53,21 +55,21 @@ const TABS: TabConfig[] = [
     title: 'Öğrenciler',
     icon: 'account-group',
     gradient: ['#667eea', '#764ba2'],
-    stats: ['likes', 'comments', 'participations', 'followers', 'following', 'clubs']
+    stats: ['totalScore', 'likes', 'comments', 'participations', 'followers', 'following', 'clubs']
   },
   {
     type: 'events',
     title: 'Etkinlikler',
     icon: 'calendar-star',
     gradient: ['#f093fb', '#f5576c'],
-    stats: ['likes', 'comments', 'participations']
+    stats: ['totalScore', 'likes', 'comments', 'participations']
   },
   {
     type: 'clubs',
     title: 'Kulüpler',
     icon: 'account-multiple',
     gradient: ['#4facfe', '#00f2fe'],
-    stats: ['likes', 'comments', 'participations', 'members', 'followers']
+    stats: ['totalScore', 'likes', 'comments', 'participations', 'members', 'events', 'followers']
   }
 ];
 
@@ -84,7 +86,9 @@ interface StatisticsEntry {
   members?: number; // clubs only
   followers?: number; // users and clubs
   following?: number; // users only
-  clubs?: number; // users and events
+  clubs?: number; // users only
+  events?: number; // clubs only
+  totalScore: number; // TOPLAM PUAN - Tüm istatistiklerin ağırlıklı toplamı
   createdAt?: any;
   // Event-specific fields
   description?: string;
@@ -106,7 +110,7 @@ const StatisticsLeaderboardScreen: React.FC = () => {
   const { currentUser } = useAuth();
   
   const [selectedTab, setSelectedTab] = useState<'users' | 'events' | 'clubs'>('users');
-  const [sortBy, setSortBy] = useState<'likes' | 'comments' | 'participations' | 'members' | 'followers' | 'following' | 'clubs'>('likes');
+  const [sortBy, setSortBy] = useState<'likes' | 'comments' | 'participations' | 'members' | 'followers' | 'following' | 'clubs' | 'totalScore'>('totalScore');
   const [data, setData] = useState<StatisticsEntry[]>([]);
   const [filteredData, setFilteredData] = useState<StatisticsEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -118,6 +122,40 @@ const StatisticsLeaderboardScreen: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [eventCardVisible, setEventCardVisible] = useState(false);
   const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({});
+
+  /**
+   * 📊 Toplam Puan Hesaplama Fonksiyonu
+   * Tüm istatistiklerin basit toplamı (ağırlık kaldırıldı)
+   */
+  const calculateTotalScore = (entry: Partial<StatisticsEntry>): number => {
+    let score = 0;
+    
+    // Temel istatistikler (tüm tipler için) - Basit toplam
+    score += (entry.likes || 0);
+    score += (entry.comments || 0);
+    score += (entry.participations || 0);
+    
+    // Öğrenci-specific
+    if (entry.followers !== undefined) {
+      score += (entry.followers || 0);
+    }
+    if (entry.following !== undefined) {
+      score += (entry.following || 0);
+    }
+    if (entry.clubs !== undefined) {
+      score += (entry.clubs || 0);
+    }
+    
+    // Kulüp-specific
+    if (entry.members !== undefined) {
+      score += (entry.members || 0);
+    }
+    if (entry.events !== undefined) {
+      score += (entry.events || 0);
+    }
+    
+    return score;
+  };
 
   // Fetch statistics data
   const fetchStatisticsData = async () => {
@@ -148,42 +186,30 @@ const StatisticsLeaderboardScreen: React.FC = () => {
             try {
               const userData = doc.data();
               
-              // Get unified statistics for this user
-              const statistics = await unifiedStatisticsService.getUserStatistics(doc.id);
+              // Get enhanced statistics for this user
+              const statistics = await enhancedStatisticsService.calculateUserStatistics(doc.id);
               
-              // Get additional data not in unified service
-              const [followersData, clubMembershipsSnapshot] = await Promise.all([
-                // Get follower count from user document
-                firebase.firestore().collection('users').doc(doc.id).get()
-                  .then(userDoc => userDoc.exists ? (userDoc.data()?.followers?.length || 0) : 0)
-                  .catch(() => 0),
-                // Count club memberships
-                firebase.firestore()
-                  .collection('clubMembers')
-                  .where('userId', '==', doc.id)
-                  .where('status', '==', 'approved')
-                  .get()
-                  .catch(() => ({ docs: [] }))
-              ]);
-              
-              return {
+              const entry = {
                 id: doc.id,
                 name: userData.displayName || userData.name || 'İsimsiz',
                 avatar: userData.profileImage || userData.avatar,
                 university: userData.university,
                 department: userData.department,
                 username: userData.username,
-                likes: statistics.likes,
-                comments: statistics.comments,
-                participations: statistics.participations,
-                followers: followersData,
-                following: userData.following?.length || 0,
-                clubs: clubMembershipsSnapshot.docs.length
+                likes: statistics.totalLikes,
+                comments: statistics.totalComments,
+                participations: statistics.totalParticipations,
+                followers: statistics.totalFollowers,
+                following: statistics.totalFollowing,
+                clubs: statistics.totalClubsJoined,
+                totalScore: 0 // Will be calculated
               };
+              entry.totalScore = calculateTotalScore(entry);
+              return entry;
             } catch (error) {
               console.warn(`⚠️ Error processing user ${doc.id}:`, error);
               const userData = doc.data();
-              return {
+              const entry = {
                 id: doc.id,
                 name: userData.displayName || userData.name || 'İsimsiz',
                 avatar: userData.profileImage || userData.avatar,
@@ -195,8 +221,11 @@ const StatisticsLeaderboardScreen: React.FC = () => {
                 participations: 0,
                 followers: userData.followers?.length || 0,
                 following: userData.following?.length || 0,
-                clubs: 0
+                clubs: 0,
+                totalScore: 0
               };
+              entry.totalScore = calculateTotalScore(entry);
+              return entry;
             }
           });
           
@@ -208,151 +237,54 @@ const StatisticsLeaderboardScreen: React.FC = () => {
         
         console.log(`✅ User statistics completed: ${entries.length} users`);
       } else if (selectedTab === 'events') {
-        console.log('🎉 Fetching event statistics...');
-        // Fetch events and their statistics - try without status filter first
-        let eventsSnapshot = await firebase.firestore()
+        console.log('🎉 Fetching event statistics with realTimeDataSyncService...');
+        // Fetch events with real-time data sync service
+        const eventsSnapshot = await firebase.firestore()
           .collection('events')
           .orderBy('createdAt', 'desc')
           .limit(100)
           .get();
         
-        console.log(`📊 Found ${eventsSnapshot.docs.length} events (without status filter)`);
+        console.log(`📊 Found ${eventsSnapshot.docs.length} events to process`);
         
-        // If no events found, try with status filter
-        if (eventsSnapshot.docs.length === 0) {
-          console.log('🔍 No events found, trying with status=approved filter...');
-          eventsSnapshot = await firebase.firestore()
-            .collection('events')
-            .where('status', '==', 'approved')
-            .limit(100)
-            .get();
-          console.log(`📊 Found ${eventsSnapshot.docs.length} approved events`);
-        }
+        // Process events with real-time service (paralel - çok daha hızlı!)
+        const eventDataPromises = eventsSnapshot.docs.map(doc => 
+          realTimeDataSyncService.getRealTimeEventData(doc.id)
+        );
         
-        for (const doc of eventsSnapshot.docs) {
-          const eventData = doc.data();
-          console.log(`🎉 Processing event: ${eventData.title || 'No title'}`);
+        const eventsData = await Promise.all(eventDataPromises);
+        
+        for (const eventData of eventsData) {
+          if (!eventData) continue;
           
-          // Calculate actual statistics from collections - use correct comment collection structure
-          const [likesSnapshot, attendeesSnapshot] = await Promise.all([
-            firebase.firestore().collection('eventLikes').where('eventId', '==', doc.id).get(),
-            firebase.firestore().collection('eventAttendees').where('eventId', '==', doc.id).get()
-          ]);
-          
-          // Get comments from subcollection structure
-          let actualComments = 0;
-          try {
-            const commentsSnapshot = await firebase.firestore()
-              .collection('events')
-              .doc(doc.id)
-              .collection('comments')
-              .get();
-            actualComments = commentsSnapshot.docs.length;
-          } catch (error) {
-            console.warn(`⚠️ Error getting comments for event ${doc.id}:`, error);
-            // Fallback to old structure if needed
-            try {
-              const fallbackSnapshot = await firebase.firestore()
-                .collection('eventComments')
-                .where('eventId', '==', doc.id)
-                .get();
-              actualComments = fallbackSnapshot.docs.length;
-            } catch (fallbackError) {
-              actualComments = 0;
-            }
-          }
-          
-          const actualLikes = likesSnapshot.docs.length;
-          const actualParticipations = attendeesSnapshot.docs.length;
-          
-          // Get club information if clubId exists
-          let clubData = null;
-          if (eventData.clubId || eventData.organizerId) {
-            try {
-              // First try users collection (newer clubs)
-              let clubDoc = await firebase.firestore()
-                .collection('users')
-                .doc(eventData.clubId || eventData.organizerId)
-                .get();
-              
-              // If not found in users, try clubs collection
-              if (!clubDoc.exists) {
-                clubDoc = await firebase.firestore()
-                  .collection('clubs')
-                  .doc(eventData.clubId || eventData.organizerId)
-                  .get();
-              }
-              
-              if (clubDoc.exists) {
-                clubData = clubDoc.data();
-                if (clubData) {
-                  console.log(`🏛️ Found club data for ${eventData.title}:`, {
-                    name: clubData.displayName || clubData.name,
-                    avatar: !!clubData.profileImage,
-                    username: clubData.username
-                  });
-                }
-              } else {
-                console.log(`❌ No club data found for clubId: ${eventData.clubId || eventData.organizerId}`);
-              }
-            } catch (error) {
-              console.log('Error fetching club data:', error);
-            }
-          }
-          
-          console.log(`📊 Event ${eventData.title}: Likes=${actualLikes}, Comments=${actualComments}, Participations=${actualParticipations}`);
-          console.log(`🏛️ Club Info - Name: ${clubData?.displayName || 'No name'}, Avatar: ${clubData?.profileImage ? 'Yes' : 'No'}, University: ${clubData?.university || 'No uni'}`);
-          
-          // Debug image fields
-          console.log(`🖼️ Event image fields for ${eventData.title}:`, {
-            imageUrl: eventData.imageUrl,
-            coverImage: eventData.coverImage,
-            coverPhoto: eventData.coverPhoto,
-            image: eventData.image,
-            eventImage: eventData.eventImage,
-            cover: eventData.cover,
-            photo: eventData.photo,
-            finalAvatar: eventData.imageUrl || eventData.coverImage || eventData.coverPhoto || 
-                        eventData.image || eventData.eventImage || eventData.cover || 
-                        eventData.photo || null
-          });
-          
-          entries.push({
-            id: doc.id,
-            name: eventData.title || eventData.name || 'İsimsiz Etkinlik',
-            // Try multiple image field names for event cover
-            avatar: eventData.imageUrl || eventData.coverImage || eventData.coverPhoto || 
-                   eventData.image || eventData.eventImage || eventData.cover || 
-                   eventData.photo || null,
-            username: eventData.organizer?.name || eventData.organizerName || eventData.creatorName,
-            likes: actualLikes,
-            comments: actualComments,
-            participations: actualParticipations,
+          const entry = {
+            id: eventData.id,
+            name: eventData.title,
+            avatar: eventData.imageUrl || eventData.coverImage,
+            username: eventData.organizer.displayName || eventData.organizer.name,
+            likes: eventData.likes,
+            comments: eventData.comments,
+            participations: eventData.participants,
             clubs: eventData.clubId ? 1 : 0,
             createdAt: eventData.createdAt,
-            // Additional event details
-            description: eventData.description || eventData.shortDescription || '',
-            clubId: eventData.clubId || eventData.organizerId,
-            // Improved club name resolution
-            clubName: clubData?.displayName || clubData?.name || clubData?.clubName || 
-                     eventData.clubName || eventData.organizer?.displayName || 
-                     eventData.organizer?.name || eventData.organizerName || 'Bilinmeyen Kulüp',
-            // Improved club username resolution
-            clubUsername: clubData?.username || clubData?.userName || 
-                         eventData.clubUsername || eventData.organizer?.username || null,
-            // Improved club avatar resolution
-            clubAvatar: clubData?.profileImage || clubData?.avatar || clubData?.photoURL || 
-                       eventData.clubAvatar || eventData.organizer?.profileImage || 
-                       eventData.organizer?.avatar || null,
-            university: clubData?.university || eventData.university || eventData.organizer?.university,
-            startDate: eventData.startDate || eventData.date,
-            location: eventData.location || eventData.venue
-          });
+            description: eventData.description,
+            clubId: eventData.clubId,
+            clubName: eventData.organizer.displayName || eventData.clubName,
+            clubUsername: eventData.organizer.name.toLowerCase().replace(/\s+/g, '_'),
+            clubAvatar: eventData.organizer.avatar,
+            university: eventData.university || eventData.organizer.university,
+            startDate: eventData.startDate,
+            location: eventData.location.physicalAddress || eventData.location.onlineLink || '',
+            totalScore: 0
+          };
+          entry.totalScore = calculateTotalScore(entry);
+          entries.push(entry);
         }
-        console.log(`🎉 Total events processed: ${entries.length}`);
+        
+        console.log(`✅ Event statistics completed with real-time data: ${entries.length} events`);
       } else if (selectedTab === 'clubs') {
-        console.log('🏛️ Fetching club statistics via unified service...');
-        // Fetch clubs and their statistics via unified service
+        console.log('🏛️ Fetching club statistics with realTimeDataSyncService...');
+        // Fetch clubs with real-time data sync service
         const clubsSnapshot = await firebase.firestore()
           .collection('users')
           .where('userType', '==', 'club')
@@ -361,69 +293,43 @@ const StatisticsLeaderboardScreen: React.FC = () => {
         
         console.log(`🏛️ Found ${clubsSnapshot.docs.length} clubs to process`);
         
-        // Process clubs in batches
-        const batchSize = 10;
-        for (let i = 0; i < clubsSnapshot.docs.length; i += batchSize) {
-          const batch = clubsSnapshot.docs.slice(i, i + batchSize);
-          const batchPromises = batch.map(async (doc) => {
-            try {
-              const clubData = doc.data();
-              
-              // Get unified statistics for this club
-              const statistics = await unifiedStatisticsService.getClubStatistics(doc.id);
-              
-              // Get additional data not in unified service
-              const followersData = await firebase.firestore()
-                .collection('clubFollowers')
-                .where('clubId', '==', doc.id)
-                .get()
-                .then(snapshot => snapshot.docs.length)
-                .catch(() => 0);
-              
-              return {
-                id: doc.id,
-                name: clubData.displayName || clubData.clubName || clubData.name || 'İsimsiz Kulüp',
-                avatar: clubData.profileImage || clubData.avatar,
-                university: clubData.university,
-                department: clubData.department,
-                username: clubData.username,
-                likes: statistics.likes,
-                comments: statistics.comments,
-                participations: statistics.eventsOrganized, // For clubs, this represents events organized
-                members: statistics.memberCount,
-                followers: followersData
-              };
-            } catch (error) {
-              console.warn(`⚠️ Error processing club ${doc.id}:`, error);
-              const clubData = doc.data();
-              return {
-                id: doc.id,
-                name: clubData.displayName || clubData.clubName || clubData.name || 'İsimsiz Kulüp',
-                avatar: clubData.profileImage || clubData.avatar,
-                university: clubData.university,
-                department: clubData.department,
-                username: clubData.username,
-                likes: 0,
-                comments: 0,
-                participations: 0,
-                members: clubData.memberCount || 0,
-                followers: 0
-              };
-            }
-          });
+        // Process clubs with real-time service (paralel)
+        const clubDataPromises = clubsSnapshot.docs.map(doc => 
+          realTimeDataSyncService.getRealTimeClubData(doc.id)
+        );
+        
+        const clubsData = await Promise.all(clubDataPromises);
+        
+        for (const clubData of clubsData) {
+          if (!clubData) continue;
           
-          const batchResults = await Promise.all(batchPromises);
-          entries.push(...batchResults);
-          
-          console.log(`🏛️ Processed batch ${Math.floor(i/batchSize) + 1}, total entries: ${entries.length}`);
+          const entry = {
+            id: clubData.id,
+            name: clubData.displayName || clubData.clubName,
+            avatar: clubData.profileImage,
+            university: clubData.university,
+            department: clubData.department,
+            username: clubData.clubName.toLowerCase().replace(/\s+/g, '_'),
+            likes: clubData.likes,
+            comments: clubData.comments,
+            participations: clubData.eventCount, // Clubs don't have participations, use events
+            members: clubData.memberCount,
+            events: clubData.eventCount,
+            followers: clubData.followerCount,
+            totalScore: 0
+          };
+          entry.totalScore = calculateTotalScore(entry);
+          entries.push(entry);
         }
         
-        console.log(`✅ Club statistics completed: ${entries.length} clubs`);
+        console.log(`✅ Club statistics completed with real-time data: ${entries.length} clubs`);
       }
       
-      // Sort by selected criteria
+      // Sort by selected criteria - DEFAULT: TOTAL SCORE
       entries.sort((a, b) => {
         switch (sortBy) {
+          case 'totalScore':
+            return b.totalScore - a.totalScore;
           case 'likes':
             return b.likes - a.likes;
           case 'comments':
@@ -439,7 +345,7 @@ const StatisticsLeaderboardScreen: React.FC = () => {
           case 'clubs':
             return (b.clubs || 0) - (a.clubs || 0);
           default:
-            return b.likes - a.likes;
+            return b.totalScore - a.totalScore; // Default: Total score
         }
       });
       
@@ -464,7 +370,7 @@ const StatisticsLeaderboardScreen: React.FC = () => {
   // Tab change handler
   const handleTabChange = (tab: 'users' | 'events' | 'clubs') => {
     setSelectedTab(tab);
-    setSortBy('likes'); // Reset sort to likes when changing tabs
+    setSortBy('totalScore'); // Reset sort to TOTAL SCORE when changing tabs
     setSearchQuery(''); // Clear search when changing tabs
   };
 
@@ -557,6 +463,8 @@ const StatisticsLeaderboardScreen: React.FC = () => {
   // Get stat icon based on type and category
   const getStatIcon = (statType: string) => {
     switch (statType) {
+      case 'totalScore':
+        return 'trophy';
       case 'likes':
         return 'heart';
       case 'comments':
@@ -571,6 +479,8 @@ const StatisticsLeaderboardScreen: React.FC = () => {
         return 'account-plus';
       case 'clubs':
         return 'account-multiple';
+      case 'events':
+        return 'calendar-star';
       default:
         return 'star';
     }
@@ -579,6 +489,8 @@ const StatisticsLeaderboardScreen: React.FC = () => {
   // Get stat label based on type
   const getStatLabel = (statType: string) => {
     switch (statType) {
+      case 'totalScore':
+        return 'Toplam Puan';
       case 'likes':
         return 'Beğeni';
       case 'comments':
@@ -593,6 +505,8 @@ const StatisticsLeaderboardScreen: React.FC = () => {
         return 'Takip';
       case 'clubs':
         return 'Kulüp';
+      case 'events':
+        return 'Etkinlik';
       default:
         return 'İstatistik';
     }
@@ -641,10 +555,163 @@ const StatisticsLeaderboardScreen: React.FC = () => {
     // Special rendering for events
     if (selectedTab === 'events') {
       return (
+        <View style={styles.eventWrapper}>
+          {/* Event Card - Clickable */}
+          <TouchableOpacity
+            style={[
+              styles.itemContainer,
+              styles.eventItemContainer,
+              isCurrentUser && styles.currentUserItem
+            ]}
+            activeOpacity={0.7}
+            onPress={() => handleItemPress(item)}
+          >
+            
+            {/* Rank */}
+            <View style={styles.rankContainer}>
+              {rank <= 3 ? (
+                <Text style={[styles.rankEmoji, { color: rankInfo.color }]}>
+                  {rankInfo.emoji}
+                </Text>
+              ) : (
+                <Text style={styles.rankNumber}>{rank}</Text>
+              )}
+            </View>
+
+            {/* Event Cover Image */}
+            <View style={styles.eventImageContainer}>
+              {item.avatar && !imageErrors[item.id] ? (
+                <Image 
+                  source={{ uri: item.avatar }} 
+                  style={styles.eventImage}
+                  onError={(error) => {
+                    console.log('🚨 Event image loading failed:', item.name, 'URI:', item.avatar);
+                    console.log('🚨 Error details:', error.nativeEvent);
+                    setImageErrors(prev => ({ ...prev, [item.id]: true }));
+                  }}
+                  onLoad={() => {
+                    console.log('✅ Event image loaded successfully:', item.name);
+                    setImageErrors(prev => ({ ...prev, [item.id]: false }));
+                  }}
+                  onLoadStart={() => {
+                    console.log('🔄 Event image loading started:', item.name);
+                  }}
+                />
+              ) : (
+                <View style={[styles.eventImage, styles.eventImagePlaceholder]}>
+                  <Image
+                    source={require('../../../assets/universe_logo.png')}
+                    style={styles.defaultEventImage}
+                    resizeMode="contain"
+                  />
+                  {item.avatar && imageErrors[item.id] && (
+                    <View style={styles.errorOverlay}>
+                      <Text style={styles.errorText}>
+                        Resim yüklenemedi
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
+            </View>
+
+            {/* Event Content */}
+            <View style={styles.eventContentContainer}>
+              
+              {/* Event Title */}
+              <Text style={[
+                styles.eventTitle,
+                isTopThree && styles.topThreeEventTitle
+              ]} numberOfLines={2}>
+                {item.name}
+              </Text>
+
+              {/* Club Info Row - Small - Right under title */}
+              <View style={styles.clubInfoRowSmall}>
+                {/* Small Club Avatar */}
+                {item.clubAvatar && !imageErrors[`club_${item.clubId}`] ? (
+                  <Image 
+                    source={{ uri: item.clubAvatar }} 
+                    style={styles.clubAvatarSmall}
+                    onError={(error) => {
+                      console.log('🚨 Club avatar loading failed:', item.clubName, 'URI:', item.clubAvatar);
+                      setImageErrors(prev => ({ ...prev, [`club_${item.clubId}`]: true }));
+                    }}
+                    onLoad={() => {
+                      setImageErrors(prev => ({ ...prev, [`club_${item.clubId}`]: false }));
+                    }}
+                  />
+                ) : (
+                  <View style={styles.clubAvatarSmall}>
+                    <MaterialCommunityIcons name="account-group" size={14} color="#9ca3af" />
+                  </View>
+                )}
+                
+                {/* Small Club Details */}
+                <View style={styles.clubDetailsSmall}>
+                  <Text style={styles.clubInfoText} numberOfLines={1}>
+                    {item.clubName || 'Bilinmeyen Kulüp'}
+                  </Text>
+                  
+                  {item.clubUsername && (
+                    <Text style={styles.clubUsernameSmall} numberOfLines={1}>
+                      @{item.clubUsername}
+                    </Text>
+                  )}
+                  
+                  {item.university && (
+                    <Text style={styles.clubUniversitySmall}>
+                      📍 {getUniversityName(item.university)}
+                    </Text>
+                  )}
+                </View>
+              </View>
+              
+            </View>
+          </TouchableOpacity>
+
+          {/* Event Statistics - Independent, Scrollable */}
+          <View style={styles.eventStatisticsContainerIndependent}>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.eventStatsScrollContent}
+            >
+              <View style={styles.eventStatsRow}>
+                {/* TOPLAM PUAN - İLK SIRADA */}
+                <View style={[styles.eventStatItem, styles.totalScoreItem]}>
+                  <MaterialCommunityIcons name="trophy" size={18} color="#FFB300" />
+                  <Text style={[styles.eventStatText, styles.totalScoreText]}>{item.totalScore}</Text>
+                </View>
+                
+                <View style={styles.eventStatItem}>
+                  <MaterialCommunityIcons name="heart" size={16} color="#e91e63" />
+                  <Text style={styles.eventStatText}>{item.likes}</Text>
+                </View>
+                
+                <View style={styles.eventStatItem}>
+                  <MaterialCommunityIcons name="comment" size={16} color="#2196f3" />
+                  <Text style={styles.eventStatText}>{item.comments}</Text>
+                </View>
+                
+                <View style={styles.eventStatItem}>
+                  <MaterialCommunityIcons name="account-check" size={16} color="#4caf50" />
+                  <Text style={styles.eventStatText}>{item.participations}</Text>
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      );
+    }
+
+    // Default rendering for users and clubs
+    return (
+      <View style={styles.userClubWrapper}>
+        {/* User/Club Card - Clickable */}
         <TouchableOpacity
           style={[
             styles.itemContainer,
-            styles.eventItemContainer,
             isCurrentUser && styles.currentUserItem
           ]}
           activeOpacity={0.7}
@@ -662,245 +729,122 @@ const StatisticsLeaderboardScreen: React.FC = () => {
             )}
           </View>
 
-          {/* Event Cover Image */}
-          <View style={styles.eventImageContainer}>
-            {item.avatar && !imageErrors[item.id] ? (
-              <Image 
-                source={{ uri: item.avatar }} 
-                style={styles.eventImage}
-                onError={(error) => {
-                  console.log('🚨 Event image loading failed:', item.name, 'URI:', item.avatar);
-                  console.log('🚨 Error details:', error.nativeEvent);
-                  setImageErrors(prev => ({ ...prev, [item.id]: true }));
-                }}
-                onLoad={() => {
-                  console.log('✅ Event image loaded successfully:', item.name);
-                  setImageErrors(prev => ({ ...prev, [item.id]: false }));
-                }}
-                onLoadStart={() => {
-                  console.log('🔄 Event image loading started:', item.name);
-                }}
-              />
-            ) : (
-              <View style={[styles.eventImage, styles.eventImagePlaceholder]}>
-                <Image
-                  source={require('../../../assets/universe_logo.png')}
-                  style={styles.defaultEventImage}
-                  resizeMode="contain"
-                />
-                {item.avatar && imageErrors[item.id] && (
-                  <View style={styles.errorOverlay}>
-                    <Text style={styles.errorText}>
-                      Resim yüklenemedi
-                    </Text>
-                  </View>
-                )}
-              </View>
-            )}
+          {/* Avatar */}
+          <View style={styles.avatarContainer}>
+            <UniversalAvatar
+              userId={item.id}
+              userName={item.name}
+              profileImage={item.avatar}
+              size={isTopThree ? 50 : 40}
+            />
           </View>
 
-          {/* Event Content */}
-          <View style={styles.eventContentContainer}>
+          {/* Content */}
+          <View style={styles.contentContainer}>
             
-            {/* Event Title */}
+            {/* Name */}
             <Text style={[
-              styles.eventTitle,
-              isTopThree && styles.topThreeEventTitle
-            ]} numberOfLines={2}>
+              styles.name,
+              isTopThree && styles.topThreeName
+            ]}>
               {item.name}
             </Text>
 
-            {/* Club Info Row - Small - Right under title */}
-            <View style={styles.clubInfoRowSmall}>
-              {/* Small Club Avatar */}
-              {item.clubAvatar && !imageErrors[`club_${item.clubId}`] ? (
-                <Image 
-                  source={{ uri: item.clubAvatar }} 
-                  style={styles.clubAvatarSmall}
-                  onError={(error) => {
-                    console.log('🚨 Club avatar loading failed:', item.clubName, 'URI:', item.clubAvatar);
-                    setImageErrors(prev => ({ ...prev, [`club_${item.clubId}`]: true }));
-                  }}
-                  onLoad={() => {
-                    setImageErrors(prev => ({ ...prev, [`club_${item.clubId}`]: false }));
-                  }}
-                />
-              ) : (
-                <View style={styles.clubAvatarSmall}>
-                  <MaterialCommunityIcons name="account-group" size={14} color="#9ca3af" />
-                </View>
-              )}
-              
-              {/* Small Club Details */}
-              <View style={styles.clubDetailsSmall}>
-                <Text style={styles.clubInfoText} numberOfLines={1}>
-                  {item.clubName || 'Bilinmeyen Kulüp'}
-                </Text>
-                
-                {item.clubUsername && (
-                  <Text style={styles.clubUsernameSmall} numberOfLines={1}>
-                    @{item.clubUsername}
-                  </Text>
-                )}
-                
-                {item.university && (
-                  <Text style={styles.clubUniversitySmall}>
-                    📍 {getUniversityName(item.university)}
-                  </Text>
-                )}
-              </View>
-            </View>
+            {/* Info */}
+            {item.university && (
+              <Text style={styles.university}>
+                📍 {getUniversityName(item.university)}
+              </Text>
+            )}
             
-          </View>
+            {item.department && (
+              <Text style={styles.department}>
+                🎓 {item.department}
+              </Text>
+            )}
 
-          {/* Event Statistics */}
-          <View style={styles.eventStatisticsContainer}>
-            <View style={styles.eventStatsRow}>
-              <View style={styles.eventStatItem}>
-                <MaterialCommunityIcons name="heart" size={14} color="#e91e63" />
-                <Text style={styles.eventStatText}>{item.likes}</Text>
-              </View>
-              
-              <View style={styles.eventStatItem}>
-                <MaterialCommunityIcons name="comment" size={14} color="#2196f3" />
-                <Text style={styles.eventStatText}>{item.comments}</Text>
-              </View>
-              
-              <View style={styles.eventStatItem}>
-                <MaterialCommunityIcons name="account-check" size={14} color="#4caf50" />
-                <Text style={styles.eventStatText}>{item.participations}</Text>
-              </View>
-            </View>
+            {item.username && (
+              <Text style={styles.username}>
+                @{item.username}
+              </Text>
+            )}
           </View>
-
         </TouchableOpacity>
-      );
-    }
 
-    // Default rendering for users and clubs
-    return (
-      <TouchableOpacity
-        style={[
-          styles.itemContainer,
-          isCurrentUser && styles.currentUserItem
-        ]}
-        activeOpacity={0.7}
-        onPress={() => handleItemPress(item)}
-      >
-        
-        {/* Rank */}
-        <View style={styles.rankContainer}>
-          {rank <= 3 ? (
-            <Text style={[styles.rankEmoji, { color: rankInfo.color }]}>
-              {rankInfo.emoji}
-            </Text>
-          ) : (
-            <Text style={styles.rankNumber}>{rank}</Text>
-          )}
-        </View>
-
-        {/* Avatar */}
-        <View style={styles.avatarContainer}>
-          <UniversalAvatar
-            userId={item.id}
-            userName={item.name}
-            profileImage={item.avatar}
-            size={isTopThree ? 50 : 40}
-          />
-        </View>
-
-        {/* Content */}
-        <View style={styles.contentContainer}>
-          
-          {/* Name */}
-          <Text style={[
-            styles.name,
-            isTopThree && styles.topThreeName
-          ]}>
-            {item.name}
-          </Text>
-
-          {/* Info */}
-          {item.university && (
-            <Text style={styles.university}>
-              📍 {getUniversityName(item.university)}
-            </Text>
-          )}
-          
-          {item.department && (
-            <Text style={styles.department}>
-              🎓 {item.department}
-            </Text>
-          )}
-
-          {item.username && (
-            <Text style={styles.username}>
-              @{item.username}
-            </Text>
-          )}
-        </View>
-
-        {/* Statistics - positioned to align with rank */}
-        <View style={styles.statisticsContainer}>
+        {/* Statistics - Independent, Scrollable, Attached */}
+        <View style={styles.statisticsContainerAttached}>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
-            style={styles.statsScrollContainer}
+            contentContainerStyle={styles.eventStatsScrollContent}
           >
             <View style={styles.statsRow}>
+              {/* TOPLAM PUAN - İLK SIRADA */}
+              <View style={[styles.statItem, styles.totalScoreItem]}>
+                <MaterialCommunityIcons name="trophy" size={18} color="#FFB300" />
+                <Text style={[styles.statText, styles.totalScoreText]}>{item.totalScore}</Text>
+              </View>
+              
               <View style={styles.statItem}>
-                <MaterialCommunityIcons name="heart" size={12} color="#e91e63" />
+                <MaterialCommunityIcons name="heart" size={16} color="#e91e63" />
                 <Text style={styles.statText}>{item.likes}</Text>
               </View>
               
               <View style={styles.statItem}>
-                <MaterialCommunityIcons name="comment" size={12} color="#2196f3" />
+                <MaterialCommunityIcons name="comment" size={16} color="#2196f3" />
                 <Text style={styles.statText}>{item.comments}</Text>
               </View>
               
               <View style={styles.statItem}>
-                <MaterialCommunityIcons name="account-check" size={12} color="#4caf50" />
+                <MaterialCommunityIcons name="account-check" size={16} color="#4caf50" />
                 <Text style={styles.statText}>{item.participations}</Text>
               </View>
               
               {selectedTab === 'users' && item.followers !== undefined && (
                 <View style={styles.statItem}>
-                  <MaterialCommunityIcons name="account-heart" size={12} color="#9c27b0" />
+                  <MaterialCommunityIcons name="account-heart" size={16} color="#9c27b0" />
                   <Text style={styles.statText}>{item.followers}</Text>
                 </View>
               )}
               
               {selectedTab === 'users' && item.following !== undefined && (
                 <View style={styles.statItem}>
-                  <MaterialCommunityIcons name="account-plus" size={12} color="#607d8b" />
+                  <MaterialCommunityIcons name="account-plus" size={16} color="#607d8b" />
                   <Text style={styles.statText}>{item.following}</Text>
                 </View>
               )}
               
               {selectedTab === 'users' && item.clubs !== undefined && (
                 <View style={styles.statItem}>
-                  <MaterialCommunityIcons name="account-multiple" size={12} color="#ff5722" />
+                  <MaterialCommunityIcons name="account-multiple" size={16} color="#1976D2" />
                   <Text style={styles.statText}>{item.clubs}</Text>
                 </View>
               )}
               
               {selectedTab === 'clubs' && item.members !== undefined && (
                 <View style={styles.statItem}>
-                  <MaterialCommunityIcons name="account-group" size={12} color="#ff9800" />
+                  <MaterialCommunityIcons name="account-group" size={16} color="#1976D2" />
                   <Text style={styles.statText}>{item.members}</Text>
+                </View>
+              )}
+              
+              {selectedTab === 'clubs' && item.events !== undefined && (
+                <View style={styles.statItem}>
+                  <MaterialCommunityIcons name="calendar-star" size={16} color="#FF9800" />
+                  <Text style={styles.statText}>{item.events}</Text>
                 </View>
               )}
               
               {selectedTab === 'clubs' && item.followers !== undefined && (
                 <View style={styles.statItem}>
-                  <MaterialCommunityIcons name="account-heart" size={12} color="#9c27b0" />
+                  <MaterialCommunityIcons name="account-heart" size={16} color="#E91E63" />
                   <Text style={styles.statText}>{item.followers}</Text>
                 </View>
               )}
             </View>
           </ScrollView>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -1288,13 +1232,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingTop: 20,
-    paddingBottom: 28,  // Even more bottom padding
-    paddingHorizontal: 20,  // More horizontal padding too
+    paddingBottom: 20,  // Reduced bottom padding for attached stats
+    paddingHorizontal: 20,
     marginHorizontal: 16,
-    marginVertical: 4,
-    minHeight: 140,  // Much bigger cards
+    marginVertical: 0,  // No vertical margin for attached stats
+    minHeight: 120,  // Reduced height for attached stats
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 0,  // No bottom radius for attached stats
+    borderBottomRightRadius: 0, // No bottom radius for attached stats
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -1329,11 +1276,25 @@ const styles = StyleSheet.create({
     flex: 1
   },
   statisticsContainer: {
+    // DEPRECATED - Kept for backward compatibility
     position: 'absolute',
-    bottom: 8,  // Slightly closer to bottom
-    left: 64,  // Slightly more left alignment with bigger padding
-    right: 20,  // Match the horizontal padding
-    flexDirection: 'row'
+    bottom: 12,
+    left: 64,
+    right: 20,
+    flexDirection: 'row',
+    backgroundColor: '#F8F9FA',
+    padding: 8,
+    borderRadius: 8,
+  },
+  statisticsContainerAttached: {
+    width: '100%',
+    backgroundColor: '#F8F9FA',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderTopWidth: 0,
+    marginTop: 0,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
   },
   name: {
     fontSize: 14,
@@ -1375,18 +1336,32 @@ const styles = StyleSheet.create({
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 12,
-    backgroundColor: '#f8f9fa',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 6,
-    minWidth: 40
+    marginRight: 10,
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    minWidth: 55,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   statText: {
-    fontSize: 10,
-    color: '#4a5568',
-    marginLeft: 3,
-    fontWeight: '600'
+    fontSize: 13,
+    color: '#1a202c',
+    marginLeft: 5,
+    fontWeight: '700'
+  },
+  totalScoreItem: {
+    backgroundColor: '#FFF8E1',
+    borderColor: '#FFB300',
+    borderWidth: 1.5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  totalScoreText: {
+    fontSize: 15,
+    color: '#F57C00',
+    fontWeight: '800',
   },
 
   // Legacy styles (keeping for compatibility)
@@ -1425,9 +1400,21 @@ const styles = StyleSheet.create({
   },
 
   // Event-specific styles
+  eventWrapper: {
+    marginBottom: 16,
+  },
   eventItemContainer: {
-    minHeight: 160,
-    paddingBottom: 16,
+    minHeight: 120,
+    paddingBottom: 20,  // Reduced bottom padding for attached stats
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 0,  // No bottom radius for attached stats
+    borderBottomRightRadius: 0, // No bottom radius for attached stats
+  },
+  
+  // User/Club-specific styles
+  userClubWrapper: {
+    marginBottom: 16,
   },
   eventImageContainer: {
     width: 85,
@@ -1570,9 +1557,26 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   eventStatisticsContainer: {
+    // DEPRECATED - Kept for backward compatibility
     position: 'absolute',
     bottom: 16,
     right: 16,
+    backgroundColor: '#F8F9FA',
+    padding: 8,
+    borderRadius: 8,
+  },
+  eventStatisticsContainerIndependent: {
+    width: '100%',
+    backgroundColor: '#F8F9FA',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderTopWidth: 0,
+    marginTop: 0,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  eventStatsScrollContent: {
+    paddingRight: 12,
   },
   eventStatsRow: {
     flexDirection: 'row',
@@ -1581,12 +1585,18 @@ const styles = StyleSheet.create({
   eventStatItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 16,
+    marginLeft: 12,
+    backgroundColor: '#fff',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   eventStatText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#4a5568',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1a202c',
     marginLeft: 4,
   }
 });

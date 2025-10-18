@@ -41,7 +41,10 @@ import { CLASS_LEVELS_DATA as classLevels } from '../../constants/classLevels';
 import { UNIVERSITIES_DATA as universities } from '../../constants/universities';
 import { CLUB_TYPES_DATA as clubTypes } from '../../constants/clubTypes';
 import * as ImagePicker from 'expo-image-picker';
-import { firebase, auth, firestore, storage } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
+import 'firebase/compat/storage';
 import { getUserProfile } from '../../firebase/auth';
 import { CustomTheme } from '../../types/theme';
 import { SecureStorage } from '../../utils/secureStorage';
@@ -449,7 +452,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
       setIsLoading(true);
       
       // Get current user from auth
-      const currentUser = auth.currentUser;
+      const currentUser = firebase.auth().currentUser;
       
       if (!currentUser) {
         setErrorMessage('Kullanıcı bulunamadı. Lütfen tekrar giriş yapmayı deneyin.');
@@ -474,7 +477,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                   setIsLoading(true);
                   
                   // Kullanıcıyı çıkış yaptır ki temiz bir Login ekranı gösterelim
-                  await auth.signOut();
+                  await firebase.auth().signOut();
                   console.log('✅ User signed out after email verification, will show Login screen');
                   
                   setIsLoading(false);
@@ -517,7 +520,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     try {
       setIsLoading(true);
       
-      const currentUser = auth.currentUser;
+      const currentUser = firebase.auth().currentUser;
       if (!currentUser) {
         setErrorMessage('Kullanıcı bulunamadı.');
         setIsLoading(false);
@@ -613,7 +616,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
       }
 
       // Create user in Firebase Auth
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       
       if (userCredential.user) {
         const userId = userCredential.user.uid;
@@ -780,11 +783,11 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
           // Add user data to Firestore (username already reserved above)
           try {
             // Email duplicate kontrolü için transaction kullan
-            await firestore.runTransaction(async (transaction) => {
+            await firebase.firestore().runTransaction(async (transaction) => {
               
               // ÖNEMLİ: Firestore transaction kuralları gereği önce TÜM okuma işlemleri yapılmalı
-              const emailRef = email ? firestore.collection('emails').doc(email.toLowerCase()) : null;
-              const userRef = firestore.collection('users').doc(userId);
+              const emailRef = email ? firebase.firestore().collection('emails').doc(email.toLowerCase()) : null;
+              const userRef = firebase.firestore().collection('users').doc(userId);
               
               // Email duplicate kontrolü yap
               const emailDoc = emailRef ? await transaction.get(emailRef) : null;

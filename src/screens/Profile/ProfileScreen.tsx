@@ -6,8 +6,13 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
-import { auth, firestore, firebase } from '../../firebase/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
 import { globalAvatarCache } from '../../services/globalAvatarCacheService';
+import { globalRealtimeSyncService } from '../../services/globalRealtimeSyncService';
+import { enhancedRealtimeSyncService } from '../../services/enhancedRealtimeSyncService';
+import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
 import { 
   refreshUserProfileCounts,
   getFollowerCountFromStorage,
@@ -23,7 +28,10 @@ import { StatusBar } from 'expo-status-bar';
 // import { ProfileLeaderboardCard } from '../../components/ProfileLeaderboardCard'; // Removed - replaced with user stats
 import { globalFollowStateManager } from '../../services/globalFollowStateManager';
 import ProfileEditModal from '../../components/profile/ProfileEditModal';
-import { UniversalAvatar } from '../../components/common';
+import { UniversalAvatar, EnhancedButton, EnhancedCard } from '../../components/common';
+import { useResponsiveDesign } from '../../utils/responsiveDesignUtils';
+import AccessibilityUtils from '../../utils/accessibilityUtils';
+import ImageZoomModal from '../../components/common/ImageZoomModal';
 import { centralizedRankingService } from '../../services/centralizedRankingService';
 import AccountDeletionService from '../../services/accountDeletionService';
 import { MemoryStorage } from '../../utils/MemoryStorage';
@@ -37,8 +45,9 @@ import { getClubMembershipsFromStorage } from '../../utils/clubStorageManager';
 const ProfileScreen: React.FC = () => {
   const baseTheme = useTheme();
   const theme = baseTheme as unknown as CustomTheme;
-    const { currentUser, userProfile, refreshUserProfile, refreshUserData, isClubAccount, signOut } = useAuth();
+  const { currentUser, userProfile, refreshUserProfile, refreshUserData, isClubAccount, signOut } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<StudentStackParamList>>();
+  const { fontSizes, spacing, shadows } = useResponsiveDesign();
   const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
   const [deleteAccountDialogVisible, setDeleteAccountDialogVisible] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -71,6 +80,26 @@ const ProfileScreen: React.FC = () => {
   const [editField, setEditField] = useState('');
   const [editValue, setEditValue] = useState<any>('');
   
+  // Image Zoom Modal States
+  const [imageZoomVisible, setImageZoomVisible] = useState(false);
+  const [zoomImageUri, setZoomImageUri] = useState('');
+  const [zoomImageTitle, setZoomImageTitle] = useState('');
+  
+  // Image zoom functions
+  const handleImageZoom = useCallback((imageUri: string, title: string) => {
+    if (imageUri) {
+      setZoomImageUri(imageUri);
+      setZoomImageTitle(title);
+      setImageZoomVisible(true);
+    }
+  }, []);
+
+  const handleCloseImageZoom = useCallback(() => {
+    setImageZoomVisible(false);
+    setZoomImageUri('');
+    setZoomImageTitle('');
+  }, []);
+
   // Real-time kullanıcı istatistikleri - scoring system removed
 
   // Leaderboard data refresh function
@@ -358,6 +387,32 @@ const ProfileScreen: React.FC = () => {
     }
   }, [currentUser?.uid, followerCount, followingCount]);
 
+  // Enhanced gerçek zamanlı profil senkronizasyonu
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+
+    console.log('🔄 Setting up enhanced real-time profile sync for ProfileScreen');
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === currentUser.uid) {
+        console.log('🔄 Enhanced profile update received, refreshing all data');
+        refreshUserProfile();
+        fetchCounts();
+        loadUserStatistics();
+        verifyAndFixFollowerCounts();
+      }
+    };
+
+    // Use both services for maximum reliability
+    globalRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    enhancedRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      globalRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      enhancedRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+    };
+  }, [currentUser?.uid, refreshUserProfile, fetchCounts, loadUserStatistics, verifyAndFixFollowerCounts]);
+
   // Sayfa her açıldığında sayıları güncelle ve doğrula
   useFocusEffect(
     useCallback(() => {
@@ -372,6 +427,29 @@ const ProfileScreen: React.FC = () => {
       }
     }, [currentUser, userProfile?.userType, loadUserStatistics])
   );
+
+  // Enhanced real-time synchronization for profile updates
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === currentUser.uid) {
+        console.log('🔄 Profile updated via comprehensive sync, refreshing all data...');
+        // Always refresh user profile first to get latest data
+        refreshUserProfile();
+        fetchCounts();
+        loadUserStatistics();
+        verifyAndFixFollowerCounts();
+      }
+    };
+
+    // Subscribe to comprehensive sync service
+    comprehensiveDataSyncService.subscribe('ProfileScreen', handleProfileUpdate);
+
+    return () => {
+      comprehensiveDataSyncService.unsubscribe('ProfileScreen', handleProfileUpdate);
+    };
+  }, [currentUser?.uid, fetchCounts, loadUserStatistics, verifyAndFixFollowerCounts, refreshUserProfile, userProfile?.userType]);
   
   // İlk yüklemede sayıları getir ve initialize et
   useEffect(() => {
@@ -438,7 +516,12 @@ const ProfileScreen: React.FC = () => {
           console.warn('⚠️ Failed persisting follow counts:', e);
         }
       }, (error) => {
-        console.error('❌ Real-time follow counts listener error:', error);
+        // Handle permission denied errors gracefully
+        if (error.code === 'permission-denied') {
+          console.warn('⚠️ [ProfileScreen] Permission denied for follow counts - using cached data');
+        } else {
+          console.error('❌ Real-time follow counts listener error:', error);
+        }
       });
 
     return unsub;
@@ -458,7 +541,12 @@ const ProfileScreen: React.FC = () => {
           setEventsCount(count);
         },
         (error) => {
-          console.error('❌ Real-time attended events listener error:', error);
+          // Handle permission denied errors gracefully
+          if (error.code === 'permission-denied') {
+            console.warn('⚠️ [ProfileScreen] Permission denied for attended events - using cached data');
+          } else {
+            console.error('❌ Real-time attended events listener error:', error);
+          }
         }
       );
 
@@ -689,7 +777,7 @@ const ProfileScreen: React.FC = () => {
   // Handle delete account
   const handleDeleteAccount = async () => {
     try {
-      const user = auth.currentUser;
+      const user = firebase.auth().currentUser;
       if (!user || !userProfile) {
         Alert.alert('Hata', 'Oturum açmanız gerekiyor.');
         return;
@@ -876,7 +964,7 @@ const ProfileScreen: React.FC = () => {
             const base64Image = `data:image/jpeg;base64,${manipulateResult.base64}`;
             
             // Direkt olarak Firestore'a kaydet
-            await firestore.collection('users').doc(currentUser.uid).update({
+            await firebase.firestore().collection('users').doc(currentUser.uid).update({
               [fieldToUpdate]: base64Image,
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             });
@@ -976,7 +1064,7 @@ const ProfileScreen: React.FC = () => {
     // Update profile if needed
     if (needsUpdate) {
       try {
-        await firestore.collection('users').doc(userProfile.uid).update(updates);
+        await firebase.firestore().collection('users').doc(userProfile.uid).update(updates);
         console.log('Profil başarıyla güncellendi!');
         
         // Sayıları güncelle
@@ -1078,31 +1166,41 @@ const ProfileScreen: React.FC = () => {
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Cover Section */}
       <View style={styles.coverSection}>
-        {userProfile?.coverImage ? (
-          <ImageBackground 
-            source={{ uri: userProfile.coverImage }}
-            style={styles.coverBackground}
-            resizeMode="cover"
-          />
-        ) : userProfile?.coverIcon ? (
-          <View style={[styles.coverBackground, { backgroundColor: userProfile.coverColor || '#1E88E5' }]}>
-            <MaterialCommunityIcons 
-              name={userProfile.coverIcon as any} 
-              size={180} 
-              color="rgba(255,255,255,0.3)" 
-              style={styles.coverIconStyle} 
+        <TouchableOpacity 
+          style={styles.coverBackground} 
+          onPress={() => {
+            if (userProfile?.coverImage) {
+              handleImageZoom(userProfile.coverImage, 'Kapak Fotoğrafı');
+            }
+          }}
+          activeOpacity={0.9}
+        >
+          {userProfile?.coverImage ? (
+            <ImageBackground 
+              source={{ uri: userProfile.coverImage }}
+              style={styles.coverBackground}
+              resizeMode="cover"
             />
-          </View>
-        ) : (
-          <View style={[styles.coverBackground, { backgroundColor: '#1E88E5' }]}>
-            <MaterialCommunityIcons 
-              name="city-variant" 
-              size={180} 
-              color="rgba(255,255,255,0.3)" 
-              style={styles.coverIconStyle} 
-            />
-          </View>
-        )}
+          ) : userProfile?.coverIcon ? (
+            <View style={[styles.coverBackground, { backgroundColor: userProfile.coverColor || '#1E88E5' }]}>
+              <MaterialCommunityIcons 
+                name={userProfile.coverIcon as any} 
+                size={180} 
+                color="rgba(255,255,255,0.3)" 
+                style={styles.coverIconStyle} 
+              />
+            </View>
+          ) : (
+            <View style={[styles.coverBackground, { backgroundColor: '#1E88E5' }]}>
+              <MaterialCommunityIcons 
+                name="city-variant" 
+                size={180} 
+                color="rgba(255,255,255,0.3)" 
+                style={styles.coverIconStyle} 
+              />
+            </View>
+          )}
+        </TouchableOpacity>
         
         {/* Three-dot menu in top right corner */}
         <View style={styles.menuContainer}>
@@ -1126,11 +1224,20 @@ const ProfileScreen: React.FC = () => {
         
         {/* Avatar that overlaps the cover and content */}
         <View style={styles.avatarContainer}>
-          <UniversalAvatar
-            user={userProfile}
-            size={96}
-            style={styles.avatar}
-          />
+          <TouchableOpacity 
+            onPress={() => {
+              if (userProfile?.profileImage) {
+                handleImageZoom(userProfile.profileImage, 'Profil Fotoğrafı');
+              }
+            }}
+            activeOpacity={0.8}
+          >
+            <UniversalAvatar
+              user={userProfile}
+              size={96}
+              style={styles.avatar}
+            />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.editAvatarButton} onPress={() => handleEditProfile('profile')}>
             <MaterialCommunityIcons name="camera" size={16} color="#FFF" />
           </TouchableOpacity>
@@ -1483,6 +1590,14 @@ const ProfileScreen: React.FC = () => {
       currentValue={editValue}
       label={getFieldLabel(editField)}
       userType={userProfile?.userType}
+    />
+    
+    {/* Image Zoom Modal */}
+    <ImageZoomModal
+      visible={imageZoomVisible}
+      imageUri={zoomImageUri}
+      title={zoomImageTitle}
+      onClose={handleCloseImageZoom}
     />
     </>
   );

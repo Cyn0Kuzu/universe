@@ -3,8 +3,9 @@
  * Kulüp ve öğrenci için merkezi bildirim sistemi
  */
 
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { firebase } from '../firebase/config';
+import PushNotificationService from './pushNotificationService';
+import hybridPushService from './hybridPushNotificationService';
 
 export interface BaseNotification {
   id?: string;
@@ -575,11 +576,43 @@ export class UnifiedNotificationService {
         createdAt: firebase.firestore.Timestamp.now()
       };
 
-      await this.db.collection('notifications').add(notificationData);
-      console.log(`✅ Notification sent to ${notification.recipientType}: ${notification.recipientId}`);
+      // Save to Firestore notifications collection
+      const docRef = await this.db.collection('notifications').add(notificationData);
+      console.log(`✅ Notification saved to Firestore with ID: ${docRef.id} for ${notification.recipientType}: ${notification.recipientId}`);
+
+      // Send push notification
+      await this.sendPushNotification(notification);
+      
+      console.log(`✅ Complete notification sent: Firestore + Push for ${notification.recipientId}`);
     } catch (error) {
       console.error('Send notification failed:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Push bildirim gönder
+   */
+  private static async sendPushNotification(notification: Omit<BaseNotification, 'id' | 'read' | 'createdAt'>): Promise<void> {
+    try {
+      // Use hybrid push notification service
+      await hybridPushService.sendToUser(
+        notification.recipientId,
+        {
+          type: notification.category === 'events' ? 'event' : 
+                notification.category === 'membership' ? 'club' : 'announcement',
+          title: notification.title,
+          body: notification.message,
+          data: {
+            notificationId: notification.recipientId,
+            type: notification.type,
+            ...notification.metadata
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Push notification failed:', error);
+      // Push bildirim hatası ana bildirim sistemini etkilemesin
     }
   }
 

@@ -1,4 +1,5 @@
-import { firebase } from './config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { ClubStatsService } from '../services/clubStatsService';
 import { ClubNotificationService } from '../services/clubNotificationService';
 import { clubActivityService } from '../services/enhancedClubActivityService';
@@ -206,6 +207,21 @@ export const sendMembershipRequest = async (
       // Kulüp yöneticisine bildirim gönder
       console.log('Sending notification to club admin...');
       await sendMembershipNotification(clubId, userId, docRef.id, userData);
+      
+      // Firebase Functions ile üyelik isteği bildirimi gönder
+      try {
+        const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+        const requesterName = userData.displayName || userData.name || userData.email || 'Anonim';
+        
+        await FirebaseFunctionsService.sendMemberRequestNotification(
+          userId,
+          clubId,
+          requesterName
+        );
+        console.log('✅ Member request notification sent via Firebase Functions');
+      } catch (notificationError) {
+        console.warn('⚠️ Failed to send member request notification:', notificationError);
+      }
       
       // Unified Notification System - Üyelik başvurusu bildirimi
       try {
@@ -577,7 +593,22 @@ export const approveMembershipRequest = async (
       })
     );
 
-    // 7. Unified Notification System - Üyelik onaylandı bildirimi
+    // 7. Firebase Functions ile üyelik onayı bildirimi gönder
+    try {
+      const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+      const clubName = clubData.displayName || clubData.clubName || clubData.name || 'Kulüp';
+      
+      await FirebaseFunctionsService.sendMemberApprovedNotification(
+        requestData.userId,
+        clubId,
+        clubName
+      );
+      console.log('✅ Member approval notification sent via Firebase Functions');
+    } catch (notificationError) {
+      console.warn('⚠️ Failed to send member approval notification:', notificationError);
+    }
+
+    // 8. Unified Notification System - Üyelik onaylandı bildirimi
     try {
       const clubInfo = await UnifiedNotificationService.getClubInfo(clubId);
       await UnifiedNotificationService.notifyStudentMembershipApproved(
@@ -736,6 +767,21 @@ export const rejectMembershipRequest = async (
         console.error('❌ Student activity creation failed:', error);
       })
     );
+
+    // Firebase Functions ile üyelik reddi bildirimi gönder
+    try {
+      const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+      const clubName = clubData.displayName || clubData.clubName || clubData.name || 'Kulüp';
+      
+      await FirebaseFunctionsService.sendMemberRejectedNotification(
+        requestData.userId,
+        requestData.clubId,
+        clubName
+      );
+      console.log('✅ Member rejection notification sent via Firebase Functions');
+    } catch (notificationError) {
+      console.warn('⚠️ Failed to send member rejection notification:', notificationError);
+    }
 
     // Unified Notification System - Üyelik reddedildi bildirimi
     try {

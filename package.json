@@ -1,6 +1,6 @@
 {
   "name": "universe",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -13,11 +13,16 @@
     "submit:ios": "eas submit --platform ios",
     "preview": "eas build --profile preview",
     "export": "expo export",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "clean": "npx expo install --fix && npx expo install --check",
+    "reset-cache": "npx expo start --clear",
+    "performance-test": "npx expo start --dev-client --no-dev --minify"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "1.21.0",
+    "@react-native-firebase/app": "^18.9.0",
+    "@react-native-firebase/messaging": "^18.9.0",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/drawer": "^6.5.0",
     "@react-navigation/native": "^6.1.18",
@@ -40,8 +45,10 @@
     "expo-updates": "~0.24.13",
     "firebase": "^9.6.11",
     "moment": "^2.30.1",
+    "postinstall-postinstall": "^2.1.0",
     "react": "18.2.0",
     "react-native": "0.73.6",
+    "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-paper": "^4.12.8",
     "react-native-reanimated": "~3.6.2",
@@ -51,6 +58,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
+    "@babel/plugin-transform-react-constant-elements": "^7.27.1",
+    "@babel/plugin-transform-react-inline-elements": "^7.27.1",
+    "@babel/plugin-transform-react-jsx-source": "^7.27.1",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@types/base-64": "^1.0.2",

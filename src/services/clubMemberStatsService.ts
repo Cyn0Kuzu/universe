@@ -1,5 +1,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import { performanceOptimizer } from '../utils/performanceOptimizer';
+import { optimizedFirebase } from './optimizedFirebaseService';
 
 export interface MemberStats {
   id: string;
@@ -175,111 +177,137 @@ export class ClubMemberStatsService {
   }
 
   /**
-   * Bir üyenin kulüp içindeki aktivite istatistiklerini hesapla - GERÇEKZAMANLİ
+   * Bir üyenin kulüp içindeki aktivite istatistiklerini hesapla - OPTIMIZED
    */
   private async calculateMemberStats(clubId: string, userId: string) {
-    const db = firebase.firestore();
-    
-    let totalParticipation = 0;
-    let totalLikes = 0;
-    let totalComments = 0;
-    let lastActivity = firebase.firestore.Timestamp.now();
+    return performanceOptimizer.executeAsync(async () => {
+      const db = firebase.firestore();
+      
+      let totalParticipation = 0;
+      let totalLikes = 0;
+      let totalComments = 0;
+      let lastActivity = firebase.firestore.Timestamp.now();
 
-    console.log(`📊 Real-time calculating stats for user ${userId} in club ${clubId}`);
+      console.log(`📊 Real-time calculating stats for user ${userId} in club ${clubId}`);
 
-    try {
-      // 1. Kulübün tüm etkinliklerini getir
-      const eventsSnapshot = await db
-        .collection('events')
-        .where('clubId', '==', clubId)
-        .get();
+      try {
+        // 1. Kulübün tüm etkinliklerini getir - optimized
+        const eventsResult = await optimizedFirebase.readCollection('events', {
+          where: [{ field: 'clubId', operator: '==', value: clubId }],
+          limit: 50 // Limit to prevent excessive queries
+        });
 
-      console.log(`📅 Found ${eventsSnapshot.size} events for club ${clubId}`);
+        console.log(`📅 Found ${eventsResult.data.length} events for club ${clubId}`);
 
-      for (const eventDoc of eventsSnapshot.docs) {
-        const eventId = eventDoc.id;
+        // Batch process events to prevent main thread blocking
+        const eventIds = eventsResult.data.map(event => event.id);
         
-        // 2. KATILIM - eventAttendees koleksiyonundan gerçek zamanlı kontrol
-        const attendeeSnapshot = await db
-          .collection('eventAttendees')
-          .where('eventId', '==', eventId)
-          .where('userId', '==', userId)
-          .get();
-        
-        if (!attendeeSnapshot.empty) {
-          totalParticipation++;
-          console.log(`✅ User ${userId} participated in event ${eventId}`);
+        // Process events in batches
+        const batchSize = 10;
+        for (let i = 0; i < eventIds.length; i += batchSize) {
+          const batch = eventIds.slice(i, i + batchSize);
           
-          // Son aktivite güncelle
-          const attendeeData = attendeeSnapshot.docs[0]?.data();
-          if (attendeeData?.joinedAt && attendeeData.joinedAt > lastActivity) {
-            lastActivity = attendeeData.joinedAt;
-          }
-        }
-
-        // 3. BEĞENİ - eventLikes koleksiyonundan gerçek zamanlı kontrol
-        const likeSnapshot = await db
-          .collection('eventLikes')
-          .where('eventId', '==', eventId)
-          .where('userId', '==', userId)
-          .get();
-        
-        if (!likeSnapshot.empty) {
-          totalLikes++;
-          console.log(`❤️ User ${userId} liked event ${eventId}`);
-          
-          // Son aktivite güncelle
-          const likeData = likeSnapshot.docs[0]?.data();
-          if (likeData?.timestamp && likeData.timestamp > lastActivity) {
-            lastActivity = likeData.timestamp;
-          }
-        }
-
-        // 4. YORUM - events/{eventId}/comments alt koleksiyonundan gerçek zamanlı kontrol
-        const commentsSnapshot = await db
-          .collection('events')
-          .doc(eventId)
-          .collection('comments')
-          .where('userId', '==', userId)
-          .get();
-        
-        if (!commentsSnapshot.empty) {
-          totalComments += commentsSnapshot.size;
-          console.log(`💬 User ${userId} has ${commentsSnapshot.size} comments in event ${eventId}`);
-          
-          // Son aktivite güncelle - en son yorumu al
-          const sortedComments = commentsSnapshot.docs.sort((a, b) => {
-            const aTime = a.data()?.createdAt || firebase.firestore.Timestamp.now();
-            const bTime = b.data()?.createdAt || firebase.firestore.Timestamp.now();
-            return bTime.seconds - aTime.seconds;
-          });
-          
-          if (sortedComments.length > 0) {
-            const latestComment = sortedComments[0]?.data();
-            if (latestComment?.createdAt && latestComment.createdAt > lastActivity) {
-              lastActivity = latestComment.createdAt;
+          // Process batch in parallel
+          const batchPromises = batch.map(async (eventId) => {
+            // 2. KATILIM - eventAttendees koleksiyonundan gerçek zamanlı kontrol
+            const attendeeResult = await optimizedFirebase.readCollection('eventAttendees', {
+              where: [
+                { field: 'eventId', operator: '==', value: eventId },
+                { field: 'userId', operator: '==', value: userId }
+              ],
+              limit: 1
+            });
+            
+            if (attendeeResult.data.length > 0) {
+              totalParticipation++;
+              console.log(`✅ User ${userId} participated in event ${eventId}`);
+              
+              // Son aktivite güncelle
+              const attendeeData = attendeeResult.data[0];
+              if (attendeeData?.joinedAt && attendeeData.joinedAt > lastActivity) {
+                lastActivity = attendeeData.joinedAt;
+              }
             }
+
+            // 3. BEĞENİ - eventLikes koleksiyonundan gerçek zamanlı kontrol
+            const likeResult = await optimizedFirebase.readCollection('eventLikes', {
+              where: [
+                { field: 'eventId', operator: '==', value: eventId },
+                { field: 'userId', operator: '==', value: userId }
+              ],
+              limit: 1
+            });
+            
+            if (likeResult.data.length > 0) {
+              totalLikes++;
+              console.log(`❤️ User ${userId} liked event ${eventId}`);
+              
+              // Son aktivite güncelle
+              const likeData = likeResult.data[0];
+              if (likeData?.timestamp && likeData.timestamp > lastActivity) {
+                lastActivity = likeData.timestamp;
+              }
+            }
+
+            // 4. YORUM - events/{eventId}/comments alt koleksiyonundan gerçek zamanlı kontrol
+            const commentsResult = await optimizedFirebase.readCollection(`events/${eventId}/comments`, {
+              where: [{ field: 'userId', operator: '==', value: userId }],
+              limit: 10
+            });
+            
+            if (commentsResult.data.length > 0) {
+              totalComments += commentsResult.data.length;
+              console.log(`💬 User ${userId} has ${commentsResult.data.length} comments in event ${eventId}`);
+              
+              // Son aktivite güncelle - en son yorumu al
+              const sortedComments = commentsResult.data.sort((a, b) => {
+                const aTime = a.createdAt || firebase.firestore.Timestamp.now();
+                const bTime = b.createdAt || firebase.firestore.Timestamp.now();
+                return bTime.seconds - aTime.seconds;
+              });
+              
+              if (sortedComments.length > 0) {
+                const latestComment = sortedComments[0];
+                if (latestComment?.createdAt && latestComment.createdAt > lastActivity) {
+                  lastActivity = latestComment.createdAt;
+                }
+              }
+            }
+          });
+
+          // Wait for batch to complete
+          await Promise.all(batchPromises);
+          
+          // Small delay to prevent main thread blocking
+          if (i + batchSize < eventIds.length) {
+            await new Promise(resolve => setTimeout(resolve, 10));
           }
         }
+
+        console.log(`📊 Final stats for user ${userId}:`, {
+          totalParticipation,
+          totalLikes,
+          totalComments,
+          lastActivity: lastActivity.toDate()
+        });
+
+        return {
+          totalParticipation,
+          totalLikes,
+          totalComments,
+          lastActivity
+        };
+
+      } catch (error) {
+        console.error(`❌ Error calculating real-time stats for user ${userId} in club ${clubId}:`, error);
+        return {
+          totalParticipation: 0,
+          totalLikes: 0,
+          totalComments: 0,
+          lastActivity: firebase.firestore.Timestamp.now()
+        };
       }
-
-      console.log(`📊 Final stats for user ${userId}:`, {
-        totalParticipation,
-        totalLikes,
-        totalComments,
-        lastActivity: lastActivity.toDate()
-      });
-
-    } catch (error) {
-      console.error(`❌ Error calculating real-time stats for user ${userId} in club ${clubId}:`, error);
-    }
-
-    return {
-      totalParticipation,
-      totalLikes,
-      totalComments,
-      lastActivity
-    };
+    }, 'low');
   }
 
   /**

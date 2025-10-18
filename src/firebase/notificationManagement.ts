@@ -1,8 +1,9 @@
 // Professional Notification Management System - CLEAN VERSION
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { firebase } from './config';
 import { ClubNotificationService, ClubNotification } from '../services/clubNotificationService';
 import { SafeNotificationCreator } from '../utils/safeNotificationCreator';
+import PushNotificationService from '../services/pushNotificationService';
+import hybridPushService from '../services/hybridPushNotificationService';
 
 export interface NotificationPreferences {
   userId: string;
@@ -126,6 +127,10 @@ export class NotificationManagement {
         .add(notification);
       
       console.log('✅ Notification sent successfully with ID:', docRef.id);
+      
+      // Push bildirim gönder
+      await this.sendPushNotification(userId, notification);
+      
       return true;
     } catch (error) {
       console.error('❌ Failed to send notification:', error);
@@ -134,8 +139,50 @@ export class NotificationManagement {
   }
 
   /**
-   * 👥 Send user follow notification
+   * Get notification type for push notifications
    */
+  private static getNotificationType(type: string): 'event' | 'club' | 'announcement' | 'reminder' {
+    switch (type) {
+      case 'user_follow':
+      case 'user_unfollow':
+      case 'club_follow':
+      case 'club_unfollow':
+        return 'club';
+      case 'event_like':
+      case 'event_comment':
+      case 'event_attendance':
+        return 'event';
+      case 'announcement':
+        return 'announcement';
+      default:
+        return 'announcement';
+    }
+  }
+
+  /**
+   * Push bildirim gönder
+   */
+  private static async sendPushNotification(userId: string, notification: any): Promise<void> {
+    try {
+      // Use hybrid push notification service
+      await hybridPushService.sendToUser(
+        userId,
+        {
+          type: this.getNotificationType(notification.type),
+          title: notification.title,
+          body: notification.message,
+          data: {
+            notificationId: userId,
+            type: notification.type,
+            ...notification.data
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Push notification failed:', error);
+      // Push bildirim hatası ana bildirim sistemini etkilemesin
+    }
+  }
   static async sendUserFollowNotification(
     followerId: string,
     followerName: string,

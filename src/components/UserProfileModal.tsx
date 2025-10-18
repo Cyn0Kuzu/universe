@@ -152,13 +152,14 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({
         });
         
         // Send follow notification to target user
-        // Note: Using enhanced user activity service for comprehensive tracking
         try {
-          await NotificationManagement.sendUserFollowNotification(
+          const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
+          const currentUserName = currentUser.displayName || currentUser.email || 'Anonim Kullanıcı';
+          
+          await FirebaseFunctionsService.sendFollowNotification(
             currentUser.uid,
-            currentUser.displayName || currentUser.email || 'Anonim Kullanıcı',
             userId,
-            currentUser.photoURL || undefined
+            currentUserName
           );
           console.log('✅ Follow notification sent to:', userId);
         } catch (error: any) {

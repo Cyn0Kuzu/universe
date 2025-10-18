@@ -134,6 +134,19 @@ const MemberStatsItem: React.FC<MemberStatsItemProps> = ({ member, onPress, cate
             </Text>
             <Text style={styles.statLabel}>Yorum</Text>
           </View>
+          
+          {/* Etkinlik */}
+          <View style={styles.statItem}>
+            <MaterialCommunityIcons 
+              name="calendar-star" 
+              size={16} 
+              color="#9C27B0" 
+            />
+            <Text style={styles.statValue}>
+              {(member as any).eventCount || 0}
+            </Text>
+            <Text style={styles.statLabel}>Etkinlik</Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>

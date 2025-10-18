@@ -31,6 +31,7 @@
         "autoIncrement": "buildNumber"
       },
       "android": {
+        "buildType": "aab",
         "resourceClass": "large",
         "autoIncrement": "versionCode"
       },
@@ -42,9 +43,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "your-apple-id@email.com",
-        "ascAppId": "your-app-store-connect-app-id",
-        "appleTeamId": "your-apple-team-id"
+        "appleId": "YOUR_APPLE_ID@email.com",
+        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
+        "appleTeamId": "YOUR_APPLE_TEAM_ID"
       },
       "android": {
         "serviceAccountKeyPath": "./android-service-account.json",

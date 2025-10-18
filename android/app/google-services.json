@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "946853543876",
+    "project_id": "universe-a6f60",
+    "storage_bucket": "universe-a6f60.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946853543876:android:969ff06b2d211c3263ae91",
+        "android_client_info": {
+          "package_name": "com.universekampus.universeapp2026"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

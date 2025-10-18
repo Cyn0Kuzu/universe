@@ -127,10 +127,10 @@ export class UserFollowSyncService {
       try {
         console.log('📨 Creating follow notification...');
         
-        // Import emergency notification fix
-        const { sendNotificationToUser } = require('../firebase/notificationManagement');
+        // Import notification management
+        const { NotificationManagement } = require('../firebase/notificationManagement');
         
-        await sendNotificationToUser(
+        await NotificationManagement.sendNotificationToUser(
           targetUserId,
           'user_follow',
           'Yeni Takipçi 👥',
@@ -148,30 +148,35 @@ export class UserFollowSyncService {
         // Don't fail the follow operation for notification errors
       }
 
-      // 🎯 Modern scoring system for user follow
-      try {
-        console.log('🎯 Starting user follow scoring...');
-        const { unifiedScoringService } = require('./unifiedScoringService');
-        
-        const scoringResult = await unifiedScoringService.followUser(followerId, targetUserId, {
-          userName: followerName
-        });
-        
-        console.log('✅ User follow scoring completed:', scoringResult);
-        
-        // Send points earned notification if points were awarded
-        if (scoringResult.success && (scoringResult.userPointsAwarded || 0) > 0) {
-          // TODO: Replace with ClubNotificationService
-          console.log('Points earned notification would be sent:', scoringResult.userPointsAwarded);
-          // const { enhancedClubNotificationService } = require('./enhancedClubNotificationService');
-          // await enhancedClubNotificationService.sendPointsEarnedNotification(
-          //   followerId, scoringResult.userPointsAwarded, 'Kullanıcı takip etme', 'follow_user'
-          // );
+        // 🎯 Modern scoring system for user follow
+        try {
+          console.log('🎯 Starting user follow scoring...');
+          
+          // Simple scoring - award points for following
+          const db = firebase.firestore();
+          const batch = db.batch();
+          
+          // Award points to follower
+          const followerRef = db.collection('users').doc(followerId);
+          batch.update(followerRef, {
+            points: firebase.firestore.FieldValue.increment(10),
+            lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          // Award points to target user
+          const targetRef = db.collection('users').doc(targetUserId);
+          batch.update(targetRef, {
+            points: firebase.firestore.FieldValue.increment(5),
+            lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          await batch.commit();
+          console.log('✅ User follow scoring completed successfully');
+          
+        } catch (scoringError: any) {
+          console.error('❌ User follow scoring failed:', scoringError);
+          // Don't fail the follow operation for scoring errors
         }
-      } catch (error: any) {
-        console.error('❌ User follow scoring failed:', error);
-        // Don't fail the follow operation for scoring errors
-      }
 
       // 📝 Log user follow activity
       try {
@@ -283,25 +288,30 @@ export class UserFollowSyncService {
       // 🎯 Modern scoring system for user unfollow
       try {
         console.log('🎯 Starting user unfollow scoring...');
-        const { unifiedScoringService } = require('./unifiedScoringService');
         
-        const scoringResult = await unifiedScoringService.unfollowUser(followerId, targetUserId, {
-          userName: followerName
+        // Simple scoring - deduct points for unfollowing
+        const db = firebase.firestore();
+        const batch = db.batch();
+        
+        // Deduct points from follower
+        const followerRef = db.collection('users').doc(followerId);
+        batch.update(followerRef, {
+          points: firebase.firestore.FieldValue.increment(-5),
+          lastActivity: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        console.log('✅ User unfollow scoring completed:', scoringResult);
+        // Deduct points from target user
+        const targetRef = db.collection('users').doc(targetUserId);
+        batch.update(targetRef, {
+          points: firebase.firestore.FieldValue.increment(-3),
+          lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+        });
         
-        // Send points lost notification if points were lost
-        if (scoringResult.success && (scoringResult.userPointsAwarded || 0) < 0) {
-          // TODO: Replace with ClubNotificationService
-          console.log('Points lost notification would be sent:', Math.abs(scoringResult.userPointsAwarded));
-          // const { enhancedClubNotificationService } = require('./enhancedClubNotificationService');
-          // await enhancedClubNotificationService.sendPointsLostNotification(
-          //   followerId, Math.abs(scoringResult.userPointsAwarded), 'Kullanıcı takipten çıkma', 'unfollow_user'
-          // );
-        }
-      } catch (error: any) {
-        console.error('❌ User unfollow scoring failed:', error);
+        await batch.commit();
+        console.log('✅ User unfollow scoring completed successfully');
+        
+      } catch (scoringError: any) {
+        console.error('❌ User unfollow scoring failed:', scoringError);
         // Don't fail the unfollow operation for scoring errors
       }
 

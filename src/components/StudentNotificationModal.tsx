@@ -78,45 +78,53 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
   }, [visible, userId]);
 
   const loadNotifications = async () => {
-    if (!isMounted()) return;
+    if (!isMounted.current) return;
     
     try {
-      setModalState({ loading: true });
+      setModalState(prev => ({ ...prev, loading: true }));
       
+      console.log(`📋 Loading student notifications for user: ${userId}`);
+      
+      // Tüm bildirimleri al (recipientType filtresi olmadan)
       let snapshot;
       try {
-        // Öğrenci bildirimleri için recipientType = 'student' filter
         snapshot = await firebase.firestore()
           .collection('notifications')
           .where('recipientId', '==', userId)
-          .where('recipientType', '==', 'student') // Öğrenci bildirimleri için
           .orderBy('createdAt', 'desc')
-          .limit(50)
+          .limit(200)
           .get();
           
-        console.log(`📋 Loaded ${snapshot.size} student notifications for user ${userId}`);
+        console.log(`📋 Loaded ${snapshot.size} total notifications for user ${userId}`);
       } catch (orderError) {
         console.warn('OrderBy failed, trying without ordering:', orderError);
         snapshot = await firebase.firestore()
           .collection('notifications')
           .where('recipientId', '==', userId)
-          .where('recipientType', '==', 'student')
-          .limit(50)
+          .limit(200)
           .get();
       }
 
       const fetchedNotifications: StudentNotification[] = [];
       
+      // Tüm bildirimleri işle
       snapshot.docs.forEach((doc) => {
         const data = doc.data();
+        
+        // Client-side filtering: recipientType 'student' olanları veya recipientType olmayan eski bildirimleri al
+        const recipientType = data.recipientType;
+        if (recipientType && recipientType !== 'student') {
+          return; // Skip non-student notifications
+        }
+        
         const notification: StudentNotification = {
           id: doc.id,
           type: data.type || 'unknown',
           title: data.title || 'Bildirim',
           message: data.message || '',
           recipientId: data.recipientId,
-          senderId: data.senderId, // Yeni sistem senderId kullanır
-          senderName: data.senderName, // Yeni sistem senderName kullanır
+          senderId: data.senderId,
+          senderName: data.senderName,
           senderImage: data.senderImage,
           clubId: data.metadata?.clubId || data.clubId,
           eventId: data.metadata?.eventId || data.eventId,
@@ -134,8 +142,8 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
         return b.createdAt.toMillis() - a.createdAt.toMillis();
       });
 
-      if (isMounted()) {
-        setModalState({ notifications: fetchedNotifications });
+      if (isMounted.current) {
+        setModalState(prev => ({ ...prev, notifications: fetchedNotifications }));
         console.log(`✅ Successfully loaded ${fetchedNotifications.length} student notifications`);
         if (fetchedNotifications.length > 0) {
           console.log('First notification:', fetchedNotifications[0]);
@@ -144,17 +152,17 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
     } catch (error) {
       console.error('Error loading student notifications:', error);
     } finally {
-      if (isMounted()) {
-        setModalState({ loading: false });
+      if (isMounted.current) {
+        setModalState(prev => ({ ...prev, loading: false }));
       }
     }
   };
 
   const onRefresh = useCallback(async () => {
-    setModalState({ refreshing: true });
+    setModalState(prev => ({ ...prev, refreshing: true }));
     await loadNotifications();
-    if (isMounted()) {
-      setModalState({ refreshing: false });
+    if (isMounted.current) {
+      setModalState(prev => ({ ...prev, refreshing: false }));
     }
   }, []);
 
@@ -177,9 +185,10 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
       await batch.commit();
       
       // Update local state
-      setModalState({
-        notifications: modalState.notifications.map(n => ({ ...n, read: true }))
-      });
+      setModalState(prev => ({
+        ...prev,
+        notifications: prev.notifications.map(n => ({ ...n, read: true }))
+      }));
       
       console.log(`✅ Marked ${unreadNotifications.length} student notifications as read`);
     } catch (error) {

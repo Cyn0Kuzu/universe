@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { useDeviceLayout, getNavigationBarStyle, getNavigationLabelStyle, getNavigationIconStyle, getNavigationItemStyle } from '../utils/deviceLayoutUtils';
 
 interface CustomTheme {
   colors: {
@@ -28,6 +29,8 @@ import EventAttendeesScreen from '../screens/Club/EventAttendeesScreen';
 import ClubFollowersScreen from '../screens/Club/ClubFollowersScreen';
 import ClubFollowingScreen from '../screens/Club/ClubFollowingScreen';
 import ClubProfileScreen from '../screens/Club/ClubProfileScreen';
+import MembershipApplicationsScreen from '../screens/Club/MembershipApplicationsScreen';
+import ViewEventScreen from '../screens/Club/ViewEventScreen';
 
 // Ortak ekranlar
 import EventDetailScreen_Tabbed from '../screens/Events/EventDetailScreen_Tabbed';
@@ -60,6 +63,8 @@ export type ClubStackParamList = {
   NotificationScreen: undefined;
   EventsScreen: undefined;
   LeaderboardScreen: undefined;
+  MembershipApplications: undefined; // Üyelik başvuruları
+  ViewEventScreen: { eventId: string }; // Kulüp etkinlik görüntüleme
 };
 
 const ClubTab = createBottomTabNavigator<ClubTabParamList>();
@@ -67,6 +72,8 @@ const ClubStack = createNativeStackNavigator<ClubStackParamList>();
 
 const ClubTabNavigator = () => {
   const theme = useTheme() as CustomTheme;
+  const deviceLayout = useDeviceLayout();
+  const insets = useDeviceLayout().safeAreaInsets;
 
   return (
     <ClubTab.Navigator
@@ -75,22 +82,17 @@ const ClubTabNavigator = () => {
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
         tabBarStyle: {
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
-          backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
-          elevation: 10,
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 3,
+          ...getNavigationBarStyle(),
+          // CRITICAL: Use safe area insets to position tab bar above system navigation
+          // This ensures tab bar sits right above phone's gesture navigation bar
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 20,
+          height: (deviceLayout.navigationBar.height - deviceLayout.navigationBar.paddingBottom) + (insets.bottom > 0 ? insets.bottom : 20),
         },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-        }
+        tabBarLabelStyle: getNavigationLabelStyle(),
+        tabBarIconStyle: getNavigationIconStyle(),
+        tabBarItemStyle: getNavigationItemStyle(),
+        tabBarShowLabel: true,
+        tabBarAllowFontScaling: false,
       }}
     >
       <ClubTab.Screen
@@ -99,7 +101,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Ana Sayfa',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="home-variant" color={color} size={size} />
+            <MaterialCommunityIcons name="home-variant" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -109,7 +111,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Etkinlikler',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="calendar" color={color} size={size} />
+            <MaterialCommunityIcons name="calendar" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -119,7 +121,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Üyeler',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="account-group" color={color} size={size} />
+            <MaterialCommunityIcons name="account-group" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -129,7 +131,7 @@ const ClubTabNavigator = () => {
         options={{
           tabBarLabel: 'Profil',
           tabBarIcon: ({ color, size }: { color: string, size: number }) => (
-            <MaterialCommunityIcons name="account" color={color} size={size} />
+            <MaterialCommunityIcons name="account" color={color} size={deviceLayout.navigationBar.iconSize} />
           ),
         }}
       />
@@ -235,6 +237,22 @@ const ClubNavigator = () => {
         options={{
           headerShown: false,
           title: 'Lider Tablosu'
+        }}
+      />
+      <ClubStack.Screen 
+        name="MembershipApplications" 
+        component={MembershipApplicationsScreen}
+        options={{
+          headerShown: false,
+          title: 'Üyelik Başvuruları'
+        }}
+      />
+      <ClubStack.Screen 
+        name="ViewEventScreen" 
+        component={ViewEventScreen}
+        options={{
+          headerShown: false,
+          title: 'Etkinlik Görüntüle'
         }}
       />
     </ClubStack.Navigator>

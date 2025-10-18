@@ -20,10 +20,30 @@
 -keep class expo.modules.** { *; }
 -keep class com.facebook.react.bridge.** { *; }
 
-# Firebase
+# Firebase - Complete protection
 -keep class com.google.firebase.** { *; }
 -keep class com.google.android.gms.** { *; }
 -dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+
+# Firebase Messaging - Critical for push notifications
+-keep class com.google.firebase.messaging.** { *; }
+-keep class com.google.firebase.iid.** { *; }
+-keepclassmembers class com.google.firebase.messaging.** {
+    *;
+}
+
+# Firebase Firestore
+-keep class com.google.firebase.firestore.** { *; }
+-keepclassmembers class com.google.firebase.firestore.** {
+    *;
+}
+
+# Keep custom FirebaseMessagingService
+-keep class com.universekampus.universeapp2026.FirebaseMessagingService { *; }
+-keepclassmembers class com.universekampus.universeapp2026.FirebaseMessagingService {
+    *;
+}
 
 # React Navigation
 -keep class com.swmansion.gesturehandler.** { *; }
@@ -103,6 +123,10 @@
 # React Native Screens
 -keep class com.swmansion.rnscreens.** { *; }
 -keepclassmembers class com.swmansion.rnscreens.** { *; }
+
+# React Native Fast Image
+-keep class com.dylanvann.fastimage.** { *; }
+-keepclassmembers class com.dylanvann.fastimage.** { *; }
 
 # React Native Gesture Handler
 -keep class com.swmansion.gesturehandler.** { *; }

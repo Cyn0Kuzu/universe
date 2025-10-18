@@ -1,4 +1,5 @@
 import { storage } from '../firebase/config';
+import { ref, getDownloadURL, uploadBytes, deleteObject } from 'firebase/storage';
 
 // Remove expo-file-system dependency - use React Native Image API instead
 // let FileSystem: any = null;
@@ -43,7 +44,7 @@ export class ImageUploadService {
       console.log('📁 Upload path:', storagePath);
 
       // Get storage reference
-      const storageRef = storage.ref().child(storagePath);
+      const storageRef = ref(storage, storagePath);
 
       // Fetch image data with standard fetch (more reliable)
       console.log('🔄 Fetching image data...');
@@ -86,7 +87,7 @@ export class ImageUploadService {
       let uploadTask;
       try {
         console.log('📤 Strategy 1: Direct blob upload without metadata...');
-        uploadTask = await storageRef.put(blob);
+        uploadTask = await uploadBytes(storageRef, blob);
         console.log('✅ Direct blob upload completed');
       } catch (putError: any) {
         console.log('⚠️ Strategy 1 failed:', putError.message);
@@ -94,9 +95,7 @@ export class ImageUploadService {
         // Strategy 2: Try with just content type
         try {
           console.log('📤 Strategy 2: Upload with content type only...');
-          uploadTask = await storageRef.put(blob, { 
-            contentType: blob.type || 'image/jpeg' 
-          });
+          uploadTask = await uploadBytes(storageRef, blob);
           console.log('✅ Content type upload completed');
         } catch (contentTypeError: any) {
           console.log('⚠️ Strategy 2 failed:', contentTypeError.message);
@@ -105,6 +104,7 @@ export class ImageUploadService {
           try {
             console.log('📤 Strategy 3: Base64 string upload...');
             
+            // Convert blob to base64 for uploadBytes alternative
             const base64Result = await new Promise<string>((resolve, reject) => {
               const reader = new FileReader();
               reader.onload = () => {
@@ -116,8 +116,15 @@ export class ImageUploadService {
               reader.readAsDataURL(blob);
             });
             
-            uploadTask = await storageRef.putString(base64Result, 'base64', { 
-              contentType: blob.type || 'image/jpeg' 
+            // Use uploadBytes with base64 data converted to Uint8Array
+            const base64Data = atob(base64Result);
+            const uint8Array = new Uint8Array(base64Data.length);
+            for (let i = 0; i < base64Data.length; i++) {
+              uint8Array[i] = base64Data.charCodeAt(i);
+            }
+            
+            uploadTask = await uploadBytes(storageRef, uint8Array, {
+              contentType: blob.type || 'image/jpeg'
             });
             console.log('✅ Base64 upload completed');
           } catch (base64Error: any) {
@@ -127,7 +134,7 @@ export class ImageUploadService {
         }
       }
 
-      const downloadURL = await uploadTask.ref.getDownloadURL();
+      const downloadURL = await getDownloadURL(uploadTask.ref);
 
       console.log(`✅ ${type} image uploaded successfully:`, downloadURL);
       
@@ -223,19 +230,19 @@ export class ImageUploadService {
       
       // Try to create a storage reference - most basic operation
       console.log('📁 Creating storage reference...');
-      const testRef = storage.ref('test/basic-connection-test.txt');
+      const testRef = ref(storage, 'test/basic-connection-test.txt');
       console.log('✅ Storage reference created successfully');
       
       // Try a very basic upload test
       console.log('📤 Testing basic upload...');
-      const testData = 'test-connection';
+      const testData = new Blob(['test-connection'], { type: 'text/plain' });
       
       try {
-        await testRef.putString(testData, 'raw');
+        const uploadResult = await uploadBytes(testRef, testData);
         console.log('✅ Basic upload test successful');
         
         // Try to get download URL
-        const url = await testRef.getDownloadURL();
+        const url = await getDownloadURL(uploadResult.ref);
         console.log('✅ Download URL retrieved:', url);
         
         return {
@@ -288,8 +295,8 @@ export class ImageUploadService {
         return false;
       }
 
-      const imageRef = storage.refFromURL(imageUrl);
-      await imageRef.delete();
+      const imageRef = ref(storage, imageUrl);
+      await deleteObject(imageRef);
       console.log('🗑️ Image deleted successfully:', imageUrl);
       return true;
     } catch (error) {

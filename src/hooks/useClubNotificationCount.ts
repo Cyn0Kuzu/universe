@@ -17,7 +17,7 @@ export const useClubNotificationCount = (clubOwnerId?: string) => {
     try {
       const db = firebase.firestore();
       
-      // Club bildirimleri - recipientId ile filtrele (orderBy kaldırıldı)
+      // Club bildirimleri - recipientId ile filtrele
       const notificationsSnapshot = await db
         .collection('notifications')
         .where('recipientId', '==', clubOwnerId)
@@ -28,10 +28,9 @@ export const useClubNotificationCount = (clubOwnerId?: string) => {
       const clubNotifications: any[] = [];
       notificationsSnapshot.forEach(doc => {
         const data = doc.data();
-        // 🚨 CRITICAL FIX: Handle legacy notifications without recipientType
-        const recipientType = data.recipientType || 'club'; // Default to club for backward compatibility
-        // Accept notifications without recipientType field (legacy notifications)
-        if (recipientType === 'club' || !data.recipientType) {
+        // recipientType 'club' olanları veya recipientType olmayan eski bildirimleri al
+        const recipientType = data.recipientType;
+        if (!recipientType || recipientType === 'club') {
           clubNotifications.push({ id: doc.id, ...data });
         }
       });

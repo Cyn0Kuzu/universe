@@ -4,7 +4,7 @@
  */
 
 // Core Firebase exports
-export { firebase, auth, firestore, storage } from './config';
+export { auth, firestore, storage, firebase } from './config';
 
 // Legacy service modules (maintain compatibility)
 export * from './auth';

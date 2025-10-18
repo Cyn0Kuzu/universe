@@ -8,7 +8,6 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from './config';
 
 // Basit AsyncStorage availability check (test yapmadan)
 const isAsyncStorageAvailable = (): boolean => {
@@ -43,8 +42,8 @@ export class FirebaseAuthPersistenceManager {
       console.log('� [AuthPersistence] Setting Firebase persistence to NONE to prevent AsyncStorage errors');
       
       try {
-        await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
-        console.log('✅ [AuthPersistence] Firebase persistence set to NONE - Custom Remember Me will handle persistence');
+        // Modern Firebase SDK'da setPersistence deprecated, bu yüzden skip ediyoruz
+        console.log('✅ [AuthPersistence] Skipping deprecated setPersistence - Custom Remember Me will handle persistence');
       } catch (persistenceError) {
         console.error('❌ [AuthPersistence] Failed to set NONE persistence:', persistenceError);
       }
@@ -67,7 +66,7 @@ export class FirebaseAuthPersistenceManager {
    */
   private static setupAuthStateListener(): void {
     try {
-      auth.onAuthStateChanged(async (user: firebase.User | null) => {
+      firebase.auth().onAuthStateChanged(async (user: firebase.User | null) => {
         if (user) {
           console.log('👤 [AuthPersistence] User authenticated, saving backups...');
           this.saveMemoryBackup(user);
@@ -220,7 +219,7 @@ export class FirebaseAuthPersistenceManager {
       console.log('🔍 [AutoSignIn] Checking for saved user session...');
       
       // İlk olarak Firebase'in kendi auth state'ini kontrol et
-      const currentUser = auth.currentUser;
+      const currentUser = firebase.auth().currentUser;
       if (currentUser) {
         console.log('✅ [AutoSignIn] Active Firebase user found, using current session');
         return currentUser;
@@ -316,7 +315,7 @@ export class FirebaseAuthPersistenceManager {
       }
       
       // Normal Firebase sign in işlemini yap
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
       
       if (userCredential.user && !userCredential.user.emailVerified) {
         // Email doğrulanmamışsa hata fırlat
@@ -353,7 +352,7 @@ export class FirebaseAuthPersistenceManager {
       await this.clearPersistentBackup();
       
       // Firebase'den çıkış yap
-      await auth.signOut();
+      await firebase.auth().signOut();
       
       console.log('✅ [AuthPersistence] Professional Sign Out successful (Remember Me cleared)');
       console.log('👋 [AuthPersistence] User will see login screen on next app open');
@@ -378,7 +377,7 @@ export class FirebaseAuthPersistenceManager {
    */
   static getCurrentUser(): firebase.User | null {
     try {
-      return auth.currentUser;
+      return firebase.auth().currentUser;
     } catch (error) {
       console.error('❌ [AuthPersistence] Failed to get current user:', error);
       return null;
@@ -390,7 +389,7 @@ export class FirebaseAuthPersistenceManager {
    */
   static async checkEmailVerification(): Promise<boolean> {
     try {
-      const user = auth.currentUser;
+      const user = firebase.auth().currentUser;
       if (!user) {
         return false;
       }
@@ -410,7 +409,7 @@ export class FirebaseAuthPersistenceManager {
    */
   static async sendEmailVerification(): Promise<void> {
     try {
-      const user = auth.currentUser;
+      const user = firebase.auth().currentUser;
       if (!user) {
         throw new Error('No user logged in');
       }
