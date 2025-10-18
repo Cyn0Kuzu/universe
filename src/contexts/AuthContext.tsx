@@ -5,6 +5,9 @@ import { refreshUserProfileCounts } from '../firebase/userProfile';
 import FirebaseAuthPersistenceManager from '../firebase/authPersistenceManager';
 import { SecureStorage } from '../utils/secureStorage';
 import { NetworkManager } from '../utils/networkManager';
+import { globalRealtimeSyncService } from '../services/globalRealtimeSyncService';
+import { enhancedRealtimeSyncService } from '../services/enhancedRealtimeSyncService';
+import { universalProfileSyncService } from '../services/universalProfileSyncService';
 import 'firebase/compat/auth';
 
 interface AuthContextType {
@@ -37,7 +40,9 @@ export const useAuth = () => useContext(AuthContext);
 
 // Helper function to normalize date fields in profile data
 const normalizeProfileDates = (profile: any) => {
-  if (!profile) return profile;
+  if (!profile) {
+    return profile;
+  }
   
   // Convert createdAt to proper Date object if it's not already
   if (profile.createdAt) {
@@ -117,7 +122,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const ensureCorrectUserType = useCallback(async (uid: string) => {
     try {
       const doc = await firebase.firestore().collection('users').doc(uid).get();
-      if (!doc.exists) return;
+      if (!doc.exists) {
+        return;
+      }
       const data: any = doc.data() || {};
       
       // Only consider it a club if it has STRONG club indicators
@@ -130,10 +137,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let sessionSaysClub = false;
       try {
         const pending = await SecureStorage.getCache('pending_profile');
-        if (pending?.userType === 'club') sessionSaysClub = true;
-        else {
+        if (pending?.userType === 'club') {
+          sessionSaysClub = true;
+        } else {
           const session = await SecureStorage.getUserSession();
-          if (session?.userType === 'club') sessionSaysClub = true;
+          if (session?.userType === 'club') {
+            sessionSaysClub = true;
+          }
         }
       } catch {}
 
@@ -237,6 +247,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [userProfile, currentUser, isClubAccount]);
 
+  // Enhanced real-time profile synchronization listener
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const handleProfileUpdate = (data: any) => {
+      console.log('🔄 Enhanced real-time profile update received:', data);
+      if (data.userId === currentUser.uid) {
+        // Refresh user profile when real-time update is received
+        refreshUserProfile();
+      }
+    };
+
+    // Listen to all sync services for maximum reliability
+    globalRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    enhancedRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    universalProfileSyncService.on('profileUpdated', handleProfileUpdate);
+
+    // Start all sync services
+    enhancedRealtimeSyncService.startGlobalSync();
+    universalProfileSyncService.initialize();
+
+    return () => {
+      globalRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      enhancedRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      universalProfileSyncService.off('profileUpdated', handleProfileUpdate);
+    };
+  }, [currentUser, refreshUserProfile]);
+
   useEffect(() => {
     if (authInitialized) return;
 
@@ -250,6 +288,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         // Network manager'ı başlat (lightweight)
         NetworkManager.init();
+        
+        // Global real-time synchronization'ı başlat
+        globalRealtimeSyncService.startGlobalSync();
         
         // Delay auth operations until after splash screen completes (2+ seconds)
         setTimeout(async () => {

@@ -7,12 +7,17 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { firebase } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import StudentEventCard from '../../components/StudentEventCard';
+import { EnhancedEventCard } from '../../components/EnhancedEventCard';
+import unifiedDataSyncService from '../../services/unifiedDataSyncService';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useLeaderboardActions } from '../../hooks/useLeaderboardActions';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StudentStackParamList } from '../../navigation/StudentNavigator';
 import { eventCategories, UNIVERSITIES_DATA } from '../../constants';
 import { unifiedScoringService } from '../../services/unifiedScoringService';
+import { globalRealtimeSyncService } from '../../services/globalRealtimeSyncService';
+import { enhancedRealtimeSyncService } from '../../services/enhancedRealtimeSyncService';
+import { universalProfileSyncService } from '../../services/universalProfileSyncService';
 
 interface Event {
   id: string;
@@ -417,124 +422,60 @@ const EventsScreen = () => {
         }
         
         try {
-          // Update events with club details
-          allEvents = allEvents.map(event => {
-            if (event.organizer?.id && clubDetails[event.organizer.id]) {
-              const clubDetail = clubDetails[event.organizer.id];
+          // Update events with club details using universal profile sync
+          allEvents = await Promise.all(allEvents.map(async event => {
+            if (event.organizer?.id) {
+              // Get fresh profile data from universal sync service
+              const freshProfileData = await universalProfileSyncService.getProfileData(event.organizer.id);
+              const clubDetail = freshProfileData || clubDetails[event.organizer.id];
               
-              // URL doğrulama ve profil resmi seçimi için iyileştirilmiş mantık
-              let profileImageUrl = null;
-              
-              // Öncelikle birden fazla olası alanı kontrol edelim
-              const possibleImageFields = [
-                clubDetail.profileImage,
-                clubDetail.photoURL,
-                clubDetail.logo,
-                clubDetail.avatar,
-                clubDetail.image,
-                event.organizer.logo,
-                event.organizer.profileImage
-              ];
-              
-              // İlk geçerli URL'yi bul
-              for (const imageUrl of possibleImageFields) {
-                if (imageUrl && typeof imageUrl === 'string') {
-                  // HTTP/HTTPS kontrolü
-                  if (imageUrl.startsWith('http')) {
-                    profileImageUrl = imageUrl;
-                    break;
-                  }
-                  // Firebase Storage URL (gs://) kontrolü
-                  else if (imageUrl.startsWith('gs://')) {
-                    try {
-                      // Bir firebase storage referansı oluştur
-                      const storageRef = firebase.storage().refFromURL(imageUrl);
-                      // URL'yi asenkron olarak al
-                      storageRef.getDownloadURL()
-                        .then(url => {
-                          // Etkinlikler listesini güncelle (burada asenkron)
-                          setEvents(currentEvents => 
-                            currentEvents.map(ev => {
-                              if (ev.id === event.id && ev.organizer) {
-                                // Organizer'ı kopyala ve profileImage'i güncelle
-                                const updatedOrganizer = {
-                                  ...ev.organizer,
-                                  profileImage: url
-                                };
-                                return {
-                                  ...ev,
-                                  organizer: updatedOrganizer
-                                };
-                              }
-                              return ev;
-                            })
-                          );
-                        })
-                        .catch(error => {
-                          console.log(`Could not get download URL: ${error.message}`);
-                        });
-                      
-                      // Şimdilik placeholder URL oluştur
-                      const displayName = clubDetail.displayName || event.organizer.name || 'Club';
-                      profileImageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random&color=fff&size=256&bold=true`;
-                      break;
-                    } catch (storageError: any) {
-                      console.error(`Error handling Firebase Storage URL: ${storageError?.message || 'Unknown storage error'}`);
-                    }
-                  }
-                }
-              }
-              
-              // Geçerli URL bulunamadıysa avatar ikon kullanmak için null ata
-              // Avatar.Icon bileşeni için profileImage null olmalı
-              if (!profileImageUrl) {
-                profileImageUrl = null;
-              }
-              
-              // Get club name
-              const clubName = clubDetail.displayName || event.organizer.name || 'Kulüp';
-              
-              return {
-                ...event,
-                organizer: {
-                  ...event.organizer,
-                  profileImage: undefined, // Force to undefined to use avatarIcon
-                  displayName: clubName,
-                  bio: clubDetail.bio,
-                  // Preserve existing avatarIcon from database if available
-                  avatarIcon: clubDetail.avatarIcon || event.organizer.avatarIcon || getDefaultAvatar().avatarIcon,
-                  avatarColor: clubDetail.avatarColor || event.organizer.avatarColor || getDefaultAvatar().avatarColor
-                }
-              };
-            } else {
-              // Kulüp bilgisi bulunamadıysa debug bilgisi
-              if (event.organizer?.id) {
-                console.log(`Could not find club details for organizer ID: ${event.organizer.id} in event: ${event.title}`);
-              }
-              
-              // Organizatör bilgisi olan ama avatar/profil resmi olmayan etkinlikler için default avatar icon ekleyelim
-              if (event.organizer) {
+              if (clubDetail) {
                 // Get club name
-                const clubName = event.organizer.name || event.clubName || 'Kulüp';
-                // Get default avatar as fallback
-                const defaultAvatar = getDefaultAvatar();
+                const clubName = clubDetail.displayName || event.organizer.name || 'Kulüp';
                 
                 return {
                   ...event,
                   organizer: {
                     ...event.organizer,
-                    // Profil resmi yoksa undefined olarak bırak (type uyumluluğu için)
-                    profileImage: undefined,
-                    // Preserve existing avatarIcon if available
-                    avatarIcon: event.organizer.avatarIcon || defaultAvatar.avatarIcon,
-                    avatarColor: event.organizer.avatarColor || defaultAvatar.avatarColor
+                    profileImage: undefined, // Force to undefined to use avatarIcon
+                    displayName: clubName,
+                    bio: clubDetail.bio,
+                    // Preserve existing avatarIcon from database if available
+                    avatarIcon: clubDetail.avatarIcon || event.organizer.avatarIcon || getDefaultAvatar().avatarIcon,
+                    avatarColor: clubDetail.avatarColor || event.organizer.avatarColor || getDefaultAvatar().avatarColor
                   }
                 };
+              } else {
+                // Kulüp bilgisi bulunamadıysa debug bilgisi
+                if (event.organizer?.id) {
+                  console.log(`Could not find club details for organizer ID: ${event.organizer.id} in event: ${event.title}`);
+                }
+                
+                // Organizatör bilgisi olan ama avatar/profil resmi olmayan etkinlikler için default avatar icon ekleyelim
+                if (event.organizer) {
+                  // Get club name
+                  const clubName = event.organizer.name || event.clubName || 'Kulüp';
+                  // Get default avatar as fallback
+                  const defaultAvatar = getDefaultAvatar();
+                  
+                  return {
+                    ...event,
+                    organizer: {
+                      ...event.organizer,
+                      // Profil resmi yoksa undefined olarak bırak (type uyumluluğu için)
+                      profileImage: undefined,
+                      // Preserve existing avatarIcon if available
+                      avatarIcon: event.organizer.avatarIcon || defaultAvatar.avatarIcon,
+                      avatarColor: event.organizer.avatarColor || defaultAvatar.avatarColor
+                    }
+                  };
+                }
+                
+                return event;
               }
-              
-              return event;
             }
-          });
+            return event;
+          }));
         } catch (mapError) {
           console.error('Error mapping events with club details:', mapError);
         }
@@ -601,6 +542,38 @@ const EventsScreen = () => {
     }
   }, [user?.uid, filterOptions.showJoinedOnly, lastVisible, fetchJoinedEvents]);
   
+  // Universal gerçek zamanlı profil senkronizasyonu
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    console.log('🔄 Setting up universal real-time profile sync for EventsScreen');
+
+    const handleProfileUpdate = (data: any) => {
+      console.log('🔄 Universal profile update received, refreshing events data');
+      fetchEvents(false);
+      fetchLikedEvents();
+    };
+
+    const handleUserUpdate = (data: any) => {
+      console.log('🔄 User update received, refreshing events data');
+      fetchEvents(false);
+      fetchLikedEvents();
+    };
+
+    // Use all services for maximum reliability
+    globalRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    enhancedRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    universalProfileSyncService.on('profileUpdated', handleProfileUpdate);
+    universalProfileSyncService.on('userUpdated', handleUserUpdate);
+
+    return () => {
+      globalRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      enhancedRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      universalProfileSyncService.off('profileUpdated', handleProfileUpdate);
+      universalProfileSyncService.off('userUpdated', handleUserUpdate);
+    };
+  }, [user?.uid, fetchEvents, fetchLikedEvents]);
+
   // Ekran odak kazandığında sadece bir kez yükleme yapalım
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   

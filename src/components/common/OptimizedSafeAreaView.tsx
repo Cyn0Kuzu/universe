@@ -29,17 +29,15 @@ export const OptimizedSafeAreaView: React.FC<OptimizedSafeAreaViewProps> = ({
   avoidStatusBar = false,
 }) => {
   const insets = useSafeAreaInsets();
-  const { handleLayout, handleLayoutComplete, isLayoutActive } = useOptimizedSafeArea();
+  const safeAreaInsets = useOptimizedSafeArea();
   const [layoutReady, setLayoutReady] = useState(false);
   const [timeoutReached, setTimeoutReached] = useState(false);
   
   // Get device layout configuration
   const deviceLayout = getDeviceLayoutConfig(insets);
 
-  // Layout timeout prevention - reduced timeout to prevent hanging
+  // Layout timeout prevention - optimized timeout handling
   useEffect(() => {
-    handleLayout(layoutId);
-    
     // Set a shorter timeout to prevent infinite waiting
     const timeout = setTimeout(() => {
       if (!layoutReady) {
@@ -47,21 +45,28 @@ export const OptimizedSafeAreaView: React.FC<OptimizedSafeAreaViewProps> = ({
         setTimeoutReached(true);
         setLayoutReady(true);
       }
-    }, 500); // Further reduced to 500ms timeout
+    }, 200); // Reduced to 200ms for faster fallback
+
+    // Auto-set layout ready after a very short delay to prevent timeout
+    const autoReadyTimeout = setTimeout(() => {
+      if (!layoutReady) {
+        setLayoutReady(true);
+      }
+    }, 100);
 
     return () => {
       clearTimeout(timeout);
-      handleLayoutComplete(layoutId);
+      clearTimeout(autoReadyTimeout);
     };
-  }, [layoutId, handleLayout, handleLayoutComplete, layoutReady]);
+  }, [layoutId, layoutReady]);
 
   // Handle layout completion
   const onLayout = useCallback(() => {
     if (!layoutReady) {
       setLayoutReady(true);
-      handleLayoutComplete(layoutId);
+      // handleLayoutComplete(layoutId);
     }
-  }, [layoutReady, handleLayoutComplete, layoutId]);
+  }, [layoutReady, layoutId]);
 
   // Fallback styles for when SafeAreaView fails
   const fallbackStyles = fallbackPadding ? {
@@ -79,7 +84,7 @@ export const OptimizedSafeAreaView: React.FC<OptimizedSafeAreaViewProps> = ({
   ];
 
   // If timeout reached or layout is not active, use fallback
-  if (timeoutReached || !isLayoutActive(layoutId)) {
+  if (timeoutReached) {
     return (
       <View style={containerStyle} onLayout={onLayout}>
         {children}

@@ -81,10 +81,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   }, [visible, userId]);
 
   const loadNotifications = async () => {
-    if (!isMounted()) return;
+    if (!isMounted.current) return;
     
     try {
-      setModalState({ loading: true });
+      setModalState(prev => ({ ...prev, loading: true }));
       
       console.log(`📋 Loading notifications for user: ${userId}`);
       
@@ -144,8 +144,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         return b.createdAt.toMillis() - a.createdAt.toMillis();
       });
 
-      if (isMounted()) {
-        setModalState({ notifications: fetchedNotifications });
+      if (isMounted.current) {
+        setModalState(prev => ({ ...prev, notifications: fetchedNotifications }));
         console.log(`✅ Successfully loaded ${fetchedNotifications.length} club notifications`);
         if (fetchedNotifications.length > 0) {
           console.log('First notification:', fetchedNotifications[0]);
@@ -154,22 +154,22 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     } catch (error) {
       console.error('Error loading notifications:', error);
     } finally {
-      if (isMounted()) {
-        setModalState({ loading: false });
+      if (isMounted.current) {
+        setModalState(prev => ({ ...prev, loading: false }));
       }
     }
   };
 
   const onRefresh = useCallback(async () => {
-    setModalState({ refreshing: true });
+    setModalState(prev => ({ ...prev, refreshing: true }));
     await loadNotifications();
-    if (isMounted()) {
-      setModalState({ refreshing: false });
+    if (isMounted.current) {
+      setModalState(prev => ({ ...prev, refreshing: false }));
     }
   }, [loadNotifications, isMounted]);
 
   const markAsRead = useCallback(async (notificationId: string) => {
-    if (!isMounted()) return;
+    if (!isMounted.current) return;
     
     try {
       await firebase.firestore()
@@ -178,8 +178,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         .update({ read: true });
 
       setModalState(prev => ({
+        ...prev,
         notifications: prev.notifications.map((notification: ClubNotification) =>
-          notification.id === notificationId
+          notification.id === notificationId 
             ? { ...notification, read: true }
             : notification
         )
@@ -190,7 +191,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   }, [isMounted]);
 
   const markAllAsRead = useCallback(async () => {
-    if (!isMounted()) return;
+    if (!isMounted.current) return;
     
     try {
       const batch = firebase.firestore().batch();
@@ -206,8 +207,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
       await batch.commit();
       
-      if (isMounted()) {
+      if (isMounted.current) {
         setModalState(prev => ({
+          ...prev,
           notifications: prev.notifications.map((notification: ClubNotification) => ({ ...notification, read: true }))
         }));
       }

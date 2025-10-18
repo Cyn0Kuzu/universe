@@ -28,12 +28,12 @@ try {
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: Constants.expoConfig?.extra?.firebaseApiKey || "AIzaSyCZNjFHtf5buInWn7I1yAeUdltpWLr8b1E",
+  apiKey: Constants.expoConfig?.extra?.firebaseApiKey || "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc",
   authDomain: Constants.expoConfig?.extra?.firebaseAuthDomain || "universe-a6f60.firebaseapp.com",
   projectId: Constants.expoConfig?.extra?.firebaseProjectId || "universe-a6f60",
-  storageBucket: Constants.expoConfig?.extra?.firebaseStorageBucket || "universe-a6f60.firebasestorage.app",
+  storageBucket: Constants.expoConfig?.extra?.firebaseStorageBucket || "universe-a6f60.appspot.com",
   messagingSenderId: Constants.expoConfig?.extra?.firebaseMessagingSenderId || "946853543876",
-  appId: Constants.expoConfig?.extra?.firebaseAppId || "1:946853543876:android:96dd500c412200f363ae91",
+  appId: Constants.expoConfig?.extra?.firebaseAppId || "1:946853543876:android:7a40780d639fa5f763ae91",
 };
 
 // Firebase services with error handling

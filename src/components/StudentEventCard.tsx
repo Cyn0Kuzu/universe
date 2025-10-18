@@ -41,6 +41,7 @@ import { userActivityService } from '../services/enhancedUserActivityService';
 import { useUserAvatar } from '../hooks/useUserAvatar';
 import { leaderboardDataSyncService } from '../services/leaderboardDataSyncService';
 import { logger } from '../utils/logger';
+import ImageZoomModal from './common/ImageZoomModal';
 
 moment.locale('tr');
 
@@ -717,6 +718,7 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
   const [isJoined, setIsJoined] = useState<boolean>(initialIsJoined || false);
   const [isSharing, setIsSharing] = useState<boolean>(false);
   const [imageLoadFailed, setImageLoadFailed] = useState<boolean>(false);
+  const [showImageZoom, setShowImageZoom] = useState<boolean>(false);
 
   // Reset image load state when event changes
   useEffect(() => {
@@ -1448,7 +1450,7 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
               // Send notification to club owner
               try {
                 const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
-                const eventCreatorId = event.creatorId || event.organizer?.id;
+                const eventCreatorId = event.createdBy || event.organizer?.id;
                 
                 if (eventCreatorId && eventCreatorId !== currentUser.uid) {
                   await FirebaseFunctionsService.sendLikeNotification(
@@ -1693,7 +1695,7 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
       if (clubId) {
         try {
           const FirebaseFunctionsService = require('../services/firebaseFunctionsService').default;
-          const eventCreatorId = event.creatorId || event.organizer?.id;
+          const eventCreatorId = event.createdBy || event.organizer?.id;
           
           if (eventCreatorId && eventCreatorId !== currentUser.uid) {
             await FirebaseFunctionsService.sendEventJoinNotification(
@@ -2386,13 +2388,9 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
           // Try multiple image field names
           const imageFields = [
             event.imageUrl,
-            event.coverImageUrl,
-            event.image,
-            event.coverImage,
-            event.photoUrl,
-            event.bannerUrl,
-            event.headerImage,
-            event.thumbnail,
+            event.imageUrl,
+            (event as any).coverImage,
+            (event as any).photoURL,
             (event as any).coverPhoto,
             (event as any).eventImage,
             (event as any).cover,

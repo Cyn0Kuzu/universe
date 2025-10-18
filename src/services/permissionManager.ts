@@ -3,7 +3,8 @@
  * Handles all app permissions including notifications and storage
  */
 
-import { Platform, Alert, Linking, PermissionsAndroid, AsyncStorage } from 'react-native';
+import { Platform, Alert, Linking, PermissionsAndroid } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -81,6 +82,40 @@ export class PermissionManager {
     await this.markPermissionsAsRequested();
 
     console.log('📋 Permission results:', results);
+    return results;
+  }
+
+  /**
+   * Request other permissions (storage, camera) - only on first launch
+   * Note: Notification permissions are handled by PushNotificationService
+   */
+  async requestOtherPermissions(): Promise<{
+    storage: PermissionResult;
+    camera: PermissionResult;
+  }> {
+    console.log('🔐 Checking if other permissions should be requested...');
+
+    // Check if permissions have been requested before
+    const alreadyRequested = await this.havePermissionsBeenRequested();
+    if (alreadyRequested) {
+      console.log('ℹ️ Other permissions already requested before, skipping...');
+      return {
+        storage: { granted: false, canAskAgain: true, status: 'skipped' },
+        camera: { granted: false, canAskAgain: true, status: 'skipped' },
+      };
+    }
+
+    console.log('🔐 Requesting other app permissions for the first time...');
+
+    const results = {
+      storage: await this.requestStoragePermissions(),
+      camera: await this.requestCameraPermissions(),
+    };
+
+    // Mark permissions as requested
+    await this.markPermissionsAsRequested();
+
+    console.log('📋 Other permission results:', results);
     return results;
   }
 

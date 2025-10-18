@@ -351,10 +351,10 @@ const FixedNotificationScreen: React.FC = () => {
             <Text style={[styles.notificationTitle, { color: theme.colors.onSurface }]}>
               {item.title}
             </Text>
-            <Text style={[styles.notificationMessage, { color: theme.colors.onSurfaceVariant }]}>
+            <Text style={[styles.notificationMessage, { color: theme.colors.onSurface }]}>
               {item.message}
             </Text>
-            <Text style={[styles.notificationTime, { color: theme.colors.outline }]}>
+            <Text style={[styles.notificationTime, { color: theme.colors.disabled }]}>
               {formatTimestamp(item.timestamp)}
             </Text>
           </View>
@@ -373,12 +373,12 @@ const FixedNotificationScreen: React.FC = () => {
       <MaterialCommunityIcons
         name="bell-off"
         size={64}
-        color={theme.colors.outline}
+        color={theme.colors.disabled}
       />
       <Text style={[styles.emptyTitle, { color: theme.colors.onSurface }]}>
         Henüz bildirim yok
       </Text>
-      <Text style={[styles.emptyMessage, { color: theme.colors.onSurfaceVariant }]}>
+      <Text style={[styles.emptyMessage, { color: theme.colors.onSurface }]}>
         Yeni etkinlikler ve güncellemeler burada görünecek
       </Text>
     </View>
@@ -409,7 +409,7 @@ const FixedNotificationScreen: React.FC = () => {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={[styles.loadingText, { color: theme.colors.onSurfaceVariant }]}>
+          <Text style={[styles.loadingText, { color: theme.colors.onSurface }]}>
             Bildirimler yükleniyor...
           </Text>
         </View>

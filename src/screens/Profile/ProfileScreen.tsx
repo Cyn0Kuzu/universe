@@ -10,6 +10,9 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
 import { globalAvatarCache } from '../../services/globalAvatarCacheService';
+import { globalRealtimeSyncService } from '../../services/globalRealtimeSyncService';
+import { enhancedRealtimeSyncService } from '../../services/enhancedRealtimeSyncService';
+import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
 import { 
   refreshUserProfileCounts,
   getFollowerCountFromStorage,
@@ -384,6 +387,32 @@ const ProfileScreen: React.FC = () => {
     }
   }, [currentUser?.uid, followerCount, followingCount]);
 
+  // Enhanced gerçek zamanlı profil senkronizasyonu
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+
+    console.log('🔄 Setting up enhanced real-time profile sync for ProfileScreen');
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === currentUser.uid) {
+        console.log('🔄 Enhanced profile update received, refreshing all data');
+        refreshUserProfile();
+        fetchCounts();
+        loadUserStatistics();
+        verifyAndFixFollowerCounts();
+      }
+    };
+
+    // Use both services for maximum reliability
+    globalRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    enhancedRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      globalRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      enhancedRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+    };
+  }, [currentUser?.uid, refreshUserProfile, fetchCounts, loadUserStatistics, verifyAndFixFollowerCounts]);
+
   // Sayfa her açıldığında sayıları güncelle ve doğrula
   useFocusEffect(
     useCallback(() => {
@@ -398,6 +427,29 @@ const ProfileScreen: React.FC = () => {
       }
     }, [currentUser, userProfile?.userType, loadUserStatistics])
   );
+
+  // Enhanced real-time synchronization for profile updates
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === currentUser.uid) {
+        console.log('🔄 Profile updated via comprehensive sync, refreshing all data...');
+        // Always refresh user profile first to get latest data
+        refreshUserProfile();
+        fetchCounts();
+        loadUserStatistics();
+        verifyAndFixFollowerCounts();
+      }
+    };
+
+    // Subscribe to comprehensive sync service
+    comprehensiveDataSyncService.subscribe('ProfileScreen', handleProfileUpdate);
+
+    return () => {
+      comprehensiveDataSyncService.unsubscribe('ProfileScreen', handleProfileUpdate);
+    };
+  }, [currentUser?.uid, fetchCounts, loadUserStatistics, verifyAndFixFollowerCounts, refreshUserProfile, userProfile?.userType]);
   
   // İlk yüklemede sayıları getir ve initialize et
   useEffect(() => {

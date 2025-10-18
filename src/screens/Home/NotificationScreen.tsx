@@ -63,7 +63,7 @@ const NotificationItem = React.memo<NotificationItemProps>(({
       <View style={styles.notificationContent}>
         <View style={styles.notificationHeader}>
           <MaterialCommunityIcons
-            name={getNotificationIcon(item.type)}
+            name={getNotificationIcon(item.type) as any}
             size={24}
             color={theme.colors.primary}
             style={styles.notificationIcon}
@@ -236,12 +236,15 @@ const NotificationScreen: React.FC = () => {
           message: data.message || data.body || 'Yeni bildirim',
           userId: data.userId,
           recipientId: data.recipientId,
+          recipientType: 'student' as const,
           eventId: data.eventId,
           clubId: data.clubId,
           timestamp: data.timestamp || data.createdAt,
           read: data.read || false,
           data: data.data,
-          senderInfo: data.senderInfo
+          createdAt: data.createdAt || new Date(),
+          updatedAt: data.updatedAt || new Date(),
+          // senderInfo: data.senderInfo
         });
       });
 
@@ -302,11 +305,11 @@ const NotificationScreen: React.FC = () => {
 
       // Handle navigation based on notification type
       if (notification.eventId) {
-        navigation.navigate('ViewEvent' as never, { eventId: notification.eventId } as never);
+        (navigation as any).navigate('ViewEvent', { eventId: notification.eventId });
       } else if (notification.clubId) {
-        navigation.navigate('ViewClub' as never, { clubId: notification.clubId } as never);
+        (navigation as any).navigate('ViewClub', { clubId: notification.clubId });
       } else if (notification.userId) {
-        navigation.navigate('ViewProfile' as never, { userId: notification.userId } as never);
+        (navigation as any).navigate('ViewProfile', { userId: notification.userId });
       }
 
     } catch (error) {
@@ -363,13 +366,13 @@ const NotificationScreen: React.FC = () => {
       <MaterialCommunityIcons
         name="bell-off"
         size={64}
-        color={theme.colors.onSurfaceVariant}
+        color={theme.colors.onSurface}
         style={styles.emptyIcon}
       />
       <Text style={[styles.emptyTitle, { color: theme.colors.onSurface, fontSize: fontSizes.h4 }]}>
         Bildirim Yok
       </Text>
-      <Text style={[styles.emptyMessage, { color: theme.colors.onSurfaceVariant, fontSize: fontSizes.body }]}>
+      <Text style={[styles.emptyMessage, { color: theme.colors.onSurface, fontSize: fontSizes.body }]}>
         Henüz bildiriminiz bulunmuyor.
       </Text>
     </View>
@@ -387,7 +390,7 @@ const NotificationScreen: React.FC = () => {
             onPress={handleMarkAllAsRead}
             style={[styles.markAllButton, { backgroundColor: theme.colors.primary }]}
           >
-            <Text style={[styles.markAllText, { color: theme.colors.onPrimary, fontSize: fontSizes.caption }]}>
+            <Text style={[styles.markAllText, { color: theme.colors.primary, fontSize: fontSizes.caption }]}>
               Tümünü Okundu İşaretle
             </Text>
           </TouchableOpacity>

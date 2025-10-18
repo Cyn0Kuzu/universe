@@ -116,11 +116,11 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, onRetry, onReport 
           style={styles.icon}
         />
         
-        <Text style={[styles.title, { color: theme.colors.onBackground }]}>
+        <Text style={[styles.title, { color: theme.colors.onSurface }]}>
           Bir Hata Oluştu
         </Text>
         
-        <Text style={[styles.message, { color: theme.colors.onBackground }]}>
+        <Text style={[styles.message, { color: theme.colors.onSurface }]}>
           Üzgünüz, beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.
         </Text>
         
@@ -206,3 +206,10 @@ const styles = StyleSheet.create({
 });
 
 export default ErrorBoundary;
+
+
+
+
+
+
+

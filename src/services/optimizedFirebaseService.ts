@@ -27,7 +27,7 @@ export class OptimizedFirebaseService {
     queries: Array<{ field: string; operator: any; value: any }>,
     limit: number = 50
   ): Promise<any[]> {
-    return performanceOptimizer.executeAsync(async () => {
+    return (await performanceOptimizer.batch([async () => {
       const cacheKey = `${collection}_${JSON.stringify(queries)}_${limit}`;
       
       // Check cache first
@@ -57,14 +57,14 @@ export class OptimizedFirebaseService {
       this.setCache(cacheKey, results);
       
       return results;
-    }, 'low');
+    }]))[0];
   }
 
   /**
    * Optimized single document read
    */
   async readDocument(collection: string, docId: string): Promise<any | null> {
-    return performanceOptimizer.executeAsync(async () => {
+    return (await performanceOptimizer.batch([async () => {
       const cacheKey = `${collection}_${docId}`;
       
       if (this.isCacheValid(cacheKey)) {
@@ -83,7 +83,7 @@ export class OptimizedFirebaseService {
       }
       
       return data;
-    }, 'normal');
+    }]))[0];
   }
 
   /**
@@ -99,7 +99,7 @@ export class OptimizedFirebaseService {
       where?: Array<{ field: string; operator: any; value: any }>;
     } = {}
   ): Promise<{ data: any[]; lastDoc?: any }> {
-    return performanceOptimizer.executeAsync(async () => {
+    return (await performanceOptimizer.batch([async () => {
       const cacheKey = `${collection}_${JSON.stringify(options)}`;
       
       if (this.isCacheValid(cacheKey)) {
@@ -107,7 +107,7 @@ export class OptimizedFirebaseService {
         return cached || { data: [] };
       }
 
-      let query = firebase.firestore().collection(collection);
+      let query: firebase.firestore.Query = firebase.firestore().collection(collection);
 
       // Apply where conditions
       if (options.where) {
@@ -138,7 +138,7 @@ export class OptimizedFirebaseService {
       this.setCache(cacheKey, { data, lastDoc });
       
       return { data, lastDoc };
-    }, 'normal');
+    }]))[0];
   }
 
   /**
@@ -150,7 +150,7 @@ export class OptimizedFirebaseService {
     docId: string;
     data?: any;
   }>): Promise<void> {
-    return performanceOptimizer.executeAsync(async () => {
+    return (await performanceOptimizer.batch([async () => {
       const batch = firebase.firestore().batch();
       
       operations.forEach(operation => {
@@ -175,7 +175,7 @@ export class OptimizedFirebaseService {
       
       // Clear related cache entries
       this.clearRelatedCache(operations);
-    }, 'high');
+    }]))[0];
   }
 
   /**
@@ -192,7 +192,7 @@ export class OptimizedFirebaseService {
     onUpdate: (data: any[]) => void,
     onError?: (error: any) => void
   ): () => void {
-    let query = firebase.firestore().collection(collection);
+    let query: firebase.firestore.Query = firebase.firestore().collection(collection);
 
     // Apply conditions
     if (options.where) {
@@ -244,7 +244,7 @@ export class OptimizedFirebaseService {
     // Prevent cache from growing too large
     if (this.cache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      if (firstKey) this.cache.delete(firstKey);
     }
 
     this.cache.set(key, {

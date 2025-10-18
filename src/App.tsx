@@ -13,6 +13,7 @@ import { LogBox } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { firebase } from './firebase';
 import { SecureStorage } from './utils/secureStorage';
+import { initializeWarningSuppression } from './utils/reactNativeWarningsFix';
 
 // Enable React Native Screens optimizations
 import { enableScreens } from 'react-native-screens';
@@ -21,24 +22,8 @@ enableScreens(true);
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
 
-// Ignore only non-critical warnings
-LogBox.ignoreLogs([
-  'Non-serializable values were found in the navigation state',
-  'VirtualizedLists should never be nested',
-  'Warning: componentWillReceiveProps has been renamed',
-  'Could not find generated setter for class',
-  'Attempt to set local data for view with unknown tag',
-  'Long monitor contention',
-  'Timed out waiting for layout',
-  'Skipped frames',
-  'Slow Looper main',
-  'JIT profile information will not be recorded',
-  'Access denied finding property',
-  'Warning: unused DT entry',
-  'Seed missing signature',
-  'Enum should inherit from class',
-  'Not starting debugger since process cannot load the jdwp agent',
-]);
+// Initialize comprehensive warning suppression
+initializeWarningSuppression();
 
 const App: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
@@ -59,33 +44,27 @@ const App: React.FC = () => {
         // Wait for auth check to complete
         await authCheckPromise;
         
-        // Request all necessary permissions (only on first launch)
+        // Initialize push notifications FIRST (handles notification permission)
         try {
-          console.log('🔐 Checking app permissions...');
+          console.log('🔔 Initializing push notification system...');
+          const { default: PushNotificationService } = require('./services/pushNotificationService');
+          const pushService = PushNotificationService.getInstance();
+          const token = await pushService.initialize();
+          if (token) {
+            console.log('✅ Push notifications initialized successfully with token:', token.substring(0, 20) + '...');
+          } else {
+            console.warn('⚠️ Push notifications initialization completed without token (permission may be denied)');
+          }
+        } catch (pushError) {
+          console.error('❌ Push notification initialization error:', pushError);
+        }
+        
+        // Request other permissions (only on first launch)
+        try {
+          console.log('🔐 Requesting other app permissions...');
           const PermissionManager = require('./services/permissionManager').default;
           const permissionManager = PermissionManager.getInstance();
-          const permissionResults = await permissionManager.requestAllPermissions();
-          
-          console.log('📋 Permission results:', permissionResults);
-          
-          // Initialize push notifications if permission granted or if it's first launch
-          if (permissionResults.notifications.granted || permissionResults.notifications.status === 'skipped') {
-            console.log('🔔 Initializing push notifications...');
-            try {
-              const { PushNotificationService } = require('./services/pushNotificationService');
-              const pushService = PushNotificationService.getInstance();
-              const token = await pushService.initialize();
-              if (token) {
-                console.log('✅ Push notifications initialized successfully with token:', token.substring(0, 20) + '...');
-              } else {
-                console.warn('⚠️ Push notifications initialization failed - no token received');
-              }
-            } catch (pushError) {
-              console.error('❌ Push notification initialization error:', pushError);
-            }
-          } else {
-            console.warn('⚠️ Notification permission not granted - skipping push notification initialization');
-          }
+          await permissionManager.requestOtherPermissions();
         } catch (permissionError) {
           console.error('❌ Permission request error:', permissionError);
         }
@@ -101,7 +80,7 @@ const App: React.FC = () => {
     };
 
     initializeApp();
-  }, []);
+  }, [checkAuthenticationStatus]);
 
   // Check authentication status during splash screen
   const checkAuthenticationStatus = async () => {

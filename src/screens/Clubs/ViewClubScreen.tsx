@@ -22,6 +22,13 @@ import { ClubStatsService } from '../../services/clubStatsService';
 import ClubFollowSyncService from '../../services/clubFollowSyncService';
 import { CustomTheme } from '../../types/theme';
 import unifiedStatisticsService, { ClubStatistics } from '../../services/unifiedStatisticsService';
+import ImageZoomModal from '../../components/common/ImageZoomModal';
+import { globalRealtimeSyncService } from '../../services/globalRealtimeSyncService';
+import { enhancedRealtimeSyncService } from '../../services/enhancedRealtimeSyncService';
+import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
+import { clubDataSyncService } from '../../services/clubDataSyncService';
+import unifiedDataSyncService, { UnifiedClubData } from '../../services/unifiedDataSyncService';
+import realTimeDataSyncService, { RealTimeClubData } from '../../services/realTimeDataSyncService';
 
 interface ClubData {
   id: string;
@@ -100,6 +107,18 @@ const ViewClubScreen: React.FC = () => {
   });
   const [statsLoading, setStatsLoading] = useState<boolean>(false);
   
+  // Image zoom modal state
+  const [imageZoomVisible, setImageZoomVisible] = useState<boolean>(false);
+  const [imageZoomUri, setImageZoomUri] = useState<string>('');
+  const [imageZoomTitle, setImageZoomTitle] = useState<string>('');
+  
+  // Image zoom handler
+  const handleImageZoom = (imageUri: string, title: string) => {
+    setImageZoomUri(imageUri);
+    setImageZoomTitle(title);
+    setImageZoomVisible(true);
+  };
+
   // Local storage için helper fonksiyonlar
   const getFollowingKey = (userId: string, clubId: string) => `following_${userId}_${clubId}`;
   const getFollowerCountKey = (clubId: string) => `follower_count_${clubId}`;
@@ -266,151 +285,86 @@ const ViewClubScreen: React.FC = () => {
     try {
       setLoading(true);
       
-      // Kulüp sayılarını güncellemeye çalış, ama hata durumunda devam et
-      try {
-        await refreshUserProfileCounts(clubId);
-      } catch (countError) {
-        console.warn('Kulüp sayıları güncellenemedi (izin hatası bekleniyor):', countError);
-      }
+      console.log('🔄 ViewClubScreen: Fetching club data with realTimeDataSyncService...');
       
-      // Güncel verileri getir
-      const clubDoc = await firebase.firestore().collection('users').doc(clubId).get();
+      // Yeni real-time servisini kullan - tüm veriler gerçek ve güncel
+      const clubData = await realTimeDataSyncService.getRealTimeClubData(clubId, currentUser?.uid);
       
-      if (clubDoc.exists) {
-        const clubData = clubDoc.data() as ClubData;
-        
-        // İlk olarak kulüp document'ının mevcut durumunu loglayalım
-        console.log('🏢 Full club document data:', {
-          clubId: clubId,
-          hasFollowersField: 'followers' in clubData,
-          followersValue: clubData.followers,
-          followersType: typeof clubData.followers,
-          isFollowersArray: Array.isArray(clubData.followers),
-          cachedFollowerCount: clubData.followerCount,
-          allFields: Object.keys(clubData)
+      if (clubData) {
+        console.log('✅ ViewClubScreen: Real-time club data loaded:', {
+          memberCount: clubData.memberCount,
+          followerCount: clubData.followerCount,
+          followingCount: clubData.followingCount,
+          eventCount: clubData.eventCount,
+          likes: clubData.likes,
+          comments: clubData.comments,
+          totalScore: clubData.totalScore,
+          level: clubData.level,
+          isFollowing: clubData.isFollowing,
+          isMember: clubData.isMember,
+          membershipStatus: clubData.membershipStatus
         });
         
+        // Kulüp verisini set et
         setClub({
-          ...clubData,
-          id: clubDoc.id
+          id: clubData.id,
+          clubName: clubData.clubName,
+          displayName: clubData.displayName,
+          description: clubData.description,
+          bio: clubData.bio,
+          university: clubData.university,
+          clubTypes: clubData.clubTypes,
+          clubType: clubData.clubTypes[0] || '',
+          profileImage: clubData.profileImage,
+          avatarIcon: clubData.avatarIcon,
+          avatarColor: clubData.avatarColor,
+          coverImage: clubData.coverImage,
+          coverIcon: clubData.coverIcon,
+          coverColor: clubData.coverColor,
+          createdAt: clubData.createdAt,
+          public: clubData.public,
+          memberCount: clubData.memberCount,
+          followerCount: clubData.followerCount,
+          followingCount: clubData.followingCount,
+          eventCount: clubData.eventCount,
+          email: clubData.email,
+          phone: clubData.phone,
+          website: clubData.website,
+          instagram: clubData.instagram,
+          facebook: clubData.facebook,
+          twitter: clubData.twitter,
+          userType: clubData.userType,
+          foundationYear: clubData.foundationYear
         });
         
-        // Gerçek zamanlı sayıları hesapla - tüm sayılar için
-        const [followerQuery, eventQuery, memberQuery] = await Promise.all([
-          // Gerçek takipçi sayısı (followers array length)
-          firebase.firestore().collection('users').doc(clubId).get(),
-          
-          // Gerçek etkinlik sayısı
-          firebase.firestore().collection('events').where('createdBy', '==', clubId).get(),
-          
-          // Gerçek üye sayısı (zaten hesaplanıyor)
-          firebase.firestore().collection('clubMembers')
-            .where('clubId', '==', clubId)
-            .where('status', '==', 'approved')
-            .get()
-        ]);
+        // Sayıları set et - artık gerçek verilerle
+        setMemberCount(clubData.memberCount);
+        setFollowerCount(clubData.followerCount);
+        setFollowingCount(clubData.followingCount);
+        setEventCount(clubData.eventCount);
         
-        const realFollowerCount = followerQuery.exists 
-          ? (followerQuery.data()?.followers?.length || 0)
-          : 0;
-        const realEventCount = eventQuery.size;
-        const realMemberCount = memberQuery.size;
-        
-        // Debug: Takipçi verilerini detaylı loglayalım
-        const followerData = followerQuery.data();
-        console.log('🔍 DEBUG: Club followers data:', {
-          clubId: clubId,
-          docExists: followerQuery.exists,
-          followersArray: followerData?.followers,
-          followersLength: followerData?.followers?.length || 0,
-          cachedFollowerCount: followerData?.followerCount || 0,
-          realCalculatedCount: realFollowerCount
+        // İstatistikleri set et
+        setClubStatistics({
+          likes: clubData.likes,
+          comments: clubData.comments,
+          eventsOrganized: clubData.eventCount,
+          memberCount: clubData.memberCount,
+          totalPoints: clubData.totalScore,
+          rank: clubData.rank,
+          level: clubData.level,
+          likesRank: 0,
+          commentsRank: 0,
+          eventsRank: 0
         });
         
-        // Gerçek zamanlı hesaplanan sayıları set et
-        setFollowerCount(realFollowerCount);
-        setFollowingCount(clubData.followingCount || clubData.following?.length || 0);
-        setEventCount(realEventCount);
-        setMemberCount(realMemberCount);
+        // Durum bilgilerini set et
+        setIsFollowing(clubData.isFollowing);
+        setIsMember(clubData.isMember);
+        setMembershipStatus(clubData.membershipStatus);
         
-        console.log('📊 Kulüp gerçek zamanlı sayıları:', {
-          followers: realFollowerCount,
-          events: realEventCount,
-          members: realMemberCount,
-          following: clubData.followingCount || clubData.following?.length || 0
-        });
-        
-        // Database sayıları gerçek sayılarla farklıysa güncelle
-        const needsUpdate = 
-          (clubData.followerCount !== realFollowerCount) ||
-          (clubData.eventCount !== realEventCount) ||
-          (clubData.memberCount !== realMemberCount);
-          
-        if (needsUpdate) {
-          try {
-            await firebase.firestore().collection('users').doc(clubId).update({
-              followerCount: realFollowerCount,
-              eventCount: realEventCount,
-              memberCount: realMemberCount,
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            console.log(`✅ Kulüp ${clubId} tüm sayıları güncellendi:`, {
-              followers: realFollowerCount,
-              events: realEventCount,
-              members: realMemberCount
-            });
-          } catch (updateError) {
-            console.warn('Kulüp sayıları güncellenemedi:', updateError);
-          }
-        }
-        
-        // Takip durumunu kontrol et - Local storage'dan yükle
+        // Local storage'ı da güncelle
         if (currentUser) {
-          await loadFollowingStatus();
-          
-          // Fallback: Database'den kontrol et (sadece local storage boşsa)
-          const followingKey = getFollowingKey(currentUser.uid, clubId);
-          const localFollowingStatus = await AsyncStorage.getItem(followingKey);
-          
-          if (localFollowingStatus === null) {
-            // Local storage'da veri yoksa database'den kontrol et
-            try {
-              const userDoc = await firebase.firestore().collection('users').doc(currentUser.uid).get();
-              const userData = userDoc.data();
-              
-              if (userData) {
-                const followedClubs = userData.followedClubs || [];
-                const isFollowingFromDB = followedClubs.includes(clubId);
-                setIsFollowing(isFollowingFromDB);
-                await saveFollowingStatus(isFollowingFromDB);
-              }
-            } catch (error) {
-              console.warn('Error checking following status from database:', error);
-            }
-          }
-          
-          // Kullanıcının aktif üye olup olmadığını kontrol et - doğru koleksiyon kullan
-          const memberDoc = await firebase.firestore().collection('clubMembers')
-            .where('clubId', '==', clubId)
-            .where('userId', '==', currentUser.uid)
-            .where('status', '==', 'approved')
-            .get();
-          
-          const isActiveMember = !memberDoc.empty;
-          console.log('Is approved member:', isActiveMember);
-          
-          if (isActiveMember) {
-            // Eğer aktif üyeyse butonları güncelleyin
-            setIsMember(true);
-            setMembershipStatus('approved');
-            console.log('User is ACTIVE member - setting isMember: true, status: approved');
-          } else {
-            // Aktif üye değilse membership status'u kontrol et
-            const membershipStat = await getMembershipStatus(clubId, currentUser.uid);
-            setMembershipStatus(membershipStat);
-            setIsMember(false);
-            console.log('User is NOT active member - membership status:', membershipStat);
-          }
+          await saveFollowingStatus(clubData.isFollowing);
         }
       } else {
         Alert.alert("Hata", "Kulüp bulunamadı");
@@ -429,6 +383,30 @@ const ViewClubScreen: React.FC = () => {
   // Load club statistics using unified service (replaces loadClubStats)
   // Note: Statistics are now loaded through loadClubStatistics function using unified service
   
+  // Enhanced gerçek zamanlı profil senkronizasyonu
+  useEffect(() => {
+    if (!clubId) return;
+
+    console.log('🔄 Setting up enhanced real-time profile sync for ViewClubScreen');
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === clubId) {
+        console.log('🔄 Enhanced club profile update received, refreshing ViewClubScreen data');
+        fetchClubData();
+        loadClubStatistics();
+      }
+    };
+
+    // Use both services for maximum reliability
+    globalRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+    enhancedRealtimeSyncService.on('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      globalRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+      enhancedRealtimeSyncService.off('profileUpdated', handleProfileUpdate);
+    };
+  }, [clubId, fetchClubData, loadClubStatistics]);
+
   // Sayfa her açıldığında sayıları güncelle ve initialize et
   useFocusEffect(
     useCallback(() => {
@@ -442,6 +420,35 @@ const ViewClubScreen: React.FC = () => {
       }
     }, [clubId, fetchClubData, loadClubStatistics, currentUser])
   );
+
+  // Enhanced real-time synchronization for club profile updates
+  useEffect(() => {
+    if (!clubId) return;
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === clubId) {
+        console.log('🔄 ViewClub: Club profile updated via comprehensive sync, refreshing...');
+        fetchClubData();
+        loadClubStatistics();
+      }
+    };
+
+    const handleClubDataUpdate = (clubData: any) => {
+      console.log('🔄 ViewClub: Club data updated via club sync service, refreshing...');
+      setClub({ ...clubData, id: clubId });
+    };
+
+    // Subscribe to comprehensive sync service
+    comprehensiveDataSyncService.subscribe('ViewClubScreen', handleProfileUpdate);
+    
+    // Subscribe to club data sync service
+    clubDataSyncService.subscribe(clubId, handleClubDataUpdate);
+
+    return () => {
+      comprehensiveDataSyncService.unsubscribe('ViewClubScreen', handleProfileUpdate);
+      clubDataSyncService.unsubscribe(clubId, handleClubDataUpdate);
+    };
+  }, [clubId, fetchClubData, loadClubStatistics]);
   
   // İlk yüklemede kulüp verilerini getir
   useEffect(() => {
@@ -1131,11 +1138,21 @@ const ViewClubScreen: React.FC = () => {
         </TouchableOpacity>
         
         {club.coverImage ? (
-          <ImageBackground 
-            source={{ uri: club.coverImage }}
+          <TouchableOpacity 
             style={styles.coverBackground}
-            resizeMode="cover"
-          />
+            onPress={() => {
+              if (club.coverImage) {
+                handleImageZoom(club.coverImage, 'Kulüp Kapak Fotoğrafı');
+              }
+            }}
+            activeOpacity={0.9}
+          >
+            <ImageBackground 
+              source={{ uri: club.coverImage }}
+              style={styles.coverBackground}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
         ) : club.coverIcon ? (
           <View style={[styles.coverBackground, { backgroundColor: club.coverColor || '#1E88E5' }]}>
             <MaterialCommunityIcons 
@@ -1159,11 +1176,20 @@ const ViewClubScreen: React.FC = () => {
         {/* Profil Resmi */}
         <View style={styles.avatarContainer}>
           {club.profileImage ? (
-            <Avatar.Image 
-              size={96} 
-              source={{ uri: club.profileImage }}
-              style={styles.avatar}
-            />
+            <TouchableOpacity 
+              onPress={() => {
+                if (club.profileImage) {
+                  handleImageZoom(club.profileImage, 'Kulüp Profil Fotoğrafı');
+                }
+              }}
+              activeOpacity={0.8}
+            >
+              <Avatar.Image 
+                size={96} 
+                source={{ uri: club.profileImage }}
+                style={styles.avatar}
+              />
+            </TouchableOpacity>
           ) : club.avatarIcon ? (
             <View style={[styles.customAvatarWrapper, { backgroundColor: club.avatarColor || theme.colors.primary }]}>
               <MaterialCommunityIcons 
@@ -1191,9 +1217,9 @@ const ViewClubScreen: React.FC = () => {
       }>
         {/* Profil Başlığı */}
         <View style={styles.profileHeader}>
-          <Text style={styles.name}>{club.clubName || club.displayName || 'İsimsiz Kulüp'}</Text>
+          <Text style={styles.name}>{clubDataSyncService.getClubDisplayName(club)}</Text>
           <Text style={styles.username}>
-            @{generateUsername(club.clubName || club.displayName)}
+            @{clubDataSyncService.getClubUsername(club)}
           </Text>
         </View>
         
@@ -1481,6 +1507,14 @@ const ViewClubScreen: React.FC = () => {
         {/* İletişim Bilgileri bölümü kaldırıldı */}
         
       </ScrollView>
+      
+      {/* Image Zoom Modal */}
+      <ImageZoomModal
+        visible={imageZoomVisible}
+        imageUri={imageZoomUri}
+        onClose={() => setImageZoomVisible(false)}
+        title={imageZoomTitle}
+      />
     </View>
   );
 };

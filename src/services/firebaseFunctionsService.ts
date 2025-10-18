@@ -20,7 +20,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Bildirim gönderme hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -39,7 +39,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Toplu bildirim gönderme hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -59,7 +59,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Topic bildirim gönderme hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -82,7 +82,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Topic subscription hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -102,7 +102,7 @@ class FirebaseFunctionsService {
       );
     } catch (error) {
       console.error('Test bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -128,7 +128,7 @@ class FirebaseFunctionsService {
       );
     } catch (error) {
       console.error('Etkinlik bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -147,7 +147,7 @@ class FirebaseFunctionsService {
       );
     } catch (error) {
       console.error('Duyuru bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -170,7 +170,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Takip bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -190,7 +190,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Beğeni bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -211,7 +211,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Yorum bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -231,7 +231,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Etkinlik katılım bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -254,7 +254,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Üyelik isteği bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -273,7 +273,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Üyelik onayı bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -292,7 +292,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Üyelik reddi bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -311,7 +311,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Kulüp takip bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -332,7 +332,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Etkinlik oluşturuldu bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -353,7 +353,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Etkinlik güncellendi bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -374,7 +374,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Etkinlik iptal bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -394,7 +394,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Sistem bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -414,7 +414,7 @@ class FirebaseFunctionsService {
       return { success: true, data: result.data };
     } catch (error) {
       console.error('Duyuru bildirimi hatası:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 }

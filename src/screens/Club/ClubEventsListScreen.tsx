@@ -11,6 +11,10 @@ import 'firebase/compat/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 import ClubEventCard from '../../components/ClubEventCard';
 import { eventCategories } from '../../constants';
+import { globalRealtimeSyncService } from '../../services/globalRealtimeSyncService';
+import { enhancedRealtimeSyncService } from '../../services/enhancedRealtimeSyncService';
+import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
+import { clubDataSyncService } from '../../services/clubDataSyncService';
 
 type ClubNavigationProp = NativeStackNavigationProp<ClubStackParamList>;
 type StudentNavigationProp = NativeStackNavigationProp<StudentStackParamList>;
@@ -134,12 +138,38 @@ const ClubEventsListScreen = () => {
           // Lokasyon bilgisi
           location: data.location || { type: 'physical', physicalAddress: data.physicalAddress || 'Belirtilmemiş' },
           // clubId zaten üstte backfill edildi
-          clubName: clubName || data.clubName || ''
+          clubName: clubName || data.clubName || '',
+          // Get fresh club data for organizer info - will be populated with fresh data
+          organizer: null // Will be populated separately with fresh data
         };
       });
       
+      // Get fresh organizer data for all events
+      const eventsWithOrganizer = await Promise.all(eventsList.map(async (event) => {
+        try {
+          // Get fresh club data for organizer
+          const organizerData = await clubDataSyncService.getClubData(clubId, true);
+          if (organizerData) {
+            return {
+              ...event,
+              organizer: {
+                id: clubId,
+                name: clubDataSyncService.getClubDisplayName(organizerData),
+                username: clubDataSyncService.getClubUsername(organizerData),
+                profileImage: organizerData.profileImage || organizerData.photoURL || '',
+                avatarIcon: organizerData.avatarIcon || 'account-group',
+                avatarColor: organizerData.avatarColor || '#1976D2'
+              }
+            };
+          }
+        } catch (error) {
+          console.warn(`Failed to get organizer data for event ${event.id}:`, error);
+        }
+        return event;
+      }));
+      
       // Arama filtresi uygula
-      let filteredEvents = eventsList;
+      let filteredEvents = eventsWithOrganizer;
       
       // Status görünümüne göre filtrele
       if (viewMode === 'upcoming') {
@@ -191,6 +221,34 @@ const ClubEventsListScreen = () => {
     }
     fetchEvents();
   }, [fetchEvents, clubId]);
+
+  // Enhanced real-time synchronization for club events
+  useEffect(() => {
+    if (!clubId) return;
+
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === clubId) {
+        console.log('🔄 ClubEventsList: Club profile updated via comprehensive sync, refreshing events...');
+        fetchEvents();
+      }
+    };
+
+    const handleClubDataUpdate = (clubData: any) => {
+      console.log('🔄 ClubEventsList: Club data updated via club sync service, refreshing events...');
+      fetchEvents();
+    };
+
+    // Subscribe to comprehensive sync service
+    comprehensiveDataSyncService.subscribe('ClubEventsListScreen', handleProfileUpdate);
+    
+    // Subscribe to club data sync service
+    clubDataSyncService.subscribe(clubId, handleClubDataUpdate);
+
+    return () => {
+      comprehensiveDataSyncService.unsubscribe('ClubEventsListScreen', handleProfileUpdate);
+      clubDataSyncService.unsubscribe(clubId, handleClubDataUpdate);
+    };
+  }, [clubId, fetchEvents]);
 
   const onRefresh = async () => {
     setRefreshing(true);

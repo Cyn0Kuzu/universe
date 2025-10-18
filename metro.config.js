@@ -20,8 +20,6 @@ config.transformer = {
       keep_fnames: true,
     },
   },
-  // Suppress warnings for better performance
-  suppressWarnings: true,
 };
 
 // Optimize resolver for better performance
@@ -31,17 +29,6 @@ config.resolver = {
   symlinks: true,
   // Optimize asset resolution
   assetExts: [...config.resolver.assetExts, 'ttf', 'otf', 'woff', 'woff2'],
-  // Suppress warnings
-  suppressWarnings: true,
-};
-
-// Optimize serializer for better performance
-config.serializer = {
-  ...config.serializer,
-  // Custom serializer options
-  customSerializer: config.serializer.customSerializer,
-  // Suppress warnings
-  suppressWarnings: true,
 };
 
 // Performance monitoring

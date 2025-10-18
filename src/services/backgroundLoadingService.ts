@@ -38,7 +38,7 @@ class BackgroundLoadingService {
    */
   async startPreloading(userId?: string): Promise<void> {
     if (this.isPreloading || this.preloadPromise) {
-      return this.preloadPromise;
+      return this.preloadPromise || Promise.resolve();
     }
 
     this.isPreloading = true;
@@ -85,7 +85,7 @@ class BackgroundLoadingService {
       console.log('📱 Preloading users...');
       
       // Check if user is authenticated before preloading
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
       if (!currentUser) {
         console.log('⚠️ User not authenticated, skipping users preload');
         return;
@@ -97,10 +97,13 @@ class BackgroundLoadingService {
         .limit(100)
         .get();
 
-      this.preloadData.users = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      this.preloadData.users = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data
+        };
+      });
 
       // Cache users data
       await AsyncStorage.setItem('preloaded_users', JSON.stringify(this.preloadData.users));
@@ -115,7 +118,7 @@ class BackgroundLoadingService {
       console.log('🏢 Preloading clubs...');
       
       // Check if user is authenticated before preloading
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
       if (!currentUser) {
         console.log('⚠️ User not authenticated, skipping clubs preload');
         return;
@@ -127,10 +130,13 @@ class BackgroundLoadingService {
         .limit(50)
         .get();
 
-      this.preloadData.clubs = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      this.preloadData.clubs = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data
+        };
+      });
 
       // Cache clubs data
       await AsyncStorage.setItem('preloaded_clubs', JSON.stringify(this.preloadData.clubs));
@@ -145,7 +151,7 @@ class BackgroundLoadingService {
       console.log('📅 Preloading events...');
       
       // Check if user is authenticated before preloading
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
       if (!currentUser) {
         console.log('⚠️ User not authenticated, skipping events preload');
         return;

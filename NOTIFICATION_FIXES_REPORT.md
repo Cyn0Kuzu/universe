@@ -213,3 +213,10 @@ Push notification ve bildirimler ekranındaki tüm sorunlar düzeltildi. Sistem 
 - Comprehensive testing araçlarına sahip
 
 Tüm cihazlarda sorunsuz çalışacak şekilde optimize edildi.
+
+
+
+
+
+
+

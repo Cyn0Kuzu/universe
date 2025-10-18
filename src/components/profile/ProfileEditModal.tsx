@@ -21,6 +21,8 @@ import 'firebase/compat/auth';
 import { userActivityService } from '../../services/enhancedUserActivityService';
 import { centralizedRankingService } from '../../services/centralizedRankingService';
 import { usernameValidationService } from '../../services/usernameValidationService';
+import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
+import { clubDataSyncService } from '../../services/clubDataSyncService';
 import { University, UNIVERSITIES_DATA } from '../../constants/universities';
 import { Department, DEPARTMENTS_DATA } from '../../constants/departments';
 import { ClassLevel, CLASS_LEVELS_DATA } from '../../constants/classLevels';
@@ -159,6 +161,10 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       
       console.log('📝 Updating database with:', updateData);
       
+      // Enhanced real-time sync service'i kullanarak güncelleme yap
+      const { globalRealtimeSyncService } = require('../../services/globalRealtimeSyncService');
+      const { enhancedRealtimeSyncService } = require('../../services/enhancedRealtimeSyncService');
+      
       // Username güncellemesi için transaction işlemi
       if (field === 'username' && typeof value === 'string') {
         await firebase.firestore().runTransaction(async (transaction) => {
@@ -215,6 +221,19 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       onDismiss();
       
       console.log('🎉 Profile update completed successfully');
+      
+      // Comprehensive sync'i tetikle
+      await comprehensiveDataSyncService.forceSyncUser(userId);
+      
+      // If this is a club profile update, also trigger club data sync
+      if (userType === 'club') {
+        await clubDataSyncService.updateClubData(userId, updateData);
+      } else {
+        // For student profiles, invalidate universal profile cache
+        const { universalProfileSyncService } = require('../../services/universalProfileSyncService');
+        universalProfileSyncService.invalidateCache(userId);
+      }
+      
       Alert.alert('Başarılı', 'Bilginiz güncellendi');
     } catch (error) {
       console.error('❌ Update error details:', error);

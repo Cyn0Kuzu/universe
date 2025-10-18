@@ -104,7 +104,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
 
     return {
       ...baseStyle,
-      borderColor: theme.colors.outline,
+      borderColor: theme.colors.disabled,
     };
   };
 
@@ -112,7 +112,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
     return {
       flex: 1,
       fontSize: fontSizes.body,
-      color: disabled ? theme.colors.onDisabled : theme.colors.onSurface,
+      color: disabled ? theme.colors.disabled : theme.colors.onSurface,
       textAlignVertical: multiline ? 'top' : 'center',
       paddingVertical: 0,
       paddingHorizontal: 0,
@@ -131,7 +131,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
   const getHelperTextStyle = () => {
     return {
       fontSize: fontSizes.caption,
-      color: hasError ? theme.colors.error : theme.colors.onSurfaceVariant,
+      color: hasError ? theme.colors.error : theme.colors.onSurface,
       marginTop: spacing.xs,
     };
   };
@@ -143,7 +143,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
       <MaterialCommunityIcons
         name={leftIcon as any}
         size={20}
-        color={disabled ? theme.colors.onDisabled : theme.colors.onSurfaceVariant}
+        color={disabled ? theme.colors.disabled : theme.colors.onSurface}
         style={styles.leftIcon}
       />
     );
@@ -163,7 +163,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
           <MaterialCommunityIcons
             name={showPassword ? 'eye-off' : 'eye'}
             size={20}
-            color={disabled ? theme.colors.onDisabled : theme.colors.onSurfaceVariant}
+            color={disabled ? theme.colors.disabled : theme.colors.onSurface}
           />
         </TouchableOpacity>
       );
@@ -180,7 +180,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
           <MaterialCommunityIcons
             name={rightIcon as any}
             size={20}
-            color={disabled ? theme.colors.onDisabled : theme.colors.onSurfaceVariant}
+            color={disabled ? theme.colors.disabled : theme.colors.onSurface}
           />
         </TouchableOpacity>
       );
@@ -208,7 +208,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
         </Text>
       )}
       
-      <View style={getInputContainerStyle()}>
+      <View style={getInputContainerStyle() as any}>
         {renderLeftIcon()}
         
         <TextInput
@@ -217,7 +217,7 @@ export const EnhancedInput: React.FC<EnhancedInputProps> = ({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={theme.colors.onSurfaceVariant}
+          placeholderTextColor={theme.colors.onSurface}
           editable={!disabled}
           multiline={multiline}
           numberOfLines={numberOfLines}
@@ -257,9 +257,9 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   helperContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
   },
   charCount: {
     fontSize: 12,

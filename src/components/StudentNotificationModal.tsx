@@ -78,10 +78,10 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
   }, [visible, userId]);
 
   const loadNotifications = async () => {
-    if (!isMounted()) return;
+    if (!isMounted.current) return;
     
     try {
-      setModalState({ loading: true });
+      setModalState(prev => ({ ...prev, loading: true }));
       
       console.log(`📋 Loading student notifications for user: ${userId}`);
       
@@ -142,8 +142,8 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
         return b.createdAt.toMillis() - a.createdAt.toMillis();
       });
 
-      if (isMounted()) {
-        setModalState({ notifications: fetchedNotifications });
+      if (isMounted.current) {
+        setModalState(prev => ({ ...prev, notifications: fetchedNotifications }));
         console.log(`✅ Successfully loaded ${fetchedNotifications.length} student notifications`);
         if (fetchedNotifications.length > 0) {
           console.log('First notification:', fetchedNotifications[0]);
@@ -152,17 +152,17 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
     } catch (error) {
       console.error('Error loading student notifications:', error);
     } finally {
-      if (isMounted()) {
-        setModalState({ loading: false });
+      if (isMounted.current) {
+        setModalState(prev => ({ ...prev, loading: false }));
       }
     }
   };
 
   const onRefresh = useCallback(async () => {
-    setModalState({ refreshing: true });
+    setModalState(prev => ({ ...prev, refreshing: true }));
     await loadNotifications();
-    if (isMounted()) {
-      setModalState({ refreshing: false });
+    if (isMounted.current) {
+      setModalState(prev => ({ ...prev, refreshing: false }));
     }
   }, []);
 
@@ -185,9 +185,10 @@ const StudentNotificationModal: React.FC<StudentNotificationModalProps> = ({
       await batch.commit();
       
       // Update local state
-      setModalState({
-        notifications: modalState.notifications.map(n => ({ ...n, read: true }))
-      });
+      setModalState(prev => ({
+        ...prev,
+        notifications: prev.notifications.map(n => ({ ...n, read: true }))
+      }));
       
       console.log(`✅ Marked ${unreadNotifications.length} student notifications as read`);
     } catch (error) {

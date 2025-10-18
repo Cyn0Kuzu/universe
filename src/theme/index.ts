@@ -236,6 +236,8 @@ const theme = {
     
     // Additional accessibility colors
     onDisabled: neutralColors.gray500,
+    onBackground: neutralColors.gray800,
+    onPrimary: neutralColors.white,
     outline: neutralColors.gray300,
     outlineVariant: neutralColors.gray200,
   },

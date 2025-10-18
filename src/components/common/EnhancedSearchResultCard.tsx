@@ -9,6 +9,7 @@ import { Text, Card, Chip, useTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UniversalAvatar } from './UniversalAvatar';
 import { User } from '../../types';
+import { clubDataSyncService } from '../../services/clubDataSyncService';
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +27,9 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
   const theme = useTheme();
 
   const getDisplayName = () => {
+    if (user.userType === 'club') {
+      return clubDataSyncService.getClubDisplayName(user);
+    }
     return user.displayName || 
            `${user.firstName || ''} ${user.lastName || ''}`.trim() || 
            user.name || 
@@ -33,20 +37,30 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
   };
 
   const getUsername = () => {
-    if (user.userName) return `@${user.userName}`;
-    if (user.email) return user.email.split('@')[0];
+    if (user.userName) {
+      return `@${user.userName}`;
+    }
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
     return '';
   };
 
   const getUniversityInfo = () => {
     const parts = [];
-    if (user.university) parts.push(user.university);
-    if (user.department) parts.push(user.department);
+    if (user.university) {
+      parts.push(user.university);
+    }
+    if (user.department) {
+      parts.push(user.department);
+    }
     return parts.join(' • ');
   };
 
   const highlightSearchTerm = (text: string, query: string) => {
-    if (!query.trim()) return text;
+    if (!query.trim()) {
+      return text;
+    }
     
     const regex = new RegExp(`(${query})`, 'gi');
     const parts = text.split(regex);
@@ -71,9 +85,19 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
       <TouchableOpacity 
         style={styles.container}
         onPress={() => {
-          console.log('🎯 EnhancedSearchResultCard pressed for user:', user.id, user.displayName);
+          console.log('🎯 EnhancedSearchResultCard pressed for user:', {
+            id: user.id,
+            displayName: user.displayName,
+            name: user.name,
+            userType: user.userType
+          });
           console.log('🎯 onPress function:', onPress);
-          onPress(user.id);
+          console.log('🎯 Calling onPress with userId:', user.id);
+          if (user.id) {
+            onPress(user.id);
+          } else {
+            console.error('❌ User ID is undefined or null');
+          }
         }}
         activeOpacity={0.7}
       >
@@ -98,7 +122,6 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
             {user.userType === 'club' && (
               <Chip 
                 mode="outlined" 
-                compact
                 style={styles.clubChip}
                 textStyle={styles.clubChipText}
               >
@@ -108,19 +131,19 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
           </View>
 
           {getUsername() && (
-            <Text style={[styles.username, { color: theme.colors.onSurfaceVariant }]} numberOfLines={1}>
+            <Text style={[styles.username, { color: theme.colors.onSurface }]} numberOfLines={1}>
               {highlightSearchTerm(getUsername(), searchQuery)}
             </Text>
           )}
 
           {getUniversityInfo() && (
-            <Text style={[styles.universityInfo, { color: theme.colors.onSurfaceVariant }]} numberOfLines={2}>
+            <Text style={[styles.universityInfo, { color: theme.colors.onSurface }]} numberOfLines={2}>
               {highlightSearchTerm(getUniversityInfo(), searchQuery)}
             </Text>
           )}
 
           {user.bio && (
-            <Text style={[styles.bio, { color: theme.colors.onSurfaceVariant }]} numberOfLines={2}>
+            <Text style={[styles.bio, { color: theme.colors.onSurface }]} numberOfLines={2}>
               {user.bio}
             </Text>
           )}
@@ -129,7 +152,6 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
             {user.classLevel && (
               <Chip 
                 mode="outlined" 
-                compact
                 style={styles.classChip}
                 textStyle={styles.classChipText}
               >
@@ -137,15 +159,15 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
               </Chip>
             )}
             
-            {user.followersCount !== undefined && (
+            {(user as any).followerCount && (user as any).followerCount > 0 && (
               <View style={styles.statsContainer}>
                 <MaterialCommunityIcons 
                   name="account-group" 
                   size={14} 
-                  color={theme.colors.onSurfaceVariant} 
+                  color={theme.colors.onSurface} 
                 />
-                <Text style={[styles.statsText, { color: theme.colors.onSurfaceVariant }]}>
-                  {user.followersCount} takipçi
+                <Text style={[styles.statsText, { color: theme.colors.onSurface }]}>
+                  {(user as any).followerCount} takipçi
                 </Text>
               </View>
             )}
@@ -156,7 +178,7 @@ export const EnhancedSearchResultCard: React.FC<EnhancedSearchResultCardProps> =
           <MaterialCommunityIcons 
             name="chevron-right" 
             size={24} 
-            color={theme.colors.onSurfaceVariant} 
+            color={theme.colors.onSurface} 
           />
         </View>
       </TouchableOpacity>

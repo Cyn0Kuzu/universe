@@ -15,6 +15,7 @@ import { useAuth } from '../../contexts/AuthContext';
 // Use our custom DateTimePicker implementation to avoid native module issues
 import DateTimePicker from '../../components/CustomDateTimePicker';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { eventCategories } from '../../constants';
 import { CustomTheme } from '../../types/theme';
@@ -200,7 +201,27 @@ const CreateEventScreen: React.FC = () => {
     });
     
     if (!result.canceled && result.assets && result.assets[0].uri) {
-      setEventImage(result.assets[0].uri);
+      try {
+        // Resmi Base64'e çevir ve kaydet
+        const manipulateResult = await ImageManipulator.manipulateAsync(
+          result.assets[0].uri,
+          [{ resize: { width: 800, height: 450 } }], // 16:9 aspect ratio
+          { format: ImageManipulator.SaveFormat.JPEG, compress: 0.7, base64: true }
+        );
+        
+        if (manipulateResult.base64) {
+          // Base64 veriyi URL formatında oluştur
+          const base64Image = `data:image/jpeg;base64,${manipulateResult.base64}`;
+          setEventImage(base64Image);
+          console.log('✅ Event cover image processed and saved as base64');
+        } else {
+          throw new Error('Resim base64 formatına dönüştürülemedi');
+        }
+      } catch (error) {
+        console.error('❌ Error processing event image:', error);
+        setSnackbarMessage('Resim işlenirken hata oluştu!');
+        setSnackbarVisible(true);
+      }
     }
   };
 
@@ -505,6 +526,8 @@ const CreateEventScreen: React.FC = () => {
         status: 'active',
         university: effectiveProfile.university || null,
         imageUrl: eventImage || null,
+        coverImage: eventImage || null,
+        coverImageUrl: eventImage || null,
       };
 
       console.log('📋 Event data object built successfully:', {

@@ -200,3 +200,10 @@ const MyScreen = () => {
 These fixes ensure that the app works properly on all Android and iOS devices without overlapping or overflow issues. The navigation bar now adapts to different screen sizes and safe areas, providing a consistent user experience across all devices.
 
 The implementation is future-proof and can easily accommodate new device types and screen configurations.
+
+
+
+
+
+
+

@@ -105,7 +105,7 @@ const HomeScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<StudentStackParamList>>();
   const { currentUser } = useAuth();
-  const { fontSizes, spacing, shadows } = useResponsiveDesign();
+  const { fontSizes, spacing, shadows, borderRadius, isTablet, isSmallDevice } = useResponsiveDesign();
   
   const [followedClubs, setFollowedClubs] = useState<Club[]>([]);
   const [followedClubEvents, setFollowedClubEvents] = useState<Event[]>([]);
@@ -755,22 +755,21 @@ const HomeScreen: React.FC = () => {
       });
       
       setAllUsers(users);
-      // Eğer arama yapılmıyorsa, tüm kullanıcıları göster
-      if (!searchQuery.trim()) {
-        setSearchResults(users);
-      }
+      // Kullanıcı listesini sadece hafızada tut, otomatik gösterme
+      // Liste sadece kullanıcı arama yaptığında görünecek
     } catch (error) {
       console.error('Error fetching all users:', error);
       setAllUsers([]);
     } finally {
       setLoadingUsers(false);
     }
-  }, [currentUser?.uid, loadingUsers, searchQuery]);
+  }, [currentUser?.uid, loadingUsers]);
 
   const searchUsers = useCallback(async (query: string) => {
     if (!query.trim()) {
-      setSearchResults(allUsers);
-      setShowSearchResults(true);
+      // Arama boşsa hiçbir şey gösterme
+      setSearchResults([]);
+      setShowSearchResults(false);
       return;
     }
     
@@ -908,24 +907,25 @@ const HomeScreen: React.FC = () => {
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
+      // Kullanıcı yazmaya başladığında listeyi göster ve ara
+      setShowSearchResults(true);
       searchUsers(query);
     } else {
-      // Arama boşsa, tüm kullanıcıları göster
-      setSearchResults(allUsers);
-      setShowSearchResults(true);
+      // Arama boşsa, listeyi gizle
+      setSearchResults([]);
+      setShowSearchResults(false);
     }
   };
   
   // Handle search bar focus - show all users when focused
   const handleSearchFocus = () => {
-    if (!showSearchResults) {
+    // SADECE arama query'si varsa sonuçları göster
+    // Kullanıcı bara tıkladığında tüm liste görünmemeli
+    if (searchQuery.trim()) {
       setShowSearchResults(true);
-      if (searchQuery.trim()) {
-        searchUsers(searchQuery);
-      } else {
-        setSearchResults(allUsers);
-      }
+      searchUsers(searchQuery);
     }
+    // Arama boşsa hiçbir şey gösterme - kullanıcı yazmaya başlayınca otomatik gösterilecek
   };
   
   // Handle search bar blur - hide results when not focused
@@ -1394,45 +1394,62 @@ const HomeScreen: React.FC = () => {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top', 'left', 'right']}>
       <StatusBar style="dark" />
       
-      {/* Header with notifications */}
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          Ana Sayfa
-        </Text>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity 
-            style={styles.notificationButton}
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <View style={styles.notificationIconContainer}>
-              <MaterialCommunityIcons 
-                name="bell-outline" 
-                size={24} 
-                color={theme.colors.text} 
-              />
-              {unreadNotificationCount > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationBadgeText}>
-                    {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
+      {/* Modern Header */}
+      <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
+        <View style={styles.headerContent}>
+          <Text style={[styles.headerTitle, { 
+            color: theme.colors.text,
+            fontSize: isTablet ? fontSizes.title : fontSizes.lg 
+          }]}>
+            Ana Sayfa
+          </Text>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity 
+              style={styles.notificationButton}
+              onPress={() => navigation.navigate('Notifications')}
+              accessibilityLabel={`Bildirimler${unreadNotificationCount > 0 ? `, ${unreadNotificationCount} okunmamış bildirim` : ''}`}
+              accessibilityRole="button"
+              accessibilityHint="Bildirimler sayfasına gider"
+            >
+              <View style={styles.notificationIconContainer}>
+                <MaterialCommunityIcons 
+                  name="bell-outline" 
+                  size={isTablet ? 28 : 24} 
+                  color={theme.colors.text} 
+                />
+                {unreadNotificationCount > 0 && (
+                  <View style={styles.notificationBadge}>
+                    <Text style={styles.notificationBadgeText}>
+                      {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
       
-      {/* Search bar - Same style as ClubsScreen */}
-      <Searchbar
-        placeholder="Öğrenci ara..."
-        onChangeText={handleSearchChange}
-        value={searchQuery}
-        style={styles.searchBar}
-        icon={() => <MaterialCommunityIcons name="magnify" size={20} color="#666" />}
-        clearIcon={() => <MaterialCommunityIcons name="close" size={20} color="#666" />}
-        onFocus={handleSearchFocus}
-        onBlur={handleSearchBlur}
-      />
+      {/* Modern Search Bar */}
+      <View style={styles.searchContainer}>
+        <Searchbar
+          placeholder="Öğrenci ara..."
+          onChangeText={handleSearchChange}
+          value={searchQuery}
+          style={[styles.searchBar, { 
+            backgroundColor: theme.colors.surface,
+            elevation: 2,
+            ...shadows.sm 
+          }]}
+          icon={() => <MaterialCommunityIcons name="magnify" size={20} color="#666" />}
+          clearIcon={() => <MaterialCommunityIcons name="close" size={20} color="#666" />}
+          onFocus={handleSearchFocus}
+          onBlur={handleSearchBlur}
+          accessibilityLabel="Öğrenci arama kutusu"
+          accessibilityHint="Öğrenci ismi, e-posta veya üniversite bilgisi ile arama yapın"
+          accessibilityRole="search"
+        />
+      </View>
       
       {/* Search Results - Inline Expanding Results */}
       {showSearchResults && (
@@ -1463,7 +1480,7 @@ const HomeScreen: React.FC = () => {
             ) : searchResults.length > 0 ? (
               <FlatList
                 data={searchResults}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => item.id || `user-${index}`}
                 renderItem={({ item }) => {
                   console.log('🎯 Rendering search result item:', {
                     id: item.id,
@@ -1473,7 +1490,7 @@ const HomeScreen: React.FC = () => {
                   });
                   return (
                     <EnhancedSearchResultCard
-                      user={item}
+                      user={{...item, email: item.email || '', userType: (item.userType as 'student' | 'club') || 'student', createdAt: new Date(), updatedAt: new Date()}}
                       onPress={handleViewUserProfile}
                       searchQuery={searchQuery}
                     />
@@ -1502,11 +1519,11 @@ const HomeScreen: React.FC = () => {
         <ScrollView 
           style={styles.scrollView}
           contentContainerStyle={styles.scrollViewContent}
-          showsVerticalScrollIndicator={false}
+          // showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          {...PerformanceOptimizer.getScrollViewOptimizationProps()}
+          {...(PerformanceOptimizer.getScrollViewOptimizationProps() as any)}
         >
         {/* Header removed as requested */}
         

@@ -8,7 +8,6 @@ import { Modal, StyleSheet, View, TouchableOpacity, Dimensions } from 'react-nat
 import { Text, useTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useResponsiveDesign } from '../../utils/responsiveDesignUtils';
-import { BlurView } from 'expo-blur';
 
 interface EnhancedModalProps {
   visible: boolean;
@@ -56,7 +55,7 @@ export const EnhancedModal: React.FC<EnhancedModalProps> = ({
     const baseStyle = {
       flex: 1,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center' as const,
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
     };
 
@@ -69,13 +68,13 @@ export const EnhancedModal: React.FC<EnhancedModalProps> = ({
       bottomSheet: {
         flex: 1,
         justifyContent: 'flex-end',
-        alignItems: 'center',
+        alignItems: 'center' as const,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
       },
       center: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center' as const,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
       },
     };
@@ -137,12 +136,12 @@ export const EnhancedModal: React.FC<EnhancedModalProps> = ({
   const getHeaderStyle = () => {
     return {
       flexDirection: 'row' as const,
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
       paddingHorizontal: spacing.lg,
       paddingVertical: spacing.md,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.outline,
+      borderBottomColor: theme.colors.disabled,
     };
   };
 

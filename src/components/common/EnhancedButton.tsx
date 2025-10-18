@@ -82,7 +82,7 @@ export const EnhancedButton: React.FC<EnhancedButtonProps> = ({
       secondary: {
         backgroundColor: disabled ? theme.colors.disabled : theme.colors.surface,
         borderWidth: 1,
-        borderColor: theme.colors.outline,
+        borderColor: theme.colors.disabled,
       },
       outline: {
         backgroundColor: 'transparent',
@@ -116,10 +116,10 @@ export const EnhancedButton: React.FC<EnhancedButtonProps> = ({
 
     const variantTextStyles = {
       primary: {
-        color: disabled ? theme.colors.onDisabled : '#FFFFFF',
+        color: disabled ? theme.colors.disabled : '#FFFFFF',
       },
       secondary: {
-        color: disabled ? theme.colors.onDisabled : theme.colors.onSurface,
+        color: disabled ? theme.colors.disabled : theme.colors.onSurface,
       },
       outline: {
         color: disabled ? theme.colors.disabled : theme.colors.primary,
@@ -128,7 +128,7 @@ export const EnhancedButton: React.FC<EnhancedButtonProps> = ({
         color: disabled ? theme.colors.disabled : theme.colors.primary,
       },
       danger: {
-        color: disabled ? theme.colors.onDisabled : '#FFFFFF',
+        color: disabled ? theme.colors.disabled : '#FFFFFF',
       },
     };
 

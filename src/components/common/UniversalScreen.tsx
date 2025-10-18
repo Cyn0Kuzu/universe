@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useDeviceLayout, getContentPadding } from '../utils/deviceLayoutUtils';
+// import { useDeviceLayout, getContentPadding } from '../utils/deviceLayoutUtils';
 import { OptimizedSafeAreaView } from './OptimizedSafeAreaView';
 
 interface UniversalScreenProps {
@@ -33,12 +33,12 @@ export const UniversalScreen: React.FC<UniversalScreenProps> = ({
   horizontalPadding,
   verticalPadding,
 }) => {
-  const deviceLayout = useDeviceLayout();
+  // const deviceLayout = useDeviceLayout();
   
   // Calculate padding
-  const padding = contentPadding ? getContentPadding() : {};
+  const padding = contentPadding ? { paddingHorizontal: 16, paddingVertical: 16 } : {};
   const customPadding = {
-    paddingHorizontal: horizontalPadding !== undefined ? horizontalPadding : padding.paddingLeft,
+    paddingHorizontal: horizontalPadding !== undefined ? horizontalPadding : 16,
     paddingVertical: verticalPadding !== undefined ? verticalPadding : 0,
   };
   
@@ -103,3 +103,10 @@ const styles = StyleSheet.create({
 });
 
 export default UniversalScreen;
+
+
+
+
+
+
+

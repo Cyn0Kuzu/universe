@@ -24,6 +24,7 @@ import ProfileFollowingScreen from '../screens/Profile/ProfileFollowingScreen';
 import StudentEventsListScreen from '../screens/Profile/StudentEventsListScreen';
 import NotificationScreen from '../screens/Home/NotificationScreen';
 import MyMembershipsScreen from '../screens/Profile/MyMembershipsScreen';
+import FixedNotificationScreen from '../screens/Home/FixedNotificationScreen';
 // import AdminPanel from '../components/AdminPanel'; // Removed - not needed
 // import ClubProfileScreen from '../screens/Club/ClubProfileScreen'; // Import sorunu
 
@@ -53,6 +54,8 @@ export type StudentStackParamList = {
   Events: { filter?: string, clubId?: string } | undefined;
   Clubs: undefined;
   MyMemberships: undefined; // Yeni ekran - Üye Olduklarım
+  FixedNotifications: undefined; // Sabit bildirimler
+  ModernLeaderboard: undefined; // Modern lider tablosu
   // Buraya diğer stack ekranları eklenebilir
 };
 
@@ -76,6 +79,7 @@ const StudentStack = createNativeStackNavigator<StudentStackParamList>();
 const StudentTabNavigator = () => {
   const theme = useTheme() as CustomTheme;
   const deviceLayout = useDeviceLayout();
+  const insets = useDeviceLayout().safeAreaInsets;
 
   return (
     <StudentTab.Navigator
@@ -85,7 +89,13 @@ const StudentTabNavigator = () => {
         headerShown: false,
         // Performance optimizations for tabs
         lazy: true, // Only load screens when needed
-        tabBarStyle: getNavigationBarStyle(),
+        tabBarStyle: {
+          ...getNavigationBarStyle(),
+          // CRITICAL: Use safe area insets to position tab bar above system navigation
+          // This ensures tab bar sits right above phone's gesture navigation bar
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 20,
+          height: (deviceLayout.navigationBar.height - deviceLayout.navigationBar.paddingBottom) + (insets.bottom > 0 ? insets.bottom : 20),
+        },
         tabBarLabelStyle: getNavigationLabelStyle(),
         tabBarIconStyle: getNavigationIconStyle(),
         tabBarItemStyle: getNavigationItemStyle(),
@@ -260,6 +270,20 @@ const StudentNavigator = () => {
       <StudentStack.Screen 
         name="MyMemberships" 
         component={MyMembershipsScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+      <StudentStack.Screen 
+        name="FixedNotifications" 
+        component={FixedNotificationScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+      <StudentStack.Screen 
+        name="ModernLeaderboard" 
+        component={StatisticsLeaderboardScreen}
         options={{
           headerShown: false
         }}

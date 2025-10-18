@@ -6,10 +6,19 @@ export interface EventData {
   title: string;
   description: string;
   date: Date | firebase.firestore.Timestamp;
+  startDate: Date | firebase.firestore.Timestamp;
+  endDate: Date | firebase.firestore.Timestamp;
   location: string;
   imageUrl?: string;
   coverImageUrl?: string;
+  coverImage?: string;
+  image?: string;
+  photoUrl?: string;
+  bannerUrl?: string;
+  headerImage?: string;
+  thumbnail?: string;
   organizerId: string;
+  creatorId?: string;
   organizer?: {
     id?: string;
     name?: string;

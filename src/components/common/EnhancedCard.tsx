@@ -61,11 +61,11 @@ export const EnhancedCard: React.FC<EnhancedCardProps> = ({
       },
       outlined: {
         borderWidth: 1,
-        borderColor: theme.colors.outline,
+        borderColor: theme.colors.disabled,
         ...shadows.none,
       },
       filled: {
-        backgroundColor: theme.colors.surfaceVariant,
+        backgroundColor: theme.colors.surface,
         borderWidth: 0,
         ...shadows.none,
       },
@@ -106,7 +106,7 @@ export const EnhancedCard: React.FC<EnhancedCardProps> = ({
   const getSubtitleStyle = () => {
     return {
       fontSize: fontSizes.bodySmall,
-      color: theme.colors.onSurfaceVariant,
+      color: theme.colors.onSurface,
       marginBottom: spacing.sm,
     };
   };

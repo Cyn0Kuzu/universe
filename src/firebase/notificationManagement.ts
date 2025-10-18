@@ -3,6 +3,7 @@ import { firebase } from './config';
 import { ClubNotificationService, ClubNotification } from '../services/clubNotificationService';
 import { SafeNotificationCreator } from '../utils/safeNotificationCreator';
 import PushNotificationService from '../services/pushNotificationService';
+import hybridPushService from '../services/hybridPushNotificationService';
 
 export interface NotificationPreferences {
   userId: string;
@@ -163,31 +164,9 @@ export class NotificationManagement {
    */
   private static async sendPushNotification(userId: string, notification: any): Promise<void> {
     try {
-      // Kullanıcının push token'larını al
-      const userDoc = await this.db.collection('users').doc(userId).get();
-      const userData = userDoc.data();
-      
-      if (!userData) {
-        console.log(`📱 User document not found for ${userId}`);
-        return;
-      }
-
-      // Check for both pushTokens array and expoPushToken for backward compatibility
-      const { pushTokens = [], expoPushToken } = userData;
-      
-      // Combine tokens, removing duplicates
-      const allTokens = [...new Set([...pushTokens, ...(expoPushToken ? [expoPushToken] : [])])];
-      
-      if (allTokens.length === 0) {
-        console.log(`📱 No push tokens found for user ${userId}`);
-        return;
-      }
-
-      const pushService = PushNotificationService.getInstance();
-      
-      // Push bildirim gönder
-      await pushService.sendPushNotification(
-        allTokens,
+      // Use hybrid push notification service
+      await hybridPushService.sendToUser(
+        userId,
         {
           type: this.getNotificationType(notification.type),
           title: notification.title,
@@ -199,8 +178,6 @@ export class NotificationManagement {
           }
         }
       );
-
-      console.log(`📱 Push notification sent to ${userId} with ${allTokens.length} tokens`);
     } catch (error) {
       console.error('Push notification failed:', error);
       // Push bildirim hatası ana bildirim sistemini etkilemesin

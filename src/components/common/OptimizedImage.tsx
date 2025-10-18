@@ -44,6 +44,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   const handleError = () => {
+    console.warn('OptimizedImage: Failed to load image:', uri);
     setLoading(false);
     setError(true);
   };

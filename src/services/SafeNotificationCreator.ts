@@ -3,8 +3,8 @@
  * Creates notifications without triggering complex cascades
  */
 
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { firebase } from '../firebase/config';
+import hybridPushService from './hybridPushNotificationService';
 
 export interface SafeNotificationData {
   type: string;
@@ -27,14 +27,43 @@ export class SafeNotificationCreator {
    */
   async createNotification(data: SafeNotificationData): Promise<void> {
     try {
-      await this.db.collection('notifications').add({
+      const notification = {
         ...data,
         read: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      };
+
+      await this.db.collection('notifications').add(notification);
+      
+      // Send push notification
+      await this.sendPushNotification(data.userId, notification);
     } catch (error) {
       console.error('Error creating safe notification:', error);
+    }
+  }
+
+  /**
+   * Send push notification
+   */
+  private async sendPushNotification(userId: string, notification: any): Promise<void> {
+    try {
+      // Use hybrid push notification service
+      await hybridPushService.sendToUser(
+        userId,
+        {
+          type: 'announcement',
+          title: notification.title,
+          body: notification.message,
+          data: {
+            notificationId: userId,
+            type: notification.type,
+            ...notification.metadata
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Push notification failed:', error);
     }
   }
 

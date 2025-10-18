@@ -92,13 +92,13 @@ android {
         jvmTarget = '17'
     }
 
-    namespace 'com.universekampus.universeapp'
+    namespace 'com.universekampus.universeapp2026'
     defaultConfig {
-        applicationId 'com.universekampus.universeapp2025'
+        applicationId 'com.universekampus.universeapp2026'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 78
-        versionName "1.2.1"
+            versionCode 402
+        versionName "1.4.0"
         
         // Optimize for AAB - bundle configuration
         multiDexEnabled true
@@ -118,12 +118,10 @@ android {
             keyPassword 'android'
         }
         release {
-            if (project.hasProperty('UNIVERSE_RELEASE_STORE_FILE')) {
-                storeFile file(UNIVERSE_RELEASE_STORE_FILE)
-                storePassword UNIVERSE_RELEASE_STORE_PASSWORD
-                keyAlias UNIVERSE_RELEASE_KEY_ALIAS
-                keyPassword UNIVERSE_RELEASE_KEY_PASSWORD
-            }
+            storeFile file('release.keystore')
+            storePassword 'universe2025'
+            keyAlias 'release'
+            keyPassword 'universe2025'
         }
     }
     buildTypes {
@@ -198,10 +196,12 @@ dependencies {
     // MultiDex support for API 35
     implementation("androidx.multidex:multidex:2.0.1")
     
-    // Firebase dependencies
-    implementation platform('com.google.firebase:firebase-bom:34.3.0')
+    // Firebase dependencies - Latest BOM version
+    implementation platform('com.google.firebase:firebase-bom:34.4.0')
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-auth'
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

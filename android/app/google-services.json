@@ -7,34 +7,15 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:946853543876:android:96dd500c412200f363ae91",
+        "mobilesdk_app_id": "1:946853543876:android:969ff06b2d211c3263ae91",
         "android_client_info": {
-          "package_name": "com.universekampus.universeapp2025"
+          "package_name": "com.universekampus.universeapp2026"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCZNjFHtf5buInWn7I1yAeUdltpWLr8b1E"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:946853543876:android:f366a189f0cc2c3e63ae91",
-        "android_client_info": {
-          "package_name": "com.universekampus.universeapp2025"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCZNjFHtf5buInWn7I1yAeUdltpWLr8b1E"
+          "current_key": "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc"
         }
       ],
       "services": {

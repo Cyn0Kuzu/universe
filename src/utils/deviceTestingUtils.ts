@@ -333,3 +333,10 @@ export default {
   generateDeviceTestReport,
   validateCurrentDeviceLayout,
 };
+
+
+
+
+
+
+

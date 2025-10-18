@@ -24,6 +24,26 @@ export interface TimestampEntity extends BaseEntity {
 
 // === USER & PROFILE TYPES ===
 
+export interface User extends BaseEntity {
+  id: string;
+  displayName?: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  userName?: string;
+  email: string;
+  photoURL?: string;
+  profileImage?: string;
+  university?: string;
+  department?: string;
+  classLevel?: string;
+  bio?: string;
+  isActive?: boolean;
+  lastSeen?: any;
+  userType?: 'student' | 'club';
+  preferences?: UserPreferences;
+}
+
 export interface UserProfile extends BaseEntity {
   displayName: string;
   email: string;
@@ -143,6 +163,10 @@ export interface NotificationBase extends BaseEntity {
   data?: Record<string, any>;
   imageUrl?: string;
   actionUrl?: string;
+  timestamp?: any;
+  eventId?: string;
+  clubId?: string;
+  userId?: string;
 }
 
 export type NotificationType = 

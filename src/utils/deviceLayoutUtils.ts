@@ -197,11 +197,33 @@ export const getResponsiveSpacing = (
 export const getNavigationBarStyle = (insets?: any) => {
   const config = getDeviceLayoutConfig(insets);
   
+  // Calculate safe bottom padding to avoid phone navigation bar overlap
+  // On Android devices with gesture navigation, add MUCH MORE extra padding
+  const baseBottomPadding = config.safeAreaInsets.bottom;
+  
+  // CRITICAL FIX: Add aggressive padding for Android gesture navigation
+  // Many Android devices have 24-48px gesture bars that overlap
+  let extraAndroidPadding = 0;
+  if (config.isAndroid) {
+    // If device has no safe area insets, assume it has gesture navigation
+    if (baseBottomPadding === 0) {
+      extraAndroidPadding = 24; // Add significant padding for gesture bar
+    } else {
+      extraAndroidPadding = 12; // Add some padding even with safe area
+    }
+  }
+  
+  const safeBottomPadding = Math.max(
+    config.navigationBar.paddingBottom,
+    baseBottomPadding + extraAndroidPadding,
+    config.isAndroid ? 20 : 0 // Minimum 20px padding on Android
+  );
+  
   return {
-    paddingBottom: config.navigationBar.paddingBottom,
+    paddingBottom: safeBottomPadding,
     paddingTop: config.navigationBar.paddingTop,
     paddingHorizontal: config.navigationBar.paddingHorizontal,
-    height: config.navigationBar.height,
+    height: config.navigationBar.height + safeBottomPadding,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
@@ -210,19 +232,28 @@ export const getNavigationBarStyle = (insets?: any) => {
     shadowOffset: Platform.OS === 'ios' ? { width: 0, height: -2 } : undefined,
     shadowOpacity: Platform.OS === 'ios' ? 0.1 : undefined,
     shadowRadius: Platform.OS === 'ios' ? 4 : undefined,
-    position: 'absolute' as const,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    // Keep relative positioning
+    position: 'relative' as const,
+    // CRITICAL: Add margin bottom for Android to prevent overlap with system navigation
+    ...(config.isAndroid && {
+      marginBottom: 0, // Don't add margin, rely on padding instead
+    }),
     // Landscape mode adjustments
     ...(config.isLandscape && {
-      height: Math.max(config.navigationBar.height, 60),
+      height: Math.max(config.navigationBar.height + safeBottomPadding, 60),
       paddingTop: Math.max(config.navigationBar.paddingTop, 8),
+      paddingBottom: Math.max(safeBottomPadding, 16),
     }),
     // Tablet adjustments
     ...(config.isTablet && {
-      height: config.navigationBar.height + 8,
+      height: config.navigationBar.height + safeBottomPadding + 8,
       paddingTop: config.navigationBar.paddingTop + 2,
+      paddingBottom: safeBottomPadding + 8,
+    }),
+    // Small device adjustments to prevent overlap
+    ...(config.isSmallDevice && {
+      paddingBottom: Math.max(safeBottomPadding, 20),
+      height: config.navigationBar.height + Math.max(safeBottomPadding, 20),
     }),
   };
 };

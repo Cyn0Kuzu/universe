@@ -14,3 +14,7 @@ export { default as UserAvatar } from './UserAvatar';
 export { default as ImageZoomModal } from './ImageZoomModal';
 export { default as OptimizedSafeAreaView } from './OptimizedSafeAreaView';
 export { default as EnhancedSearchResultCard } from './EnhancedSearchResultCard';
+
+// Professional Components - v1.3.0
+export { default as ResponsiveContainer } from './ResponsiveContainer';
+export { default as AnimatedButton } from './AnimatedButton';

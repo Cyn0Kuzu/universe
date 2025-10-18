@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, RefreshControl, ScrollView, Dimensions } from 'react-native';
 import { Text, useTheme, Card, Avatar, Chip, Searchbar, Button, IconButton, Divider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -14,6 +14,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { UniversalAvatar } from '../../components/common';
 import ClubFollowSyncService from '../../services/clubFollowSyncService';
 import { ClubStatsService } from '../../services/clubStatsService';
+import { clubDataSyncService } from '../../services/clubDataSyncService';
+import { EnhancedClubCard } from '../../components/EnhancedClubCard';
+import unifiedDataSyncService from '../../services/unifiedDataSyncService';
+import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
+import { useResponsiveDesign } from '../../utils/responsiveDesignUtils';
+import realTimeDataSyncService, { RealTimeClubData } from '../../services/realTimeDataSyncService';
 
 interface ClubData {
   id: string;
@@ -36,13 +42,21 @@ interface ClubData {
   expanded?: boolean; // Track expanded/collapsed state of cards
   isFollowing?: boolean; // Kullanıcının kulübü takip edip etmediğini gösterir
   memberCount?: number; // Kulüp üye sayısı
+  followerCount?: number; // Kulüp takipçi sayısı
+  followingCount?: number; // Kulüp takip ettiği sayısı
   eventCount?: number; // Kulüp etkinlik sayısı
+  likes?: number; // Kulüp beğeni sayısı
+  comments?: number; // Kulüp yorum sayısı
+  totalScore?: number; // Kulüp toplam puanı
+  rank?: number; // Kulüp sıralaması
+  level?: number; // Kulüp seviyesi
 }
 
 const ClubsScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation();
   const { currentUser, isClubAccount } = useAuth();
+  const { fontSizes, spacing, shadows, borderRadius, isTablet, isSmallDevice, screenWidth } = useResponsiveDesign();
   
   const [clubs, setClubs] = useState<ClubData[]>([]);
   const [joinedClubs, setJoinedClubs] = useState<string[]>([]);
@@ -68,7 +82,7 @@ const ClubsScreen: React.FC = () => {
     memberFilter: 'all' as 'all' | 'small' | 'medium' | 'large',
   });
   
-  // Fetch clubs from Firestore
+  // Fetch clubs from Firestore using realTimeDataSyncService
   const fetchClubs = async () => {
     try {
       setLoading(true);
@@ -77,21 +91,15 @@ const ClubsScreen: React.FC = () => {
       // Query for all club accounts
       const clubsRef = db.collection('users')
         .where('userType', '==', 'club')
-        .limit(50); // Added limit for security rules
+        .limit(50);
       
       const snapshot = await clubsRef.get();
       
       const clubsList: ClubData[] = [];
       
-      // Kullanıcının takip ettiği kulüpleri al (eğer giriş yapılmışsa)
-      let followedClubIds: string[] = [];
+      // Kullanıcının üye olduğu kulüpleri al
       let joinedClubIds: string[] = [];
       if (currentUser) {
-        const userDoc = await db.collection('users').doc(currentUser.uid).get();
-        const userData = userDoc.data();
-        followedClubIds = userData?.followedClubs || [];
-        
-        // Kullanıcının üye olduğu kulüpleri al
         const membershipsQuery = await db.collection('clubMembers')
           .where('userId', '==', currentUser.uid)
           .where('status', '==', 'approved')
@@ -101,67 +109,50 @@ const ClubsScreen: React.FC = () => {
         setJoinedClubs(joinedClubIds);
       }
       
-      for (const doc of snapshot.docs) {
-        const clubData = doc.data() as ClubData;
-        
-        // Profil resmi veya avatar bilgilerini doğru şekilde al
-        let profileImage = clubData.profileImage || clubData.photoURL || '';
-        
-        // Boş string veya 'null' string değerlerini temizle
-        if (profileImage === 'null' || profileImage === 'undefined' || !profileImage?.trim()) {
-          profileImage = '';
-        }
-        
-        // Avatar bilgilerini belirle - profil resmi yoksa kullanılacak
-        const avatarIcon = clubData.avatarIcon || 'account-group';
-        const avatarColor = clubData.avatarColor || '#1976D2';
-        
-        // Eğer üye sayısı 0 ise, gerçek üye sayısını clubMembers koleksiyonundan çek
-        let actualMemberCount = clubData.memberCount || 0;
-        if (actualMemberCount === 0) {
-          try {
-            const memberQuery = await db.collection('clubMembers')
-              .where('clubId', '==', doc.id)
-              .where('status', '==', 'approved')
-              .get();
-            actualMemberCount = memberQuery.size;
-            
-            // Eğer gerçek sayı varsa, kulüp dokümanını güncelle
-            if (actualMemberCount > 0) {
-              await db.collection('users').doc(doc.id).update({
-                memberCount: actualMemberCount,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-              });
-            }
-          } catch (error) {
-            console.error(`Kulüp ${doc.id} üye sayısı alınamadı:`, error);
-          }
-        }
+      // Paralel olarak tüm kulüp verilerini çek (daha hızlı)
+      const clubsDataPromises = snapshot.docs.map(doc => 
+        realTimeDataSyncService.getRealTimeClubData(doc.id, currentUser?.uid)
+      );
+      
+      const clubsData = await Promise.all(clubsDataPromises);
+      
+      for (const clubData of clubsData) {
+        if (!clubData) continue;
 
         clubsList.push({
-          id: doc.id,
-          clubName: clubData.clubName || clubData.displayName || 'İsimsiz Kulüp',
-          description: clubData.description || clubData.bio || '',
-          university: clubData.university || '',
-          clubTypes: clubData.clubTypes || (clubData.clubType ? [clubData.clubType] : []),
-          clubType: clubData.clubType || '',
-          profileImage: profileImage,
-          avatarIcon: avatarIcon,
-          avatarColor: avatarColor,
-          coverImage: clubData.coverImage || '',
-          coverIcon: clubData.coverIcon || '',
-          coverColor: clubData.coverColor || '#0D47A1',
+          id: clubData.id,
+          clubName: clubData.clubName,
+          displayName: clubData.displayName,
+          description: clubData.description,
+          bio: clubData.bio,
+          university: clubData.university,
+          clubTypes: clubData.clubTypes,
+          clubType: clubData.clubTypes[0] || '',
+          profileImage: clubData.profileImage,
+          avatarIcon: clubData.avatarIcon,
+          avatarColor: clubData.avatarColor,
+          coverImage: clubData.coverImage,
+          coverIcon: clubData.coverIcon,
+          coverColor: clubData.coverColor,
           createdAt: clubData.createdAt,
-          expanded: false, // Initialize all cards as collapsed
-          isFollowing: followedClubIds.includes(doc.id), // Kulüp takip ediliyor mu?
-          memberCount: actualMemberCount, // Gerçek üye sayısı
-          eventCount: clubData.eventCount || 0 // Etkinlik sayısı
+          expanded: false,
+          isFollowing: clubData.isFollowing,
+          memberCount: clubData.memberCount,
+          followerCount: clubData.followerCount,
+          followingCount: clubData.followingCount,
+          eventCount: clubData.eventCount,
+          likes: clubData.likes,
+          comments: clubData.comments,
+          totalScore: clubData.totalScore,
+          rank: clubData.rank,
+          level: clubData.level
         });
       }
       
+      console.log(`✅ ${clubsList.length} kulüp yüklendi (gerçek verilerle)`);
       setClubs(clubsList);
     } catch (error) {
-      console.error('Error fetching clubs:', error);
+      console.error('❌ Error fetching clubs:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -171,6 +162,23 @@ const ClubsScreen: React.FC = () => {
   // Initial fetch
   useEffect(() => {
     fetchClubs();
+  }, []);
+
+  // Real-time synchronization for clubs
+  useEffect(() => {
+    const handleClubUpdate = (data: any) => {
+      if (data.type === 'profile' && data.userId) {
+        console.log('🔄 ClubsScreen: Club profile updated via comprehensive sync, refreshing...');
+        fetchClubs();
+      }
+    };
+
+    // Subscribe to comprehensive sync service
+    comprehensiveDataSyncService.subscribe('ClubsScreen', handleClubUpdate);
+
+    return () => {
+      comprehensiveDataSyncService.unsubscribe('ClubsScreen', handleClubUpdate);
+    };
   }, []);
   
   // Handle pull-to-refresh
@@ -391,12 +399,12 @@ const ClubsScreen: React.FC = () => {
   };
   
   // Handle view profile button press
-  const handleViewProfile = (clubId: string) => {
+  const handleViewProfile = (clubId: string): void => {
     navigateToClubProfile(clubId);
   };
   
   // Kulüp takip etme/takipten çıkma işlevi - synchronized with comprehensive scoring
-  const handleFollowClub = async (clubId: string, isFollowing: boolean) => {
+  const handleFollowClub = async (clubId: string) => {
     if (!currentUser) {
       // Kullanıcı giriş yapmamışsa giriş sayfasına yönlendir
       navigation.navigate('Login' as never);
@@ -423,7 +431,7 @@ const ClubsScreen: React.FC = () => {
         currentUser.uid,
         clubId,
         clubName,
-        isFollowing,
+        false,
         isClubAccount ? 'club' : 'student'
       );
       
@@ -445,6 +453,76 @@ const ClubsScreen: React.FC = () => {
     }
   };
   
+  const handleUnfollowClub = async (clubId: string) => {
+    if (!currentUser) return;
+    
+    try {
+      await unfollowClub(currentUser.uid, clubId);
+      
+      // Update local state
+    setClubs(prevClubs => 
+      prevClubs.map(club => 
+        club.id === clubId 
+            ? { ...club, isFollowing: false, followerCount: Math.max(0, (club.followerCount || 0) - 1) }
+          : club
+      )
+    );
+      
+      console.log('✅ Club unfollowed successfully');
+    } catch (error) {
+      console.error('❌ Error unfollowing club:', error);
+    }
+  };
+
+  const handleJoinClub = async (clubId: string) => {
+    if (!currentUser) return;
+    
+    try {
+      // Send membership request
+      await firebase.firestore().collection('clubMembers').add({
+        userId: currentUser.uid,
+        clubId: clubId,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      console.log('✅ Membership request sent successfully');
+    } catch (error) {
+      console.error('❌ Error joining club:', error);
+    }
+  };
+
+  const handleLeaveClub = async (clubId: string) => {
+    if (!currentUser) return;
+    
+    try {
+      // Remove membership
+      const membershipQuery = await firebase.firestore()
+        .collection('clubMembers')
+        .where('userId', '==', currentUser.uid)
+        .where('clubId', '==', clubId)
+        .get();
+      
+      if (!membershipQuery.empty) {
+        await membershipQuery.docs[0].ref.delete();
+      }
+      
+      // Update local state
+      setClubs(prevClubs => 
+        prevClubs.map(club => 
+          club.id === clubId 
+            ? { ...club, memberCount: Math.max(0, (club.memberCount || 0) - 1) }
+            : club
+        )
+      );
+      
+      console.log('✅ Left club successfully');
+    } catch (error) {
+      console.error('❌ Error leaving club:', error);
+    }
+  };
+  
   // Handle card expansion toggle
   const toggleCardExpansion = (clubId: string) => {
     setClubs(prevClubs => 
@@ -456,152 +534,19 @@ const ClubsScreen: React.FC = () => {
     );
   };
   
-  // Render club card
+  // Render club card using EnhancedClubCard
   const renderClubCard = ({ item }: { item: ClubData }) => {
     return (
-      <Card style={styles.clubCard}>
-        <TouchableOpacity 
-          style={styles.cardHeader} 
-          onPress={() => toggleCardExpansion(item.id)}
-          activeOpacity={0.7}
-        >
-          {/* Club Avatar */}
-          <UniversalAvatar
-            user={{
-              id: item.id,
-              name: item.displayName || item.clubName,
-              profileImage: item.profileImage,
-              avatarIcon: item.avatarIcon || 'account-group',
-              avatarColor: item.avatarColor || '#1976D2'
-            }}
-            size={45}
-            style={styles.avatar}
-            fallbackIcon="account-group"
-            fallbackColor="#1976D2"
-          />
-          
-          {/* Basic Info */}
-          <View style={styles.headerInfo}>
-            <Text style={styles.clubName} numberOfLines={1}>{item.clubName}</Text>
-            
-            <View style={styles.universityContainer}>
-              <MaterialCommunityIcons name="school" size={14} color="#555" />
-              <Text style={styles.universityText} numberOfLines={1}>{getUniversityName(item.university || '')}</Text>
-            </View>
-          </View>
-          
-          {/* Expand/Collapse Indicator */}
-          <MaterialCommunityIcons 
-            name={item.expanded ? "chevron-up" : "chevron-down"} 
-            size={24} 
-            color="#555" 
-            style={styles.expandIcon}
-          />
-        </TouchableOpacity>
-        
-        {/* Expandable Content */}
-        {item.expanded && (
-          <>
-            {/* Description */}
-            {(item.description || item.bio) && (
-              <Card.Content style={styles.contentContainer}>
-                <Text style={styles.description}>
-                  {item.description || item.bio}
-                </Text>
-              
-                {/* Club Types */}
-                <View style={styles.clubTypesContainer}>
-                  {item.clubTypes && item.clubTypes.map((type, index) => (
-                    <Chip 
-                      key={index} 
-                      style={styles.clubTypeChip}
-                      textStyle={{ color: 'white', fontSize: 12 }}
-                      icon={() => {
-                        const typeInfo = CLUB_TYPES_DATA.find(ct => ct.id === type);
-                        return typeInfo ? (
-                          <MaterialCommunityIcons 
-                            name={typeInfo.icon as any || 'shape'} 
-                            size={14} 
-                            color="white" 
-                          />
-                        ) : null;
-                      }}
-                    >
-                      {getClubTypeName(type)}
-                    </Chip>
-                  ))}
-                  
-                  {(!item.clubTypes || item.clubTypes.length === 0) && item.clubType && (
-                    <Chip 
-                      style={styles.clubTypeChip}
-                      textStyle={{ color: 'white', fontSize: 12 }}
-                    >
-                      {getClubTypeName(item.clubType)}
-                    </Chip>
-                  )}
-                </View>
-                
-                {/* Club Statistics */}
-                <View style={styles.statsContainer}>
-                  <View style={styles.statItem}>
-                    <MaterialCommunityIcons name="account-group" size={16} color="#666" />
-                    <Text style={styles.statText}>{item.memberCount || 0} üye</Text>
-                  </View>
-                  <View style={styles.statItem}>
-                    <MaterialCommunityIcons name="calendar-multiple" size={16} color="#666" />
-                    <Text style={styles.statText}>{item.eventCount || 0} etkinlik</Text>
-                  </View>
-                </View>
-              </Card.Content>
-            )}
-            
-            {/* Actions */}
-            <Card.Actions style={styles.cardActions}>
-              <Button 
-                mode="text"
-                icon="eye"
-                labelStyle={{ fontSize: 12 }}
-                compact
-                onPress={() => handleViewProfile(item.id)}
-              >
-                Profil Görüntüle
-              </Button>
-              
-              {/* Membership ve Follow durumuna göre buton göster */}
-              {!isClubAccount && currentUser && (
-                <>
-                  {joinedClubs.includes(item.id) ? (
-                    // Üye ise
-                    <Button 
-                      mode="text"
-                      icon="check-circle"
-                      labelStyle={{ fontSize: 12, color: '#4CAF50' }}
-                      compact
-                      disabled
-                    >
-                      Üyesin
-                    </Button>
-                  ) : (
-                    // Üye değilse takip durumuna göre buton göster
-                    <Button 
-                      mode="text"
-                      icon={item.isFollowing ? "heart" : "heart-outline"}
-                      labelStyle={{ 
-                        fontSize: 12,
-                        color: item.isFollowing ? '#E91E63' : '#666'
-                      }}
-                      compact
-                      onPress={() => handleFollowClub(item.id, item.isFollowing || false)}
-                    >
-                      {item.isFollowing ? 'Takipte' : 'Takip Et'}
-                    </Button>
-                  )}
-                </>
-              )}
-            </Card.Actions>
-          </>
-        )}
-      </Card>
+      <EnhancedClubCard
+        clubId={item.id}
+        onPress={() => handleViewProfile(item.id)}
+        onFollow={handleFollowClub}
+        onUnfollow={handleUnfollowClub}
+        onJoin={handleJoinClub}
+        onLeave={handleLeaveClub}
+        showFollowButton={!isClubAccount && !!currentUser}
+        showJoinButton={!isClubAccount && !!currentUser}
+      />
     );
   };
 

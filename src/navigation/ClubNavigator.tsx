@@ -29,6 +29,8 @@ import EventAttendeesScreen from '../screens/Club/EventAttendeesScreen';
 import ClubFollowersScreen from '../screens/Club/ClubFollowersScreen';
 import ClubFollowingScreen from '../screens/Club/ClubFollowingScreen';
 import ClubProfileScreen from '../screens/Club/ClubProfileScreen';
+import MembershipApplicationsScreen from '../screens/Club/MembershipApplicationsScreen';
+import ViewEventScreen from '../screens/Club/ViewEventScreen';
 
 // Ortak ekranlar
 import EventDetailScreen_Tabbed from '../screens/Events/EventDetailScreen_Tabbed';
@@ -61,6 +63,8 @@ export type ClubStackParamList = {
   NotificationScreen: undefined;
   EventsScreen: undefined;
   LeaderboardScreen: undefined;
+  MembershipApplications: undefined; // Üyelik başvuruları
+  ViewEventScreen: { eventId: string }; // Kulüp etkinlik görüntüleme
 };
 
 const ClubTab = createBottomTabNavigator<ClubTabParamList>();
@@ -69,6 +73,7 @@ const ClubStack = createNativeStackNavigator<ClubStackParamList>();
 const ClubTabNavigator = () => {
   const theme = useTheme() as CustomTheme;
   const deviceLayout = useDeviceLayout();
+  const insets = useDeviceLayout().safeAreaInsets;
 
   return (
     <ClubTab.Navigator
@@ -76,7 +81,13 @@ const ClubTabNavigator = () => {
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
-        tabBarStyle: getNavigationBarStyle(),
+        tabBarStyle: {
+          ...getNavigationBarStyle(),
+          // CRITICAL: Use safe area insets to position tab bar above system navigation
+          // This ensures tab bar sits right above phone's gesture navigation bar
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 20,
+          height: (deviceLayout.navigationBar.height - deviceLayout.navigationBar.paddingBottom) + (insets.bottom > 0 ? insets.bottom : 20),
+        },
         tabBarLabelStyle: getNavigationLabelStyle(),
         tabBarIconStyle: getNavigationIconStyle(),
         tabBarItemStyle: getNavigationItemStyle(),
@@ -226,6 +237,22 @@ const ClubNavigator = () => {
         options={{
           headerShown: false,
           title: 'Lider Tablosu'
+        }}
+      />
+      <ClubStack.Screen 
+        name="MembershipApplications" 
+        component={MembershipApplicationsScreen}
+        options={{
+          headerShown: false,
+          title: 'Üyelik Başvuruları'
+        }}
+      />
+      <ClubStack.Screen 
+        name="ViewEventScreen" 
+        component={ViewEventScreen}
+        options={{
+          headerShown: false,
+          title: 'Etkinlik Görüntüle'
         }}
       />
     </ClubStack.Navigator>

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Universe Campus",
     "slug": "universe-kampus",
-    "version": "1.2.1",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "automatic",
@@ -46,8 +46,8 @@
         "foregroundImage": "./assets/universe_logo2.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.universekampus.universeapp2025",
-      "versionCode": 55,
+      "package": "com.universekampus.universeapp2026",
+        "versionCode": 402,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

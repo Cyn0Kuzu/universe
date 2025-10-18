@@ -1,6 +1,6 @@
 // Direct notification creation bypass - guaranteed to work
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { firebase } from '../firebase/config';
+import hybridPushService from '../services/hybridPushNotificationService';
 
 export class DirectNotificationCreator {
   
@@ -34,11 +34,38 @@ export class DirectNotificationCreator {
         .add(notification);
 
       console.log('✅ DIRECT: Notification created successfully with ID:', docRef.id);
+      
+      // Send push notification
+      await this.sendPushNotification(targetUserId, notification);
+      
       return docRef.id;
       
     } catch (error) {
       console.error('❌ DIRECT: Failed to create notification:', error);
       return null;
+    }
+  }
+
+  /**
+   * Send push notification
+   */
+  private static async sendPushNotification(userId: string, notification: any): Promise<void> {
+    try {
+      // Use hybrid push notification service
+      await hybridPushService.sendToUser(
+        userId,
+        {
+          type: 'announcement',
+          title: notification.title,
+          body: notification.message,
+          data: {
+            notificationId: userId,
+            type: notification.type
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Push notification failed:', error);
     }
   }
 
