@@ -19,9 +19,10 @@ export const APP_CONFIG = {
   name: 'Universe',
   version: '2.0.0',
   description: 'University Social Platform',
-  supportEmail: 'support@universe.edu.tr',
-  termsUrl: 'https://universe.edu.tr/terms',
-  privacyUrl: 'https://universe.edu.tr/privacy',
+  supportEmail: 'destek@universe-kampus.com',
+  supportUrl: 'https://support.universe-kampus.com',
+  termsUrl: 'https://universe-kampus.com/terms',
+  privacyUrl: 'https://universe-kampus.com/privacy',
 } as const;
 
 // API Configuration

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import BackgroundLoadingService from './services/backgroundLoadingService';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -29,61 +29,8 @@ const App: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Enhanced splash screen with authentication check
-  useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        console.log('🚀 Starting app initialization with auth check...');
-        
-        // Start authentication check immediately
-        const authCheckPromise = checkAuthenticationStatus();
-        
-        // Wait for splash screen duration (2 seconds)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Wait for auth check to complete
-        await authCheckPromise;
-        
-        // Initialize push notifications FIRST (handles notification permission)
-        try {
-          console.log('🔔 Initializing push notification system...');
-          const { default: PushNotificationService } = require('./services/pushNotificationService');
-          const pushService = PushNotificationService.getInstance();
-          const token = await pushService.initialize();
-          if (token) {
-            console.log('✅ Push notifications initialized successfully with token:', token.substring(0, 20) + '...');
-          } else {
-            console.warn('⚠️ Push notifications initialization completed without token (permission may be denied)');
-          }
-        } catch (pushError) {
-          console.error('❌ Push notification initialization error:', pushError);
-        }
-        
-        // Request other permissions (only on first launch)
-        try {
-          console.log('🔐 Requesting other app permissions...');
-          const PermissionManager = require('./services/permissionManager').default;
-          const permissionManager = PermissionManager.getInstance();
-          await permissionManager.requestOtherPermissions();
-        } catch (permissionError) {
-          console.error('❌ Permission request error:', permissionError);
-        }
-        
-        await SplashScreen.hideAsync();
-        setIsReady(true);
-        console.log('✅ App initialization completed with auth check and push notifications');
-      } catch (error) {
-        console.error('App initialization error:', error);
-        await SplashScreen.hideAsync();
-        setIsReady(true);
-      }
-    };
-
-    initializeApp();
-  }, [checkAuthenticationStatus]);
-
-  // Check authentication status during splash screen
-  const checkAuthenticationStatus = async () => {
+  // Check authentication status during splash screen (defined first)
+  const checkAuthenticationStatus = useCallback(async () => {
     try {
       console.log('🔐 Checking authentication status...');
       
@@ -120,7 +67,73 @@ const App: React.FC = () => {
       console.error('❌ Auth check error:', error);
       setAuthChecked(true);
     }
-  };
+  }, []);
+
+  // Enhanced splash screen with authentication check
+  useEffect(() => {
+    let isMounted = true;
+    
+    const initializeApp = async () => {
+      try {
+        console.log('🚀 Starting app initialization with auth check...');
+        
+        // Start authentication check immediately
+        const authCheckPromise = checkAuthenticationStatus();
+        
+        // Wait for splash screen duration (2 seconds)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Wait for auth check to complete
+        await authCheckPromise;
+        
+        // Only proceed if component is still mounted
+        if (!isMounted) return;
+        
+        // Initialize push notifications FIRST (handles notification permission)
+        try {
+          console.log('🔔 Initializing push notification system...');
+          const { default: PushNotificationService } = require('./services/pushNotificationService');
+          const pushService = PushNotificationService.getInstance();
+          const token = await pushService.initialize();
+          if (token) {
+            console.log('✅ Push notifications initialized successfully with token:', token.substring(0, 20) + '...');
+          } else {
+            console.warn('⚠️ Push notifications initialization completed without token (permission may be denied)');
+          }
+        } catch (pushError) {
+          console.error('❌ Push notification initialization error:', pushError);
+        }
+        
+        // Request other permissions (only on first launch)
+        try {
+          console.log('🔐 Requesting other app permissions...');
+          const PermissionManager = require('./services/permissionManager').default;
+          const permissionManager = PermissionManager.getInstance();
+          await permissionManager.requestOtherPermissions();
+        } catch (permissionError) {
+          console.error('❌ Permission request error:', permissionError);
+        }
+        
+        if (!isMounted) return;
+        
+        await SplashScreen.hideAsync();
+        setIsReady(true);
+        console.log('✅ App initialization completed with auth check and push notifications');
+      } catch (error) {
+        console.error('App initialization error:', error);
+        if (!isMounted) return;
+        await SplashScreen.hideAsync();
+        setIsReady(true);
+      }
+    };
+
+    initializeApp();
+    
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [checkAuthenticationStatus]);
 
   // Don't render main app until splash screen is hidden
   if (!isReady) {

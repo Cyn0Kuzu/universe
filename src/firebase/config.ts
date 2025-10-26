@@ -1,5 +1,5 @@
 import { initializeApp, FirebaseApp } from 'firebase/app';
-import { initializeAuth, Auth } from 'firebase/auth';
+import { initializeAuth, Auth, getReactNativePersistence } from 'firebase/auth';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,24 +42,42 @@ let auth: Auth;
 let firestore: Firestore;
 let storage: FirebaseStorage;
 
-// Initialize Firebase with modern SDK
+// Initialize Firebase with modern SDK with enhanced error handling
 try {
   app = initializeApp(firebaseConfig);
 
-  // Initialize Firebase compat SDK for legacy code
+  // Initialize Firebase compat SDK for legacy code with better error handling
   if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+    try {
+      firebase.initializeApp(firebaseConfig);
+    } catch (compatError: any) {
+      console.warn('⚠️ Compat SDK initialization issue (may already be initialized):', compatError.message);
+    }
   }
 
-  // Auth with default persistence
-  auth = initializeAuth(app);
+  // Auth with default persistence - with crash protection
+  try {
+    auth = initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage)
+    });
+  } catch (authError: any) {
+    console.warn('⚠️ Auth initialization issue, using default:', authError.message);
+    // Fallback: don't use persistence if it fails
+    auth = initializeAuth(app);
+  }
 
-  // Firestore with optimized cache settings
-  firestore = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager()
-    })
-  });
+  // Firestore with optimized cache settings - with crash protection
+  try {
+    firestore = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    });
+  } catch (firestoreError: any) {
+    console.warn('⚠️ Firestore cache initialization issue, using default:', firestoreError.message);
+    // Fallback: use default Firestore configuration
+    firestore = initializeFirestore(app);
+  }
 
   // Storage with optimized configuration
   storage = getStorage(app);
@@ -79,6 +97,17 @@ try {
   });
   // Don't throw, allow app to continue with limited functionality
   console.warn('⚠️ App will continue with limited functionality');
+  
+  // Create default exports to prevent crashes
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = initializeAuth(app);
+    firestore = initializeFirestore(app);
+    storage = getStorage(app);
+    console.log('✅ Firebase fallback initialization successful');
+  } catch (fallbackError: any) {
+    console.error('❌ Firebase fallback initialization also failed:', fallbackError);
+  }
 }
 
 export { app, auth, firestore, storage, firebase };
