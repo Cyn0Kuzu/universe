@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universe Campus - Destek ve Yardım</title>
+    <title>Universe Campus - Destek</title>
     <style>
         * {
             margin: 0;
@@ -67,6 +67,8 @@
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             display: block;
+            border: none;
+            cursor: pointer;
         }
         
         .policy-button:hover {
@@ -96,6 +98,11 @@
             border-radius: 15px;
             margin: 40px 0;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .contact-box.show {
+            display: block;
         }
         
         .contact-box h2 {
@@ -125,6 +132,20 @@
         a:hover {
             color: #764ba2;
             text-decoration: underline;
+        }
+        
+        .info-section {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .info-section.show {
+            display: block;
+        }
+        
+        .info-section h2 {
+            color: #6750A4;
+            margin-bottom: 20px;
         }
         
         .app-info {
@@ -174,44 +195,44 @@
             <h2 style="text-align: center; color: #6750A4; margin-bottom: 30px;">Politikalar ve Kullanım Şartları</h2>
             
             <div class="buttons-grid">
-                <a href="#gizlilik" class="policy-button" onclick="showSection('gizlilik'); return false;">
+                <button class="policy-button" onclick="showSection('gizlilik')">
                     <div class="icon">🔒</div>
                     <div class="title">Gizlilik Politikası</div>
                     <div class="desc">Kişisel verilerinizin korunması</div>
-                </a>
+                </button>
                 
-                <a href="#kullanim" class="policy-button" onclick="showSection('kullanim'); return false;">
+                <button class="policy-button" onclick="showSection('kullanim')">
                     <div class="icon">📋</div>
                     <div class="title">Kullanım Şartları</div>
                     <div class="desc">Uygulama kullanım kuralları</div>
-                </a>
+                </button>
                 
-                <a href="#cocuk-guvenligi" class="policy-button" onclick="showSection('cocuk-guvenligi'); return false;">
+                <button class="policy-button" onclick="showSection('cocuk-guvenligi')">
                     <div class="icon">👶</div>
                     <div class="title">Çocuk Güvenliği</div>
                     <div class="desc">Çocuk koruma standartları</div>
-                </a>
+                </button>
                 
-                <a href="#guvenlik" class="policy-button" onclick="showSection('guvenlik'); return false;">
+                <button class="policy-button" onclick="showSection('guvenlik')">
                     <div class="icon">🛡️</div>
                     <div class="title">Güvenlik Politikası</div>
                     <div class="desc">Güvenlik önlemleri</div>
-                </a>
+                </button>
                 
-                <a href="#topluluk" class="policy-button" onclick="showSection('topluluk'); return false;">
+                <button class="policy-button" onclick="showSection('topluluk')">
                     <div class="icon">🏫</div>
                     <div class="title">Topluluk Kuralları</div>
                     <div class="desc">Topluluk standartları</div>
-                </a>
+                </button>
                 
-                <a href="#iletisim" class="policy-button" onclick="showSection('iletisim'); return false;">
+                <button class="policy-button" onclick="showSection('iletisim')">
                     <div class="icon">📞</div>
                     <div class="title">İletişim ve Destek</div>
                     <div class="desc">Destek ve iletişim bilgileri</div>
-                </a>
+                </button>
             </div>
 
-            <div id="iletisim" class="contact-box" style="display: none;">
+            <div id="iletisim" class="contact-box">
                 <h2>📧 İletişim ve Destek</h2>
                 <div class="contact-item">
                     <strong>Email:</strong> 
@@ -225,28 +246,28 @@
                 </p>
             </div>
 
-            <div id="gizlilik" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🔒 Gizlilik Politikası</h2>
+            <div id="gizlilik" class="info-section">
+                <h2>🔒 Gizlilik Politikası</h2>
                 <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi için uygulama içindeki Gizlilik Politikası bölümüne bakabilirsiniz.</p>
             </div>
 
-            <div id="kullanim" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">📋 Kullanım Şartları</h2>
+            <div id="kullanim" class="info-section">
+                <h2>📋 Kullanım Şartları</h2>
                 <p>Universe Campus uygulamasını kullanırken uymanız gereken kurallar ve şartlar için uygulama içindeki Kullanım Şartları bölümüne bakabilirsiniz.</p>
             </div>
 
-            <div id="cocuk-guvenligi" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">👶 Çocuk Güvenliği</h2>
+            <div id="cocuk-guvenligi" class="info-section">
+                <h2>👶 Çocuk Güvenliği</h2>
                 <p>13 yaş altı kullanıcıların güvenliği için aldığımız özel önlemler ve standartlar için uygulama içindeki Çocuk Güvenliği bölümüne bakabilirsiniz.</p>
             </div>
 
-            <div id="guvenlik" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🛡️ Güvenlik Politikası</h2>
+            <div id="guvenlik" class="info-section">
+                <h2>🛡️ Güvenlik Politikası</h2>
                 <p>Uygulamanızın ve verilerinizin güvenliğini sağlamak için uyguladığımız güvenlik önlemleri için uygulama içindeki Güvenlik Politikası bölümüne bakabilirsiniz.</p>
             </div>
 
-            <div id="topluluk" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🏫 Topluluk Kuralları</h2>
+            <div id="topluluk" class="info-section">
+                <h2>🏫 Topluluk Kuralları</h2>
                 <p>Sağlıklı ve güvenli bir kampüs ortamı için topluluk kuralları ve davranış standartları için uygulama içindeki Topluluk Kuralları bölümüne bakabilirsiniz.</p>
             </div>
 
@@ -275,17 +296,19 @@
             sections.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
-                    element.style.display = 'none';
+                    element.classList.remove('show');
                 }
             });
             
             // Seçilen bölümü göster
             const selectedSection = document.getElementById(sectionId);
             if (selectedSection) {
-                selectedSection.style.display = 'block';
+                selectedSection.classList.add('show');
                 
                 // Sayfayı bölüme kaydır
-                selectedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => {
+                    selectedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             }
         }
 
