@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universe Campus - Destek ve Yardım</title>
+    <title>Universe Campus - Destek ve Politikalar</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -67,6 +67,9 @@
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             display: block;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
         }
         
         .policy-button:hover {
@@ -90,11 +93,53 @@
             opacity: 0.9;
         }
         
+        .section-content {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            line-height: 1.8;
+        }
+        
+        .section-content.show {
+            display: block;
+        }
+        
+        .section-content h2 {
+            color: #6750A4;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #6750A4;
+            padding-bottom: 10px;
+        }
+        
+        .section-content h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .section-content p {
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        
+        .section-content ul, .section-content ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        .section-content li {
+            margin: 10px 0;
+        }
+        
         .contact-box {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 30px;
             border-radius: 15px;
-            margin: 40px 0;
+            margin: 30px 0;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
@@ -112,7 +157,7 @@
         .contact-item strong {
             color: #6750A4;
             display: inline-block;
-            min-width: 150px;
+            min-width: 180px;
         }
         
         a {
@@ -141,6 +186,10 @@
             background: #f5f5f5;
             color: #666;
             margin-top: 40px;
+        }
+        
+        .bold {
+            font-weight: bold;
         }
         
         @media (max-width: 768px) {
@@ -174,80 +223,448 @@
             <h2 style="text-align: center; color: #6750A4; margin-bottom: 30px;">Politikalar ve Kullanım Şartları</h2>
             
             <div class="buttons-grid">
-                <a href="#gizlilik" class="policy-button" onclick="showSection('gizlilik'); return false;">
+                <button class="policy-button" onclick="showSection('gizlilik')">
                     <div class="icon">🔒</div>
                     <div class="title">Gizlilik Politikası</div>
                     <div class="desc">Kişisel verilerinizin korunması</div>
-                </a>
+                </button>
                 
-                <a href="#kullanim" class="policy-button" onclick="showSection('kullanim'); return false;">
+                <button class="policy-button" onclick="showSection('kullanim')">
                     <div class="icon">📋</div>
                     <div class="title">Kullanım Şartları</div>
                     <div class="desc">Uygulama kullanım kuralları</div>
-                </a>
+                </button>
                 
-                <a href="#cocuk-guvenligi" class="policy-button" onclick="showSection('cocuk-guvenligi'); return false;">
+                <button class="policy-button" onclick="showSection('cocuk-guvenligi')">
                     <div class="icon">👶</div>
                     <div class="title">Çocuk Güvenliği</div>
                     <div class="desc">Çocuk koruma standartları</div>
-                </a>
+                </button>
                 
-                <a href="#guvenlik" class="policy-button" onclick="showSection('guvenlik'); return false;">
+                <button class="policy-button" onclick="showSection('guvenlik')">
                     <div class="icon">🛡️</div>
                     <div class="title">Güvenlik Politikası</div>
                     <div class="desc">Güvenlik önlemleri</div>
-                </a>
+                </button>
                 
-                <a href="#topluluk" class="policy-button" onclick="showSection('topluluk'); return false;">
+                <button class="policy-button" onclick="showSection('topluluk')">
                     <div class="icon">🏫</div>
                     <div class="title">Topluluk Kuralları</div>
                     <div class="desc">Topluluk standartları</div>
-                </a>
+                </button>
                 
-                <a href="#iletisim" class="policy-button" onclick="showSection('iletisim'); return false;">
+                <button class="policy-button" onclick="showSection('iletisim')">
                     <div class="icon">📞</div>
                     <div class="title">İletişim ve Destek</div>
                     <div class="desc">Destek ve iletişim bilgileri</div>
-                </a>
+                </button>
             </div>
 
-            <div id="iletisim" class="contact-box" style="display: none;">
-                <h2>📧 İletişim ve Destek</h2>
-                <div class="contact-item">
-                    <strong>Email:</strong> 
-                    <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a>
+            <!-- Gizlilik Politikası -->
+            <div id="gizlilik" class="section-content">
+                <h2>🔒 Gizlilik Politikası</h2>
+                
+                <h3>1. Giriş</h3>
+                <p>Universe Kampüs Hayatını Keşfet uygulaması ("Universe", "Uygulama", "biz" veya "bizim") olarak, kullanıcılarımızın gizliliğini korumaya kararlıyız. Bu Gizlilik Politikası, kişisel bilgilerinizi nasıl topladığımızı, kullandığımızı, sakladığımızı ve koruduğumuzu açıklar.</p>
+
+                <h3>2. Topladığımız Bilgiler</h3>
+                
+                <p><strong>2.1 Hesap Bilgileri</strong></p>
+                <ul>
+                    <li>Ad ve soyad</li>
+                    <li>E-posta adresi</li>
+                    <li>Telefon numarası</li>
+                    <li>Üniversite bilgileri (okul, bölüm, sınıf)</li>
+                    <li>Profil fotoğrafı</li>
+                    <li>Kullanıcı adı</li>
+                </ul>
+
+                <p><strong>2.2 Kullanım Bilgileri</strong></p>
+                <ul>
+                    <li>Uygulama içi aktiviteleriniz</li>
+                    <li>Katıldığınız etkinlikler</li>
+                    <li>Üye olduğunuz kulüpler</li>
+                    <li>Paylaştığınız içerikler</li>
+                    <li>Mesajlaşma geçmişi</li>
+                    <li>Konum bilgileri (izin verdiğiniz takdirde)</li>
+                </ul>
+
+                <p><strong>2.3 Teknik Bilgiler</strong></p>
+                <ul>
+                    <li>Cihaz türü ve işletim sistemi</li>
+                    <li>IP adresi</li>
+                    <li>Uygulama sürümü</li>
+                    <li>Çökme raporları</li>
+                    <li>Performans verileri</li>
+                </ul>
+
+                <h3>3. Bilgileri Nasıl Kullanırız</h3>
+                <p><strong>🎯 Hizmet Sağlama:</strong></p>
+                <ul>
+                    <li>Hesabınızı oluşturmak ve yönetmek</li>
+                    <li>Kulüp ve etkinlik önerilerinde bulunmak</li>
+                    <li>Kampüs arkadaşları bulmaya yardım etmek</li>
+                    <li>Puanlama ve başarı sistemini işletmek</li>
+                </ul>
+
+                <p><strong>📱 Uygulama Geliştirme:</strong></p>
+                <ul>
+                    <li>Uygulama performansını artırmak</li>
+                    <li>Yeni özellikler geliştirmek</li>
+                    <li>Hataları tespit etmek ve düzeltmek</li>
+                    <li>Kullanıcı deneyimini iyileştirmek</li>
+                </ul>
+
+                <p><strong>🔔 İletişim:</strong></p>
+                <ul>
+                    <li>Önemli bildirimleri göndermek</li>
+                    <li>Etkinlik hatırlatmaları yapmak</li>
+                    <li>Güvenlik uyarıları göndermek</li>
+                    <li>Kullanıcı desteği sağlamak</li>
+                </ul>
+
+                <h3>4. Bilgi Paylaşımı</h3>
+                <p>Kişisel bilgilerinizi şu durumlar dışında üçüncü taraflarla paylaşmayız:</p>
+                
+                <p><strong>✅ İzin verdiğiniz durumlar:</strong></p>
+                <ul>
+                    <li>Profil bilgilerinizi diğer kullanıcılarla paylaşmak</li>
+                    <li>Kulüp üyeliklerinizi kulüp yöneticileriyle paylaşmak</li>
+                    <li>Etkinlik katılımlarınızı organizatörlerle paylaşmak</li>
+                </ul>
+
+                <p><strong>⚖️ Yasal zorunluluklar:</strong></p>
+                <ul>
+                    <li>Mahkeme kararı veya resmi talep</li>
+                    <li>Ulusal güvenlik gereklilikleri</li>
+                    <li>Suç önleme ve araştırma</li>
+                </ul>
+
+                <p><strong>🔒 Hizmet sağlayıcılar:</strong></p>
+                <ul>
+                    <li>Firebase (Google) - veri depolama</li>
+                    <li>Expo - uygulama geliştirme</li>
+                    <li>Push bildirim servisleri</li>
+                </ul>
+
+                <h3>5. Veri Güvenliği</h3>
+                <p>Verilerinizi korumak için şu güvenlik önlemlerini alıyoruz:</p>
+                <ul>
+                    <li>🔐 SSL/TLS şifreleme</li>
+                    <li>🛡️ Firebase güvenlik kuralları</li>
+                    <li>🔑 Güvenli kimlik doğrulama</li>
+                    <li>📊 Düzenli güvenlik denetimleri</li>
+                    <li>🚫 Erişim kontrolü ve yetkilendirme</li>
+                    <li>💾 Düzenli veri yedekleme</li>
+                </ul>
+                <p>Ancak, hiçbir internet iletişimi veya veri depolama yöntemi %100 güvenli değildir. Bu nedenle, mutlak güvenlik garantisi veremeyiz.</p>
+
+                <h3>6. Veri Saklama</h3>
+                <ul>
+                    <li>Aktif hesaplar: Hesap kapatılana kadar</li>
+                    <li>Pasif hesaplar: 2 yıl süreyle</li>
+                    <li>Mesajlar: 1 yıl süreyle</li>
+                    <li>Etkinlik geçmişi: 3 yıl süreyle</li>
+                    <li>Log kayıtları: 6 ay süreyle</li>
+                </ul>
+                <p>Yasal zorunluluklar gereği daha uzun süre saklamamız gereken veriler olabilir.</p>
+
+                <h3>7. Kullanıcı Hakları (KVKK)</h3>
+                <p>Kişisel Verilerin Korunması Kanunu kapsamında aşağıdaki haklara sahipsiniz:</p>
+                <ul>
+                    <li>📋 Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
+                    <li>📖 İşlenen kişisel verileriniz hakkında bilgi talep etme</li>
+                    <li>🎯 İşleme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme</li>
+                    <li>🌐 Yurt içinde veya yurt dışında kişisel verilerin aktarıldığı üçüncü kişileri bilme</li>
+                    <li>✏️ Kişisel verilerin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme</li>
+                    <li>🗑️ Kişisel verilerin silinmesini veya yok edilmesini isteme</li>
+                    <li>📢 Düzeltme, silme ve yok etme işlemlerinin paylaşıldığı üçüncü kişilere bildirilmesini isteme</li>
+                    <li>⚖️ İşlenen verilerin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle kişinin aleyhine bir sonucun ortaya çıkmasına itiraz etme</li>
+                    <li>💸 Kişisel verilerin kanuna aykırı olarak işlenmesi sebebiyle zarara uğraması hâlinde zararın giderilmesini talep etme</li>
+                </ul>
+
+                <h3>8. Çerezler ve Takip Teknolojileri</h3>
+                <p>Uygulamamız aşağıdaki teknolojileri kullanır:</p>
+                <ul>
+                    <li>📱 Uygulama içi analytics</li>
+                    <li>🔔 Push notification token'ları</li>
+                    <li>💾 Yerel veri depolama</li>
+                    <li>📊 Performans izleme</li>
+                    <li>🐛 Hata raporlama</li>
+                </ul>
+                <p>Bu teknolojiler hizmet kalitesini artırmak için kullanılır ve kişisel kimliğinizi ifşa etmez.</p>
+
+                <h3>9. Çocukların Gizliliği</h3>
+                <p>Uygulamamız 13 yaş altı çocuklar için tasarlanmamıştır. 13 yaş altı çocuklardan bilerek kişisel bilgi toplamayız. Eğer bir çocuğun kişisel bilgilerini topladığımızı fark edersek, bu bilgileri derhal sileriz.</p>
+
+                <h3>10. Uluslararası Veri Transferi</h3>
+                <p>Verileriniz Firebase (Google Cloud) üzerinde saklanmaktadır. Bu veriler, Google'ın küresel altyapısı nedeniyle farklı ülkelerde işlenebilir. Tüm veri transferleri, uygun güvenlik önlemleri alınarak gerçekleştirilir.</p>
+
+                <h3>11. Politika Değişiklikleri</h3>
+                <p>Bu Gizlilik Politikası zaman zaman güncellenebilir. Önemli değişiklikler uygulama içi bildirimlerle ve e-posta ile duyurulacaktır. Son güncelleme tarihi her zaman bu sayfanın altında yer alır.</p>
+
+                <h3>12. İletişim Bilgileri</h3>
+                <p>Gizlilik Politikası, veri işleme uygulamalarımız veya haklarınız hakkında sorularınız için bizimle iletişime geçebilirsiniz:</p>
+                <div class="contact-box">
+                    <p><strong>Email:</strong> <a href="mailto:gizlilik@universe-kampus.com">gizlilik@universe-kampus.com</a></p>
+                    <p><strong>Veri Sorumlusu:</strong> Universe</p>
+                    <p><strong>Son güncelleme:</strong> 1 Ağustos 2025</p>
                 </div>
-                <div class="contact-item">
-                    <strong>Yanıt Süresi:</strong> 24-48 saat içinde
+            </div>
+
+            <!-- Kullanım Şartları -->
+            <div id="kullanim" class="section-content">
+                <h2>📋 Kullanım Şartları</h2>
+                
+                <h3>1. Kabul ve Onay</h3>
+                <p>Universe Kampüs Hayatını Keşfet uygulamasını (bundan sonra "Uygulama" olarak anılacaktır) kullanarak, bu kullanım şartlarını kabul etmiş sayılırsınız. Bu şartları kabul etmiyorsanız, lütfen uygulamayı kullanmayın.</p>
+
+                <h3>2. Uygulama Hakkında</h3>
+                <p>Universe, üniversite öğrencilerinin kampüs hayatını keşfetmelerine yardımcı olan bir sosyal platform uygulamasıdır. Öğrenciler kulüpleri keşfedebilir, etkinliklere katılabilir, yeni arkadaşlıklar kurabilir ve kampüs yaşamına aktif olarak katılabilirler.</p>
+
+                <h3>3. Kullanıcı Hesapları ve Sorumluluklar</h3>
+                <ul>
+                    <li>Hesap oluştururken doğru ve güncel bilgiler vermelisiniz</li>
+                    <li>Hesap güvenliğinizden siz sorumlusunuz</li>
+                    <li>Hesabınızı başkalarıyla paylaşmamalısınız</li>
+                    <li>Şifrenizi güvenli tutmalı ve düzenli olarak değiştirmelisiniz</li>
+                    <li>Hesabınızda gerçekleşen tüm aktivitelerden sorumlusunuz</li>
+                </ul>
+
+                <h3>4. Kabul Edilebilir Kullanım</h3>
+                <p><strong>✅ İzin verilen:</strong></p>
+                <ul>
+                    <li>Saygılı ve yapıcı iletişim kurmak</li>
+                    <li>Gerçek kimliğinizle hesap oluşturmak</li>
+                    <li>Kulüp etkinliklerine katılmak</li>
+                    <li>Üniversite topluluğuna katkı sağlamak</li>
+                    <li>Eğitici ve sosyal içerikler paylaşmak</li>
+                </ul>
+
+                <p><strong>❌ Yasak olan:</strong></p>
+                <ul>
+                    <li>Nefret söylemi, taciz veya zorbalık</li>
+                    <li>Sahte hesap oluşturmak</li>
+                    <li>Spam veya istenmeyen içerik göndermek</li>
+                    <li>Telif hakkı ihlali yapan içerikler</li>
+                    <li>Pornografik, şiddet içeren veya uygunsuz içerikler</li>
+                    <li>Diğer kullanıcıların kişisel bilgilerini paylaşmak</li>
+                    <li>Uygulamanın güvenliğini tehdit edecek faaliyetler</li>
+                </ul>
+
+                <h3>5. İçerik ve Telif Hakları</h3>
+                <ul>
+                    <li>Paylaştığınız içeriklerin telif haklarına sahip olmalısınız</li>
+                    <li>Universe, paylaştığınız içerikleri platform içinde kullanma hakkına sahiptir</li>
+                    <li>Başkalarının telif haklarını ihlal eden içerikler derhal kaldırılır</li>
+                    <li>Uygunsuz içerikleri bildirme hakkınız vardır</li>
+                </ul>
+
+                <h3>6. Gizlilik ve Veri Koruma</h3>
+                <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi için lütfen Gizlilik Politikamızı inceleyin. Uygulamayı kullanarak, Gizlilik Politikamızda belirtilen veri işleme uygulamalarını kabul etmiş olursunuz.</p>
+
+                <h3>7. Puanlama ve Ödül Sistemi</h3>
+                <ul>
+                    <li>Etkinliklere katılım, kulüp üyeliği gibi aktivitelerle puan kazanabilirsiniz</li>
+                    <li>Puanlar sadece uygulama içi kullanım içindir</li>
+                    <li>Puan manipülasyonu yasaktır</li>
+                    <li>Universe, puan sistemini değiştirme hakkını saklı tutar</li>
+                </ul>
+
+                <h3>8. Hesap Askıya Alma ve Sonlandırma</h3>
+                <p>Universe, kullanım şartlarını ihlal eden hesapları uyarı vermeksizin askıya alma veya sonlandırma hakkını saklı tutar. Ciddi ihlaller durumunda hesabınız kalıcı olarak kapatılabilir.</p>
+
+                <h3>9. Sorumluluk Reddi</h3>
+                <ul>
+                    <li>Uygulama "olduğu gibi" sunulmaktadır</li>
+                    <li>Kesintisiz hizmet garantisi verilmez</li>
+                    <li>Kullanıcılar arası etkileşimlerden sorumluluk kabul edilmez</li>
+                    <li>Üçüncü taraf bağlantılardan sorumlu değiliz</li>
+                </ul>
+
+                <h3>10. Değişiklikler</h3>
+                <p>Bu kullanım şartları zaman zaman güncellenebilir. Önemli değişiklikler uygulama içi bildirimlerle duyurulacaktır. Değişikliklerden sonra uygulamayı kullanmaya devam etmeniz, yeni şartları kabul ettiğiniz anlamına gelir.</p>
+
+                <h3>11. İletişim</h3>
+                <p>Kullanım şartları hakkında sorularınız için bizimle iletişime geçebilirsiniz:</p>
+                <div class="contact-box">
+                    <p><strong>Email:</strong> <a href="mailto:destek@universe-kampus.com">destek@universe-kampus.com</a></p>
+                    <p><strong>Son güncelleme:</strong> 1 Ağustos 2025</p>
                 </div>
-                <p style="margin-top: 20px; color: #666;">
-                    Sorularınız, önerileriniz veya teknik destek için yukarıdaki email adresine yazabilirsiniz.
-                </p>
             </div>
 
-            <div id="gizlilik" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🔒 Gizlilik Politikası</h2>
-                <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi için uygulama içindeki Gizlilik Politikası bölümüne bakabilirsiniz.</p>
+            <!-- Çocuk Güvenliği -->
+            <div id="cocuk-guvenligi" class="section-content">
+                <h2>👶 Çocuk Güvenliği</h2>
+                
+                <h3>1. Yaş Kısıtlaması</h3>
+                <p>Universe Campus uygulaması 13 yaş altı çocuklar için tasarlanmamıştır. Uygulama üniversite öğrencilerine yöneliktir ve minimum 13 yaş sınırı uygulanmaktadır.</p>
+
+                <h3>2. Çocuk Cinsel İstismarı Materyali (CSAM) Önleme</h3>
+                <p>Universe Campus, çocuk cinsel istismarı materyali (CSAM) ile mücadelede sıfır tolerans politikası uygular. Uygulama içinde hiçbir şekilde çocuklara yönelik zararlı içerik veya etkileşimlere izin verilmez.</p>
+
+                <h3>3. İçerik Moderasyonu</h3>
+                <ul>
+                    <li>Tüm kullanıcı içerikleri otomatik ve manuel moderasyon süreçlerinden geçer</li>
+                    <li>Şüpheli içerikler derhal kaldırılır ve ilgili yetkililere bildirilir</li>
+                    <li>Kullanıcılar uygunsuz içerikleri bildirme hakkına sahiptir</li>
+                </ul>
+
+                <h3>4. Kullanıcı Bildirim Sistemi</h3>
+                <p>Uygulama içinde her içerik ve profilde "⚠️ Bildir" butonu bulunmaktadır. Şüpheli veya uygunsuz içerikleri anında bildirebilirsiniz. Bildirimler gizlilik içinde işlenir ve gerekli durumlarda yetkililere iletilebilir.</p>
+
+                <h3>5. Güvenli İletişim</h3>
+                <ul>
+                    <li>End-to-end şifreli mesajlaşma</li>
+                    <li>Otomatik şüpheli mesaj tespiti</li>
+                    <li>Spam ve taciz filtreleri</li>
+                    <li>Kullanıcı engelleme ve bildirim entegrasyonu</li>
+                </ul>
+
+                <h3>6. Acil Durum İletişimi</h3>
+                <p>Çocuk güvenliği ile ilgili acil durumlar için:</p>
+                <div class="contact-box">
+                    <p><strong>Acil Bildirimi:</strong> <a href="mailto:emergency@universekampus.com">emergency@universekampus.com</a></p>
+                    <p><strong>Yanıt Süresi:</strong> 15 dakika içinde (acil durumlar için)</p>
+                    <p><strong>Ana İletişim:</strong> <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a></p>
+                </div>
             </div>
 
-            <div id="kullanim" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">📋 Kullanım Şartları</h2>
-                <p>Universe Campus uygulamasını kullanırken uymanız gereken kurallar ve şartlar için uygulama içindeki Kullanım Şartları bölümüne bakabilirsiniz.</p>
+            <!-- Güvenlik Politikası -->
+            <div id="guvenlik" class="section-content">
+                <h2>🛡️ Güvenlik Politikası</h2>
+                
+                <h3>1. Veri Şifreleme</h3>
+                <ul>
+                    <li>🔐 SSL/TLS şifreleme ile tüm veri transferleri korunur</li>
+                    <li>🔑 Güvenli kimlik doğrulama sistemleri kullanılır</li>
+                    <li>🛡️ Firebase güvenlik kuralları ile veri erişimi kontrol edilir</li>
+                </ul>
+
+                <h3>2. Erişim Kontrolü</h3>
+                <ul>
+                    <li>Kullanıcı yetkilendirme ve kimlik doğrulama</li>
+                    <li>Rol tabanlı erişim kontrolü</li>
+                    <li>İki faktörlü kimlik doğrulama desteği</li>
+                    <li>Oturum yönetimi ve güvenlik</li>
+                </ul>
+
+                <h3>3. Güvenlik Denetimleri</h3>
+                <ul>
+                    <li>Düzenli güvenlik denetimleri</li>
+                    <li>Otomatik güvenlik taramaları</li>
+                    <li>Zafiyet testleri</li>
+                    <li>Güvenlik açığı bildirim sistemi</li>
+                </ul>
+
+                <h3>4. Veri Yedekleme</h3>
+                <ul>
+                    <li>Düzenli otomatik veri yedekleme</li>
+                    <li>Çoklu lokasyon yedekleme</li>
+                    <li>Felaket kurtarma planları</li>
+                    <li>Veri bütünlüğü kontrolü</li>
+                </ul>
+
+                <h3>5. Güvenlik İhlali Bildirimi</h3>
+                <p>Bir güvenlik ihlali tespit edildiğinde, etkilenen kullanıcılar derhal bilgilendirilir ve gerekli önlemler alınır.</p>
+
+                <div class="contact-box">
+                    <p><strong>Güvenlik Ekibi:</strong> <a href="mailto:safety@universekampus.com">safety@universekampus.com</a></p>
+                    <p><strong>Ana İletişim:</strong> <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a></p>
+                </div>
             </div>
 
-            <div id="cocuk-guvenligi" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">👶 Çocuk Güvenliği</h2>
-                <p>13 yaş altı kullanıcıların güvenliği için aldığımız özel önlemler ve standartlar için uygulama içindeki Çocuk Güvenliği bölümüne bakabilirsiniz.</p>
+            <!-- Topluluk Kuralları -->
+            <div id="topluluk" class="section-content">
+                <h2>🏫 Topluluk Kuralları</h2>
+                
+                <h3>1. Saygılı İletişim</h3>
+                <ul>
+                    <li>Tüm kullanıcılara saygılı ve kibar davranın</li>
+                    <li>Nefret söylemi, ayrımcılık veya taciz yasaktır</li>
+                    <li>Farklı görüşlere saygı gösterin</li>
+                    <li>Yapıcı eleştiri yapın, yıkıcı olmayın</li>
+                </ul>
+
+                <h3>2. İçerik Standartları</h3>
+                <ul>
+                    <li>✅ Gerçek ve doğru bilgiler paylaşın</li>
+                    <li>✅ Eğitici ve sosyal içerikler üretin</li>
+                    <li>✅ Üniversite topluluğuna katkı sağlayın</li>
+                    <li>❌ Sahte veya yanıltıcı bilgiler yasaktır</li>
+                    <li>❌ Spam veya istenmeyen içerik yasaktır</li>
+                    <li>❌ Telif hakkı ihlali yapan içerikler yasaktır</li>
+                </ul>
+
+                <h3>3. Etkinlik ve Kulüp Katılımı</h3>
+                <ul>
+                    <li>Kayıt olduğunuz etkinliklere zamanında katılın</li>
+                    <li>Etkinlik organizatörlerine saygı gösterin</li>
+                    <li>Kulüp kurallarına uyun</li>
+                    <li>Etkinlik mekanlarına saygılı davranın</li>
+                </ul>
+
+                <h3>4. Profil ve Kimlik</h3>
+                <ul>
+                    <li>Gerçek kimliğinizi kullanın</li>
+                    <li>Doğru üniversite bilgileri verin</li>
+                    <li>Uygun profil fotoğrafları kullanın</li>
+                    <li>Sahte hesap oluşturmayın</li>
+                </ul>
+
+                <h3>5. İhlal Sonuçları</h3>
+                <p>Topluluk kurallarını ihlal eden kullanıcılar için:</p>
+                <ul>
+                    <li>İlk ihlal: Uyarı</li>
+                    <li>Tekrarlanan ihlaller: Hesap askıya alma</li>
+                    <li>Ciddi ihlaller: Kalıcı hesap kapatma</li>
+                </ul>
+
+                <h3>6. Bildirim ve Raporlama</h3>
+                <p>Topluluk kurallarını ihlal eden kullanıcıları veya içerikleri bildirebilirsiniz. Tüm bildirimler gizlilik içinde işlenir.</p>
             </div>
 
-            <div id="guvenlik" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🛡️ Güvenlik Politikası</h2>
-                <p>Uygulamanızın ve verilerinizin güvenliğini sağlamak için uyguladığımız güvenlik önlemleri için uygulama içindeki Güvenlik Politikası bölümüne bakabilirsiniz.</p>
-            </div>
+            <!-- İletişim ve Destek -->
+            <div id="iletisim" class="section-content">
+                <h2>📞 İletişim ve Destek</h2>
+                
+                <div class="contact-box">
+                    <h3>Ana İletişim</h3>
+                    <div class="contact-item">
+                        <strong>Email:</strong> 
+                        <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Yanıt Süresi:</strong> 24-48 saat içinde
+                    </div>
+                </div>
 
-            <div id="topluluk" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🏫 Topluluk Kuralları</h2>
-                <p>Sağlıklı ve güvenli bir kampüs ortamı için topluluk kuralları ve davranış standartları için uygulama içindeki Topluluk Kuralları bölümüne bakabilirsiniz.</p>
+                <h3>Destek Konuları</h3>
+                <ul>
+                    <li>Teknik sorunlar ve hatalar</li>
+                    <li>Hesap yönetimi</li>
+                    <li>Özellik önerileri</li>
+                    <li>Geri bildirimler</li>
+                    <li>Gizlilik ve veri koruma soruları</li>
+                </ul>
+
+                <h3>Özel İletişim Kanalları</h3>
+                <div class="contact-box">
+                    <p><strong>Gizlilik Soruları:</strong> <a href="mailto:gizlilik@universe-kampus.com">gizlilik@universe-kampus.com</a></p>
+                    <p><strong>Güvenlik Sorunları:</strong> <a href="mailto:safety@universekampus.com">safety@universekampus.com</a></p>
+                    <p><strong>Acil Durumlar:</strong> <a href="mailto:emergency@universekampus.com">emergency@universekampus.com</a> (15 dakika içinde yanıt)</p>
+                    <p><strong>Yasal Süreçler:</strong> <a href="mailto:legal@universekampus.com">legal@universekampus.com</a></p>
+                </div>
+
+                <h3>Sıkça Sorulan Sorular</h3>
+                <p><strong>S: Hesabımı nasıl silebilirim?</strong></p>
+                <p>C: Hesap silme işlemi için destek email adresine yazın. KVKK gereği hesabınız 30 gün içinde tamamen silinecektir.</p>
+
+                <p><strong>S: Şifremi unuttum, ne yapmalıyım?</strong></p>
+                <p>C: Uygulama içinde "Şifremi Unuttum" özelliğini kullanabilirsiniz. Email adresinize şifre sıfırlama bağlantısı gönderilecektir.</p>
+
+                <p><strong>S: Bildirimler gelmiyor, neden?</strong></p>
+                <p>C: Bildirimler için uygulama izni gereklidir. Ayarlar'dan bildirim izinlerini kontrol edin.</p>
             </div>
 
             <div class="app-info">
@@ -256,6 +673,7 @@
                 <p><strong>Versiyon:</strong> 1.5.1</p>
                 <p><strong>Platform:</strong> iOS</p>
                 <p><strong>Minimum iOS:</strong> 15.1+</p>
+                <p><strong>Bundle ID:</strong> com.universekampus.app</p>
             </div>
         </div>
 
@@ -275,17 +693,19 @@
             sections.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
-                    element.style.display = 'none';
+                    element.classList.remove('show');
                 }
             });
             
             // Seçilen bölümü göster
             const selectedSection = document.getElementById(sectionId);
             if (selectedSection) {
-                selectedSection.style.display = 'block';
+                selectedSection.classList.add('show');
                 
                 // Sayfayı bölüme kaydır
-                selectedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => {
+                    selectedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             }
         }
 
