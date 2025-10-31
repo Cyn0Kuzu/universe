@@ -1,11 +1,301 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=child-safety-standards.html">
-    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe Campus - Destek ve Yardım</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #6750A4 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .policy-button {
+            background: linear-gradient(135deg, #6750A4 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: block;
+        }
+        
+        .policy-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .policy-button .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .policy-button .title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .policy-button .desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .contact-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .contact-box h2 {
+            color: #6750A4;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .contact-item {
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        
+        .contact-item strong {
+            color: #6750A4;
+            display: inline-block;
+            min-width: 150px;
+        }
+        
+        a {
+            color: #6750A4;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .app-info {
+            background: #e7f3ff;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #f5f5f5;
+            color: #666;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-item strong {
+                display: block;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Redirecting to <a href="child-safety-standards.html">Child Safety Standards</a>...</p>
+    <div class="container">
+        <header>
+            <h1>🚀 Universe Campus</h1>
+            <p>Üniversite Kampüs Yaşam Platformu</p>
+        </header>
+        
+        <div class="content">
+            <h2 style="text-align: center; color: #6750A4; margin-bottom: 30px;">Politikalar ve Kullanım Şartları</h2>
+            
+            <div class="buttons-grid">
+                <a href="#gizlilik" class="policy-button" onclick="showSection('gizlilik'); return false;">
+                    <div class="icon">🔒</div>
+                    <div class="title">Gizlilik Politikası</div>
+                    <div class="desc">Kişisel verilerinizin korunması</div>
+                </a>
+                
+                <a href="#kullanim" class="policy-button" onclick="showSection('kullanim'); return false;">
+                    <div class="icon">📋</div>
+                    <div class="title">Kullanım Şartları</div>
+                    <div class="desc">Uygulama kullanım kuralları</div>
+                </a>
+                
+                <a href="#cocuk-guvenligi" class="policy-button" onclick="showSection('cocuk-guvenligi'); return false;">
+                    <div class="icon">👶</div>
+                    <div class="title">Çocuk Güvenliği</div>
+                    <div class="desc">Çocuk koruma standartları</div>
+                </a>
+                
+                <a href="#guvenlik" class="policy-button" onclick="showSection('guvenlik'); return false;">
+                    <div class="icon">🛡️</div>
+                    <div class="title">Güvenlik Politikası</div>
+                    <div class="desc">Güvenlik önlemleri</div>
+                </a>
+                
+                <a href="#topluluk" class="policy-button" onclick="showSection('topluluk'); return false;">
+                    <div class="icon">🏫</div>
+                    <div class="title">Topluluk Kuralları</div>
+                    <div class="desc">Topluluk standartları</div>
+                </a>
+                
+                <a href="#iletisim" class="policy-button" onclick="showSection('iletisim'); return false;">
+                    <div class="icon">📞</div>
+                    <div class="title">İletişim ve Destek</div>
+                    <div class="desc">Destek ve iletişim bilgileri</div>
+                </a>
+            </div>
+
+            <div id="iletisim" class="contact-box" style="display: none;">
+                <h2>📧 İletişim ve Destek</h2>
+                <div class="contact-item">
+                    <strong>Email:</strong> 
+                    <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a>
+                </div>
+                <div class="contact-item">
+                    <strong>Yanıt Süresi:</strong> 24-48 saat içinde
+                </div>
+                <p style="margin-top: 20px; color: #666;">
+                    Sorularınız, önerileriniz veya teknik destek için yukarıdaki email adresine yazabilirsiniz.
+                </p>
+            </div>
+
+            <div id="gizlilik" style="display: none; margin-top: 30px;">
+                <h2 style="color: #6750A4; margin-bottom: 20px;">🔒 Gizlilik Politikası</h2>
+                <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi için uygulama içindeki Gizlilik Politikası bölümüne bakabilirsiniz.</p>
+            </div>
+
+            <div id="kullanim" style="display: none; margin-top: 30px;">
+                <h2 style="color: #6750A4; margin-bottom: 20px;">📋 Kullanım Şartları</h2>
+                <p>Universe Campus uygulamasını kullanırken uymanız gereken kurallar ve şartlar için uygulama içindeki Kullanım Şartları bölümüne bakabilirsiniz.</p>
+            </div>
+
+            <div id="cocuk-guvenligi" style="display: none; margin-top: 30px;">
+                <h2 style="color: #6750A4; margin-bottom: 20px;">👶 Çocuk Güvenliği</h2>
+                <p>13 yaş altı kullanıcıların güvenliği için aldığımız özel önlemler ve standartlar için uygulama içindeki Çocuk Güvenliği bölümüne bakabilirsiniz.</p>
+            </div>
+
+            <div id="guvenlik" style="display: none; margin-top: 30px;">
+                <h2 style="color: #6750A4; margin-bottom: 20px;">🛡️ Güvenlik Politikası</h2>
+                <p>Uygulamanızın ve verilerinizin güvenliğini sağlamak için uyguladığımız güvenlik önlemleri için uygulama içindeki Güvenlik Politikası bölümüne bakabilirsiniz.</p>
+            </div>
+
+            <div id="topluluk" style="display: none; margin-top: 30px;">
+                <h2 style="color: #6750A4; margin-bottom: 20px;">🏫 Topluluk Kuralları</h2>
+                <p>Sağlıklı ve güvenli bir kampüs ortamı için topluluk kuralları ve davranış standartları için uygulama içindeki Topluluk Kuralları bölümüne bakabilirsiniz.</p>
+            </div>
+
+            <div class="app-info">
+                <h3 style="color: #2196F3; margin-bottom: 15px;">📱 Uygulama Bilgileri</h3>
+                <p><strong>Uygulama Adı:</strong> Universe Campus</p>
+                <p><strong>Versiyon:</strong> 1.5.1</p>
+                <p><strong>Platform:</strong> iOS</p>
+                <p><strong>Minimum iOS:</strong> 15.1+</p>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Universe Campus</strong></p>
+            <p>Üniversite öğrencileri için kampüs yaşam platformu</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">
+                © 2025 Universe Campus. Tüm hakları saklıdır.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Tüm bölümleri gizle
+            const sections = ['gizlilik', 'kullanim', 'cocuk-guvenligi', 'guvenlik', 'topluluk', 'iletisim'];
+            sections.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+            
+            // Seçilen bölümü göster
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.style.display = 'block';
+                
+                // Sayfayı bölüme kaydır
+                selectedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // URL hash'e göre bölüm göster
+        window.addEventListener('load', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                showSection(hash);
+            }
+        });
+    </script>
 </body>
 </html>
