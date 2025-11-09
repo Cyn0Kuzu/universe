@@ -263,6 +263,35 @@ const theme = {
     },
   },
   
+  // Font sizes for compatibility
+  fontSizes: {
+    xs: typography.fontSize.xs,
+    sm: typography.fontSize.sm,
+    md: typography.fontSize.md,
+    lg: typography.fontSize.lg,
+    xl: typography.fontSize.xl,
+    xxl: typography.fontSize['2xl'],
+    xxxl: typography.fontSize['3xl'],
+    title: typography.fontSize['3xl'],
+    header: typography.fontSize['4xl'],
+    tab: typography.fontSize.md,
+    // Additional sizes for compatibility
+    h1: typography.fontSize['4xl'],
+    h2: typography.fontSize['3xl'],
+    h3: typography.fontSize['2xl'],
+    h4: typography.fontSize.xl,
+    h5: typography.fontSize.lg,
+    h6: typography.fontSize.md,
+    body: typography.fontSize.md,
+    bodySmall: typography.fontSize.sm,
+    caption: typography.fontSize.xs,
+    label: typography.fontSize.sm,
+    button: typography.fontSize.md,
+  },
+  
+  // Shadows for compatibility
+  shadows: shadows,
+  
   // Modern rounded corners
   roundness: borderRadius.lg,
   

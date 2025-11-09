@@ -54,7 +54,7 @@ interface Notification {
   message: string;
   type: string; // Daha geniş tip listesi için
   isRead: boolean;
-  createdAt: firebase.firestore.Timestamp;
+  createdAt: any; // firebase.firestore.Timestamp
   userId?: string;
   clubId?: string;
   actionData?: any; // Ek aksiyon verileri
@@ -279,7 +279,7 @@ const ClubHomeScreen: React.FC = () => {
               averageEventRating: 4.2,
               engagementRate: updatedStats.totalEvents > 0 ? (updatedStats.totalLikes + updatedStats.totalComments) / updatedStats.totalEvents : 0,
               growthRate: 15.0,
-              lastUpdated: updatedStats.lastUpdated || firebase.firestore.Timestamp.now(),
+              lastUpdated: updatedStats.lastUpdated || (firebase.firestore as any).Timestamp.now(),
               isActive: true,
               weeklyStats: {}
             };
@@ -337,7 +337,7 @@ const ClubHomeScreen: React.FC = () => {
             averageEventRating: 4.2,
             engagementRate: statsData.totalEvents > 0 ? (statsData.totalLikes + statsData.totalComments) / statsData.totalEvents : 0,
             growthRate: 15.0,
-            lastUpdated: statsData.lastUpdated || firebase.firestore.Timestamp.now(),
+            lastUpdated: statsData.lastUpdated || (firebase.firestore as any).Timestamp.now(),
             isActive: true,
             weeklyStats: {} // Default empty object
           };
@@ -581,7 +581,7 @@ const ClubHomeScreen: React.FC = () => {
     }
   };
 
-  const formatDate = (timestamp: firebase.firestore.Timestamp) => {
+  const formatDate = (timestamp: any) => { // firebase.firestore.Timestamp
     if (!timestamp || !timestamp.toDate) return 'Tarih yok';
     
     const date = timestamp.toDate();

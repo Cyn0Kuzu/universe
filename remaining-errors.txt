@@ -1,0 +1,70 @@
+﻿
+src/components/ClubEventCard.tsx(2702,19): error TS2339: Property 'Cover' does not exist on type 'ComponentType<any>'.
+src/components/ClubEventCard.tsx(2750,15): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/ClubEventCard.tsx(2962,16): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/ClubProfileModal.tsx(336,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/ClubProfileModal.tsx(349,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/ClubProfileModal.tsx(356,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/ClubProfileModal.tsx(369,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/ClubProfileModal.tsx(375,23): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/ClubProfileModal.tsx(405,24): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+src/components/common/EnhancedButton.tsx(112,27): error TS2339: Property 'button' does not exist on type '{ xs: number; sm: number; md: number; lg
+: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedCard.tsx(65,20): error TS2339: Property 'none' does not exist on type '{ sm: { shadowColor: string; shadowOffset: { 
+width: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; md: { shadowColor: string; shadowOffset: { wi
+dth: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; lg: { ...; }; xl: { ...; }; }'.
+src/components/common/EnhancedCard.tsx(70,20): error TS2339: Property 'none' does not exist on type '{ sm: { shadowColor: string; shadowOffset: { 
+width: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; md: { shadowColor: string; shadowOffset: { wi
+dth: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; lg: { ...; }; xl: { ...; }; }'.
+src/components/common/EnhancedCard.tsx(99,27): error TS2339: Property 'h6' does not exist on type '{ xs: number; sm: number; md: number; lg: numbe
+r; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedCard.tsx(108,27): error TS2339: Property 'bodySmall' does not exist on type '{ xs: number; sm: number; md: number; l
+g: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedInput.tsx(114,27): error TS2339: Property 'body' does not exist on type '{ xs: number; sm: number; md: number; lg: n
+umber; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedInput.tsx(124,27): error TS2339: Property 'label' does not exist on type '{ xs: number; sm: number; md: number; lg: 
+number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedInput.tsx(133,27): error TS2339: Property 'caption' does not exist on type '{ xs: number; sm: number; md: number; lg
+: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedModal.tsx(150,27): error TS2339: Property 'h5' does not exist on type '{ xs: number; sm: number; md: number; lg: num
+ber; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/UniversalAvatar.tsx(181,15): error TS2339: Property 'Image' does not exist on type 'ComponentType<any>'.
+src/components/common/UniversalAvatar.tsx(195,15): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+src/components/common/UniversalAvatar.tsx(208,15): error TS2339: Property 'Text' does not exist on type 'ComponentType<any>'.
+src/components/common/UniversalAvatar.tsx(219,15): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+src/components/GlobalLeaderboard.tsx(43,26): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has n
+o exported member 'firestore'.
+src/components/NotificationModal.tsx(197,42): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/components/StudentNotificationModal.tsx(173,42): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/contexts/AuthContext.tsx(14,25): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no export
+ed member 'User'.
+src/contexts/AuthContext.tsx(61,59): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no export
+ed member 'User'.
+src/contexts/AuthContext.tsx(361,33): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no expor
+ted member 'User'.
+src/contexts/AuthContext.tsx(375,31): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no expor
+ted member 'User'.
+src/contexts/AuthContext.tsx(389,27): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no expor
+ted member 'User'.
+src/contexts/AuthContext.tsx(678,32): error TS2339: Property 'user' does not exist on type 'unknown'.
+src/firebase/auth.ts(32,91): error TS2694: Namespace 'firebase.auth' has no exported member 'UserCredential'.
+src/firebase/auth.ts(120,167): error TS2694: Namespace 'firebase.auth' has no exported member 'UserCredential'.
+src/firebase/auth.ts(199,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/firebase/auth.ts(386,84): error TS2554: Expected 0 arguments, but got 1.
+src/firebase/auth.ts(526,32): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/firebase/auth.ts(829,89): error TS2554: Expected 0 arguments, but got 1.
+src/firebase/authPersistenceManager.ts(308,83): error TS2694: Namespace 'firebase.auth' has no exported member 'UserCredential'.
+src/firebase/clubManagement.ts(22,22): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/firebase/clubManagement.ts(23,33): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/firebase/clubManagement.ts(71,22): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/firebase/clubManagement.ts(72,33): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/firebase/clubManagement.ts(134,40): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/firebase/clubManagement.ts(141,24): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/firebase/clubManagement.ts(149,24): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/firebase/clubManagement.ts(157,24): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/firebase/clubManagement.ts(200,30): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/firebase/clubManagement.ts(201,34): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/firebase/commentManagement.ts(88,75): error TS2339: Property 'add' does not exist on type 'CollectionReference'.
+src/firebase/commentManagement.ts(493,20): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+
+

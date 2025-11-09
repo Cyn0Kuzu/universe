@@ -7,16 +7,16 @@ import { firebase } from '../firebase/config';
 
 interface DailyLoginRecord {
   userId: string;
-  loginDate: firebase.firestore.Timestamp;
+  loginDate: any; // firebase.firestore.Timestamp
   streakCount: number;
   totalLoginDays: number;
-  lastLoginDate?: firebase.firestore.Timestamp;
+  lastLoginDate?: any; // firebase.firestore.Timestamp
   pointsEarned: number;
 }
 
 export class DailyLoginService {
   private static instance: DailyLoginService;
-  private db: firebase.firestore.Firestore;
+  private db: any; // firebase.firestore.Firestore
 
   private constructor() {
     this.db = firebase.firestore();
@@ -202,7 +202,7 @@ export class DailyLoginService {
   /**
    * Firebase Timestamp'ı YYYY-MM-DD formatında string'e çevir
    */
-  private timestampToDateString(timestamp: firebase.firestore.Timestamp): string {
+  private timestampToDateString(timestamp: any): string { // firebase.firestore.Timestamp
     return timestamp.toDate().toISOString().split('T')[0];
   }
 

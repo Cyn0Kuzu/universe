@@ -383,7 +383,7 @@ export const checkEmailVerification = async (): Promise<boolean> => {
 export const getUserProfile = async (userId: string) => {
   try {
     // Force fresh read from server (not cache)
-    const userDoc = await firebase.firestore().collection('users').doc(userId).get({ source: 'server' });
+    const userDoc = await firebase.firestore().collection('users').doc(userId).get();
     
     if (userDoc.exists) {
       // Firestore'dan profil bilgisini al
@@ -826,7 +826,7 @@ export const getUserProfile = async (userId: string) => {
         
         // Re-check latest snapshot to avoid overwriting fresh values (race-proofing)
         try {
-          const latest = await firebase.firestore().collection('users').doc(userId).get({ source: 'server' });
+          const latest = await firebase.firestore().collection('users').doc(userId).get();
           const latestData = latest.exists ? (latest.data() || {}) : {};
           // If displayName/fullName/name just got set by another flow, drop our generic fallback
           if (updatedFields.displayName && latestData.displayName && latestData.displayName !== profileData.displayName) {

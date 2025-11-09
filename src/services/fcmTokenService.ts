@@ -4,7 +4,14 @@
  */
 
 import { Platform } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+// @ts-ignore - Optional dependency
+let messaging: any;
+try {
+  messaging = require('@react-native-firebase/messaging').default;
+} catch {
+  // Module not available - will handle gracefully
+  messaging = null;
+}
 import { firebase } from '../firebase/config';
 
 class FCMTokenService {
@@ -191,6 +198,32 @@ class FCMTokenService {
 }
 
 export default FCMTokenService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

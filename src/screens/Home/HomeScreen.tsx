@@ -1438,7 +1438,6 @@ const HomeScreen: React.FC = () => {
           value={searchQuery}
           style={[styles.searchBar, { 
             backgroundColor: theme.colors.surface,
-            elevation: 2,
             ...shadows.sm 
           }]}
           icon={() => <MaterialCommunityIcons name="magnify" size={20} color="#666" />}
@@ -1498,7 +1497,7 @@ const HomeScreen: React.FC = () => {
                 }}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.inlineSearchListContent}
-                {...PerformanceOptimizer.getFlatListOptimizationProps()}
+                {...(PerformanceOptimizer.getFlatListOptimizationProps() as any)}
               />
             ) : (
               <View style={styles.inlineSearchEmptyState}>
@@ -1916,9 +1915,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
+  headerContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   notificationButton: {
     padding: 8,
@@ -2562,12 +2572,6 @@ const styles = StyleSheet.create({
   activeSortButtonText: {
     color: '#fff',
     fontWeight: '600',
-  },
-  // Header button styles
-  headerButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
   },
   // Member badge styles
   memberBadge: {

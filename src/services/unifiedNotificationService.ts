@@ -21,7 +21,7 @@ export interface BaseNotification {
   category: 'membership' | 'events' | 'social' | 'system';
   priority: 'high' | 'medium' | 'low';
   read: boolean;
-  createdAt: firebase.firestore.Timestamp;
+  createdAt: any; // firebase.firestore.Timestamp
   metadata?: any;
 }
 

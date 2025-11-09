@@ -277,7 +277,7 @@ const EventsScreen = () => {
                 // Profil resmi bul
                 const profileImageUrl = await getProfileImageUrl(userData);
                 
-                clubDetails[clubId] = {
+                clubDetails[clubId as string] = {
                   profileImage: profileImageUrl,
                   displayName: userData?.displayName || userData?.name || userData?.clubName || 'Kulüp',
                   university: userData?.university,
@@ -306,7 +306,7 @@ const EventsScreen = () => {
                 // Profil resmi bul
                 const profileImageUrl = await getProfileImageUrl(userData);
                 
-                clubDetails[clubId] = {
+                clubDetails[clubId as string] = {
                   profileImage: profileImageUrl,
                   displayName: userData?.displayName || userData?.name || userData?.clubName || 'Kulüp',
                   university: userData?.university,
@@ -331,7 +331,7 @@ const EventsScreen = () => {
                 // Profil resmi bul
                 const profileImageUrl = await getProfileImageUrl(clubData);
                 
-                clubDetails[clubId] = {
+                clubDetails[clubId as string] = {
                   profileImage: profileImageUrl,
                   displayName: clubData?.displayName || clubData?.name || 'Kulüp',
                   university: clubData?.university,
@@ -400,7 +400,7 @@ const EventsScreen = () => {
               // Get default avatar - only used if we can't get user's selected avatar
               const defaultAvatar = getDefaultAvatar();
               
-              clubDetails[clubId] = {
+              clubDetails[clubId as string] = {
                 displayName: clubName,
                 university: '',
                 bio: '',
@@ -411,7 +411,7 @@ const EventsScreen = () => {
               };
               
               // Detayları getirmeye çalış (başarısız olsa bile üstteki fallback değerler kalacak)
-              await getClubDetails(clubId);
+              await getClubDetails(clubId as string);
             } catch (error) {
               console.error(`Error loading club data:`, error);
               // Fallback değerleri zaten ayarladık, işleme devam et

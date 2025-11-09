@@ -171,7 +171,7 @@ export class RealtimeUpdateManager {
 
     try {
       const db = firebase.firestore();
-      let ref: firebase.firestore.Query = db.collection(subscription.collection);
+      let ref: any = db.collection(subscription.collection); // firebase.firestore.Query
 
       // Query uygula
       if (subscription.query && !subscription.query.documentId) {
@@ -437,7 +437,7 @@ export class RealtimeUpdateManager {
   /**
    * Offline cache'i güncelle
    */
-  private async updateOfflineCache(collection: string, data: any, changeType: firebase.firestore.DocumentChangeType): Promise<void> {
+  private async updateOfflineCache(collection: string, data: any, changeType: any): Promise<void> { // firebase.firestore.DocumentChangeType
     try {
       const key = `${collection}_${data.id}`;
       
@@ -457,7 +457,7 @@ export class RealtimeUpdateManager {
   /**
    * Change type'ı map et
    */
-  private mapChangeType(changeType: firebase.firestore.DocumentChangeType): 'created' | 'updated' | 'deleted' {
+  private mapChangeType(changeType: any): 'created' | 'updated' | 'deleted' { // firebase.firestore.DocumentChangeType
     switch (changeType) {
       case 'added':
         return 'created';

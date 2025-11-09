@@ -40,8 +40,8 @@ export interface NotificationPreferences {
   universityNotifications: boolean;
   departmentNotifications: boolean;
   
-  createdAt: firebase.firestore.Timestamp;
-  updatedAt: firebase.firestore.Timestamp;
+  createdAt: any; // firebase.firestore.Timestamp
+  updatedAt: any; // firebase.firestore.Timestamp
 }
 
 export class NotificationManagement {
@@ -108,7 +108,7 @@ export class NotificationManagement {
         read: false,
         archived: false,
         actionRequired: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: (firebase.firestore as any).FieldValue.serverTimestamp()
       };
 
       // Only add optional fields if they have values
@@ -254,8 +254,8 @@ export class NotificationManagement {
           locationBasedNotifications: true,
           universityNotifications: true,
           departmentNotifications: true,
-          createdAt: firebase.firestore.Timestamp.now(),
-          updatedAt: firebase.firestore.Timestamp.now()
+          createdAt: (firebase.firestore as any).Timestamp.now(),
+          updatedAt: (firebase.firestore as any).Timestamp.now()
         };
         
         // Save default preferences
@@ -287,8 +287,8 @@ export class NotificationManagement {
         locationBasedNotifications: true,
         universityNotifications: true,
         departmentNotifications: true,
-        createdAt: firebase.firestore.Timestamp.now(),
-        updatedAt: firebase.firestore.Timestamp.now()
+        createdAt: (firebase.firestore as any).Timestamp.now(),
+        updatedAt: (firebase.firestore as any).Timestamp.now()
       };
     }
   }
@@ -303,7 +303,7 @@ export class NotificationManagement {
     try {
       await this.db.collection('notificationPreferences').doc(userId).update({
         ...preferences,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt: (firebase.firestore as any).FieldValue.serverTimestamp()
       });
       return true;
     } catch (error) {
@@ -362,7 +362,7 @@ export class NotificationManagement {
     try {
       await this.db.collection('notifications').doc(notificationId).update({
         read: true,
-        readAt: firebase.firestore.FieldValue.serverTimestamp()
+        readAt: (firebase.firestore as any).FieldValue.serverTimestamp()
       });
       return true;
     } catch (error) {
@@ -386,7 +386,7 @@ export class NotificationManagement {
       snapshot.docs.forEach(doc => {
         batch.update(doc.ref, {
           read: true,
-          readAt: firebase.firestore.FieldValue.serverTimestamp()
+          readAt: (firebase.firestore as any).FieldValue.serverTimestamp()
         });
       });
 
@@ -421,7 +421,7 @@ export class NotificationManagement {
 
       const snapshot = await this.db
         .collection('notifications')
-        .where('createdAt', '<', firebase.firestore.Timestamp.fromDate(thirtyDaysAgo))
+        .where('createdAt', '<', (firebase.firestore as any).Timestamp.fromDate(thirtyDaysAgo))
         .get();
 
       if (snapshot.empty) {

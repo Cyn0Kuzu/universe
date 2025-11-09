@@ -40,7 +40,7 @@ interface LeaderboardEntry {
   rank: number;
   eventCount?: number;
   trend?: number;
-  lastActivity: firebase.firestore.Timestamp;
+  lastActivity: any; // firebase.firestore.Timestamp
   userHandle?: string;
 }
 

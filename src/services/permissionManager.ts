@@ -140,7 +140,7 @@ export class PermissionManager {
           allowAlert: true,
           allowBadge: true,
           allowSound: true,
-          allowAnnouncements: true,
+          // allowAnnouncements removed - not supported in iOS notification permissions
         },
         android: {
           allowAlert: true,

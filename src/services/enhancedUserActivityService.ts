@@ -41,7 +41,7 @@ export interface UserActivity {
     changeDetails?: any;
     action?: string;
   };
-  createdAt: firebase.firestore.Timestamp;
+  createdAt: any; // firebase.firestore.Timestamp
   isHighlighted: boolean;
   isPinned: boolean;
   reactions?: {
@@ -76,7 +76,7 @@ export interface UserActivityFilter {
  */
 export class EnhancedUserActivityService {
   private static instance: EnhancedUserActivityService;
-  private db: firebase.firestore.Firestore;
+  private db: any; // firebase.firestore.Firestore
   private cache: Map<string, UserActivity[]> = new Map();
   private listeners: Map<string, () => void> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
@@ -157,7 +157,7 @@ export class EnhancedUserActivityService {
         this.clearCache(sanitizedActivity.userId);
       }
 
-      return docRef.id;
+      return (docRef as any).id;
     }, 'Create Activity');
   }
 
@@ -251,7 +251,7 @@ export class EnhancedUserActivityService {
       }
 
       // Build query
-      let query: firebase.firestore.Query = this.db
+      let query: any = this.db // firebase.firestore.Query
         .collection('userActivities')
         .where('userId', '==', userId);
 
@@ -294,7 +294,7 @@ export class EnhancedUserActivityService {
           id: doc.id,
           ...data,
           // Support legacy entries that use `timestamp` instead of `createdAt`
-          createdAt: data.createdAt || data.timestamp || firebase.firestore.Timestamp.now()
+          createdAt: data.createdAt || data.timestamp || (firebase.firestore as any).Timestamp.now()
         } as UserActivity);
       });
 
@@ -365,7 +365,7 @@ export class EnhancedUserActivityService {
               id: doc.id,
               ...data,
               // Support legacy entries that use `timestamp` instead of `createdAt`
-              createdAt: data.createdAt || data.timestamp || firebase.firestore.Timestamp.now()
+              createdAt: data.createdAt || data.timestamp || (firebase.firestore as any).Timestamp.now()
             } as UserActivity);
           });
 

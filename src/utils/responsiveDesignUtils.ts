@@ -46,6 +46,18 @@ export const responsiveFontSizes = {
   title: scaleFont(28),
   header: scaleFont(32),
   tab: scaleFont(14),
+  // Additional sizes for compatibility
+  h1: scaleFont(32),
+  h2: scaleFont(24),
+  h3: scaleFont(20),
+  h4: scaleFont(18),
+  h5: scaleFont(16),
+  h6: scaleFont(14),
+  body: scaleFont(14),
+  bodySmall: scaleFont(12),
+  caption: scaleFont(10),
+  label: scaleFont(12),
+  button: scaleFont(14),
 };
 
 // Responsive border radius
@@ -97,6 +109,16 @@ export const responsiveGridConfig = {
 
 // Responsive shadows
 export const responsiveShadows = {
+  none: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
   sm: {
     shadowColor: '#000',
     shadowOffset: {

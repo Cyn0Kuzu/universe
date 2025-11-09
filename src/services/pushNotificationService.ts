@@ -43,36 +43,54 @@ class PushNotificationService {
    */
   async initialize(): Promise<string | null> {
     try {
-      if (!Device.isDevice) {
-        console.warn('Push notifications only work on physical devices');
-        return null;
+      // 🛡️ SAFETY: Device check with error handling (simulator'da da çalışması için)
+      try {
+        if (!Device.isDevice) {
+          console.warn('⚠️ Push notifications may not work on simulators');
+          // Simulator'da da devam et (crash yerine null döndür)
+        }
+      } catch (deviceCheckError) {
+        console.warn('⚠️ Device check failed:', deviceCheckError);
+        // Device check hatası durumunda devam et
       }
 
       console.log('🚀 Starting push notification initialization...');
 
-      // Check current permission status
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      console.log(`📋 Current notification permission status: ${existingStatus}`);
+      // 🛡️ SAFETY: Check current permission status with error handling
+      let existingStatus = 'undetermined';
+      try {
+        const permissionResult = await Notifications.getPermissionsAsync();
+        existingStatus = permissionResult.status;
+        console.log(`📋 Current notification permission status: ${existingStatus}`);
+      } catch (permError) {
+        console.error('❌ Permission check failed:', permError);
+        return null; // Çökme yerine null döndür
+      }
 
       // If not granted, request permission
       let finalStatus = existingStatus;
       if (existingStatus !== 'granted') {
         console.log('🔔 Requesting notification permissions...');
-        const { status } = await Notifications.requestPermissionsAsync({
-          ios: {
-            allowAlert: true,
-            allowBadge: true,
-            allowSound: true,
-            allowAnnouncements: true,
-          },
-          android: {
-            allowAlert: true,
-            allowBadge: true,
-            allowSound: true,
-          },
-        });
-        finalStatus = status;
-        console.log(`✅ Permission request result: ${finalStatus}`);
+        try {
+          const { status } = await Notifications.requestPermissionsAsync({
+            ios: {
+              allowAlert: true,
+              allowBadge: true,
+              allowSound: true,
+              // allowAnnouncements removed - not supported in iOS notification permissions
+            },
+            android: {
+              allowAlert: true,
+              allowBadge: true,
+              allowSound: true,
+            },
+          });
+          finalStatus = status;
+          console.log(`✅ Permission request result: ${finalStatus}`);
+        } catch (requestError) {
+          console.error('❌ Permission request failed:', requestError);
+          return null; // Çökme yerine null döndür
+        }
       }
 
       // If still not granted after request, return early

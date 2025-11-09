@@ -1,0 +1,1355 @@
+﻿src/components/ClubEventCard.tsx(11,3): error TS2305: Module '"react-native-paper"' has no exported member 'ProgressBar'.
+src/components/ClubEventCard.tsx(641,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(651,22): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(654,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(809,48): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(830,46): error TS7006: Parameter 'snap' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(834,41): error TS7006: Parameter 'fullSnap' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(841,74): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(851,22): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(873,8): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(879,25): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(882,26): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(959,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(965,25): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(976,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1115,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1121,25): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1141,32): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1141,37): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1221,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1357,29): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1430,33): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1511,32): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1623,60): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1634,46): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1833,56): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1844,65): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(1855,46): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(2431,46): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(2446,54): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(2489,50): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(2538,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(2570,35): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubEventCard.tsx(2702,19): error TS2339: Property 'Cover' does not exist on type 'ComponentType<any>'.
+  Property 'Cover' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubEventCard.tsx(2750,15): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubEventCard.tsx(2962,16): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubProfileModal.tsx(79,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/ClubProfileModal.tsx(90,10): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/components/ClubProfileModal.tsx(336,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubProfileModal.tsx(349,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubProfileModal.tsx(356,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubProfileModal.tsx(369,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubProfileModal.tsx(375,23): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/ClubProfileModal.tsx(405,24): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/components/common/EnhancedButton.tsx(112,27): error TS2339: Property 'button' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedCard.tsx(65,20): error TS2339: Property 'none' does not exist on type '{ sm: { shadowColor: string; shadowOffset: { width: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; md: { shadowColor: string; shadowOffset: { width: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; lg: { ...; }; xl: { ...; }; }'.
+src/components/common/EnhancedCard.tsx(70,20): error TS2339: Property 'none' does not exist on type '{ sm: { shadowColor: string; shadowOffset: { width: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; md: { shadowColor: string; shadowOffset: { width: number; height: number; }; shadowOpacity: number; shadowRadius: number; elevation: number; }; lg: { ...; }; xl: { ...; }; }'.
+src/components/common/EnhancedCard.tsx(99,27): error TS2339: Property 'h6' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedCard.tsx(108,27): error TS2339: Property 'bodySmall' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedInput.tsx(114,27): error TS2339: Property 'body' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedInput.tsx(124,27): error TS2339: Property 'label' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedInput.tsx(133,27): error TS2339: Property 'caption' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/EnhancedModal.tsx(150,27): error TS2339: Property 'h5' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/components/common/LoadingStates.tsx(3,10): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/components/common/UniversalAvatar.tsx(181,15): error TS2339: Property 'Image' does not exist on type 'ComponentType<any>'.
+  Property 'Image' does not exist on type 'ComponentClass<any, any>'.
+src/components/common/UniversalAvatar.tsx(195,15): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/components/common/UniversalAvatar.tsx(208,15): error TS2339: Property 'Text' does not exist on type 'ComponentType<any>'.
+  Property 'Text' does not exist on type 'ComponentClass<any, any>'.
+src/components/common/UniversalAvatar.tsx(219,15): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/components/CustomDateTimePicker.tsx(252,36): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/components/CustomDateTimePicker.tsx(300,36): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/components/CustomDateTimePicker.tsx(330,36): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/components/CustomDateTimePicker.tsx(360,36): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/components/EnhancedClubCard.tsx(66,46): error TS1323: Dynamic imports are only supported when the '--module' flag is set to 'es2020', 'es2022', 'esnext', 'commonjs', 'amd', 'system', 'umd', 'node16', or 'nodenext'.
+src/components/EnhancedEventCard.tsx(73,46): error TS1323: Dynamic imports are only supported when the '--module' flag is set to 'es2020', 'es2022', 'esnext', 'commonjs', 'amd', 'system', 'umd', 'node16', or 'nodenext'.
+src/components/EventCardModal.tsx(144,12): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/EventCardModal.tsx(154,12): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/components/EventDetailModal.tsx(219,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/EventDetailModal.tsx(239,10): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/components/GlobalLeaderboard.tsx(43,26): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/components/GlobalLeaderboard.tsx(216,57): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/GlobalLeaderboard.tsx(216,62): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/components/GlobalLeaderboard.tsx(413,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/GlobalLeaderboard.tsx(420,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/GlobalLeaderboard.tsx(430,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/GlobalLeaderboard.tsx(436,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/JoinClubModal.tsx(51,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/JoinClubModal.tsx(66,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/JoinClubModal.tsx(78,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/JoinClubModal.tsx(82,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/components/NotificationModal.tsx(94,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/NotificationModal.tsx(104,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/NotificationModal.tsx(114,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/NotificationModal.tsx(175,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/NotificationModal.tsx(197,30): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/NotificationModal.tsx(202,44): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/profile/ProfileEditModal.tsx(121,31): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/components/profile/ProfileEditModal.tsx(170,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/profile/ProfileEditModal.tsx(170,58): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/components/profile/ProfileEditModal.tsx(172,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/profile/ProfileEditModal.tsx(184,36): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/profile/ProfileEditModal.tsx(195,45): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/profile/ProfileEditModal.tsx(203,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/profile/ProfileEditModal.tsx(211,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/StudentEventCard.tsx(1135,26): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1140,36): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1148,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1157,26): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1162,36): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1170,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1179,26): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1194,54): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1297,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1353,42): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1374,46): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(1561,64): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(2088,39): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(2245,39): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(2245,44): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/components/StudentEventCard.tsx(2250,70): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentNotificationModal.tsx(91,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/StudentNotificationModal.tsx(101,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/StudentNotificationModal.tsx(111,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/components/StudentNotificationModal.tsx(173,30): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/StudentNotificationModal.tsx(178,44): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/StudentNotificationModal.tsx(203,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/UpcomingEventsList.tsx(46,36): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/components/UpcomingEventsList.tsx(74,56): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/contexts/AuthContext.tsx(14,25): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'User'.
+src/contexts/AuthContext.tsx(61,59): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'User'.
+src/contexts/AuthContext.tsx(361,33): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'User'.
+src/contexts/AuthContext.tsx(375,31): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'User'.
+src/contexts/AuthContext.tsx(389,27): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'User'.
+src/contexts/AuthContext.tsx(513,56): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/contexts/AuthContext.tsx(556,87): error TS7006: Parameter 'snap' implicitly has an 'any' type.
+src/contexts/AuthContext.tsx(678,32): error TS2339: Property 'user' does not exist on type '{}'.
+src/firebase/auth.ts(32,86): error TS2694: Namespace 'firebase' has no exported member 'auth'.
+src/firebase/auth.ts(44,43): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/auth.ts(99,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(103,26): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(106,26): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(120,162): error TS2694: Namespace 'firebase' has no exported member 'auth'.
+src/firebase/auth.ts(137,43): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/auth.ts(193,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(217,20): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/auth.ts(226,20): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/auth.ts(280,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(297,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(305,41): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(359,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(362,30): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(386,36): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(521,50): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(829,41): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(844,26): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(850,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(865,29): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/auth.ts(892,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/auth.ts(896,37): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/authPersistenceManager.ts(69,16): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/authPersistenceManager.ts(69,64): error TS2694: Namespace 'firebase' has no exported member 'User'.
+src/firebase/authPersistenceManager.ts(90,50): error TS2694: Namespace 'firebase' has no exported member 'User'.
+src/firebase/authPersistenceManager.ts(108,60): error TS2694: Namespace 'firebase' has no exported member 'User'.
+src/firebase/authPersistenceManager.ts(217,55): error TS2694: Namespace 'firebase' has no exported member 'User'.
+src/firebase/authPersistenceManager.ts(222,36): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/authPersistenceManager.ts(288,34): error TS2694: Namespace 'firebase' has no exported member 'User'.
+src/firebase/authPersistenceManager.ts(308,78): error TS2694: Namespace 'firebase' has no exported member 'auth'.
+src/firebase/authPersistenceManager.ts(318,45): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/authPersistenceManager.ts(355,22): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/authPersistenceManager.ts(378,37): error TS2694: Namespace 'firebase' has no exported member 'User'.
+src/firebase/authPersistenceManager.ts(380,23): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/authPersistenceManager.ts(392,29): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/authPersistenceManager.ts(412,29): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/clubManagement.ts(16,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(26,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(27,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/clubManagement.ts(65,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(75,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(76,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/clubManagement.ts(108,36): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(134,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(137,44): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(140,34): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/clubManagement.ts(145,46): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(148,36): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/clubManagement.ts(153,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(156,33): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/clubManagement.ts(161,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(186,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/clubManagement.ts(193,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(46,34): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/commentManagement.ts(79,37): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/commentManagement.ts(88,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(94,37): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/commentManagement.ts(97,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(101,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(102,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/commentManagement.ts(107,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(256,34): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/firebase/commentManagement.ts(281,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(307,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(320,47): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(323,48): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(367,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(371,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(384,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(385,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/commentManagement.ts(389,37): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(391,36): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(487,38): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(499,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(502,37): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/commentManagement.ts(506,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(507,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/commentManagement.ts(515,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(521,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(527,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(567,38): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(582,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(583,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/commentManagement.ts(590,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(596,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(602,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(644,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/commentManagement.ts(690,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/config.ts(105,10): error TS2749: 'FirebaseApp' refers to a value, but is being used as a type here. Did you mean 'typeof FirebaseApp'?
+src/firebase/config.ts(106,11): error TS2749: 'Auth' refers to a value, but is being used as a type here. Did you mean 'typeof Auth'?
+src/firebase/config.ts(107,16): error TS2749: 'Firestore' refers to a value, but is being used as a type here. Did you mean 'typeof Firestore'?
+src/firebase/config.ts(108,14): error TS2749: 'FirebaseStorage' refers to a value, but is being used as a type here. Did you mean 'typeof FirebaseStorage'?
+src/firebase/eventManagement.ts(15,37): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(36,38): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(48,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(51,37): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(55,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(56,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(60,37): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(102,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(114,36): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(120,36): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(128,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(131,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(134,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(135,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(143,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(183,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(195,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(198,36): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(202,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(203,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(208,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(216,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(251,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(265,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(268,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(269,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(343,37): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(344,37): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(373,35): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(387,47): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(393,51): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/eventManagement.ts(421,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(438,45): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(460,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(475,50): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(480,48): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(559,37): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(592,45): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(597,51): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/eventManagement.ts(615,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(630,41): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(663,37): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(672,38): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(682,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(683,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(689,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(729,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(739,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(740,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/eventManagement.ts(746,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/eventManagement.ts(750,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(84,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(162,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(256,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(331,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(359,47): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/membership.ts(366,22): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/firebase/membership.ts(366,25): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/firebase/membership.ts(392,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(419,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(430,32): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/membership.ts(463,23): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(499,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(507,36): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(516,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(677,23): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(710,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(839,23): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(873,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/membership.ts(876,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(882,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(1004,23): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/membership.ts(1038,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/membership.ts(1041,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/membership.ts(1049,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/firebase/notificationManagement.ts(43,23): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/firebase/notificationManagement.ts(44,23): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/firebase/notificationManagement.ts(335,29): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/notificationManagement.ts(386,29): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/notificationManagement.ts(432,29): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/firebase/userProfile.ts(139,29): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/firebase/userProfile.ts(251,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/hooks/useClubNotificationCount.ts(29,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/hooks/useClubNotificationCount.ts(93,28): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/hooks/useClubNotificationCount.ts(110,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/hooks/useClubNotificationCount.ts(160,13): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/hooks/useNotificationCount.ts(39,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/hooks/useNotificationCount.ts(75,28): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/hooks/useNotificationCount.ts(88,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/hooks/useNotificationCount.ts(106,13): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/hooks/useRealtimeLeaderboard.ts(38,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/hooks/useRealtimeLeaderboard.ts(166,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/hooks/useRealtimeLeaderboard.ts(199,25): error TS2339: Property 'metadata' does not exist on type 'QuerySnapshot'.
+src/hooks/useUnifiedLeaderboard.ts(33,23): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/hooks/useUnifiedLeaderboard.ts(96,24): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/hooks/useUnifiedLeaderboard.ts(137,24): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Auth/LoginScreen.tsx(3,45): error TS2305: Module '"react-native-paper"' has no exported member 'HelperText'.
+src/screens/Auth/LoginScreen.tsx(3,57): error TS2305: Module '"react-native-paper"' has no exported member 'Dialog'.
+src/screens/Auth/LoginScreen.tsx(3,73): error TS2305: Module '"react-native-paper"' has no exported member 'Checkbox'.
+src/screens/Auth/LoginScreen.tsx(94,47): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Auth/LoginScreen.tsx(106,22): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Auth/LoginScreen.tsx(166,29): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/screens/Auth/LoginScreen.tsx(172,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/LoginScreen.tsx(178,29): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/screens/Auth/LoginScreen.tsx(183,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/LoginScreen.tsx(185,28): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(26,3): error TS2305: Module '"react-native-paper"' has no exported member 'HelperText'.
+src/screens/Auth/RegisterScreen.tsx(27,3): error TS2305: Module '"react-native-paper"' has no exported member 'Menu'.
+src/screens/Auth/RegisterScreen.tsx(29,3): error TS2305: Module '"react-native-paper"' has no exported member 'Checkbox'.
+src/screens/Auth/RegisterScreen.tsx(31,3): error TS2305: Module '"react-native-paper"' has no exported member 'Dialog'.
+src/screens/Auth/RegisterScreen.tsx(455,36): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Auth/RegisterScreen.tsx(480,34): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Auth/RegisterScreen.tsx(523,36): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Auth/RegisterScreen.tsx(619,45): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Auth/RegisterScreen.tsx(786,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Auth/RegisterScreen.tsx(786,62): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/screens/Auth/RegisterScreen.tsx(789,49): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Auth/RegisterScreen.tsx(790,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Auth/RegisterScreen.tsx(814,23): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Auth/RegisterScreen.tsx(1042,36): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1052,36): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1063,34): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1081,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1084,30): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1086,30): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1088,30): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1123,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1155,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1157,28): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1179,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1181,28): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/RegisterScreen.tsx(1682,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Auth/WelcomeScreen.tsx(18,20): error TS2305: Module '"react-native-paper"' has no exported member 'Checkbox'.
+src/screens/Club/ClubEventsListScreen.tsx(3,16): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Club/ClubEventsListScreen.tsx(79,30): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubEventsListScreen.tsx(323,17): error TS2339: Property 'BackAction' does not exist on type '{ Content: ComponentType<any>; Header: ComponentType<any>; }'.
+src/screens/Club/ClubEventsListScreen.tsx(325,17): error TS2339: Property 'Action' does not exist on type '{ Content: ComponentType<any>; Header: ComponentType<any>; }'.
+src/screens/Club/ClubEventsScreen.tsx(3,51): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Club/ClubEventsScreen.tsx(200,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubEventsScreen.tsx(210,43): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ClubFollowersScreen.tsx(119,28): error TS7006: Parameter 'userFollowersSnapshot' implicitly has an 'any' type.
+src/screens/Club/ClubFollowersScreen.tsx(153,13): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Club/ClubFollowingScreen.tsx(3,51): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Club/ClubFollowingScreen.tsx(71,22): error TS7006: Parameter 'clubDoc' implicitly has an 'any' type.
+src/screens/Club/ClubFollowingScreen.tsx(84,13): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Club/ClubHomeScreen.tsx(57,23): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/screens/Club/ClubHomeScreen.tsx(375,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ClubHomeScreen.tsx(479,32): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Club/ClubHomeScreen.tsx(485,34): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ClubHomeScreen.tsx(524,17): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Club/ClubHomeScreen.tsx(584,43): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/screens/Club/ClubHomeScreen.tsx(713,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(717,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(721,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(725,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(729,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(733,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(739,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(743,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(747,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(751,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(755,25): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubHomeScreen.tsx(761,26): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/ClubMembersScreen.tsx(15,3): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Club/ClubMembersScreen.tsx(18,3): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Club/ClubMembersScreen.tsx(19,3): error TS2305: Module '"react-native-paper"' has no exported member 'Menu'.
+src/screens/Club/ClubProfileScreen.tsx(3,42): error TS2305: Module '"react-native-paper"' has no exported member 'Dialog'.
+src/screens/Club/ClubProfileScreen.tsx(3,79): error TS2305: Module '"react-native-paper"' has no exported member 'Menu'.
+src/screens/Club/ClubProfileScreen.tsx(117,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(124,48): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(139,42): error TS7006: Parameter 'eventId' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(143,47): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(143,52): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(146,45): error TS7006: Parameter 'eventId' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(150,53): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(150,58): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(153,49): error TS7006: Parameter 'eventId' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(157,61): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(157,66): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(182,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(201,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Club/ClubProfileScreen.tsx(259,29): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(288,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(336,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(350,49): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(355,52): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(360,53): error TS7006: Parameter 'club' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(442,48): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(445,24): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ClubProfileScreen.tsx(469,33): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(480,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Club/ClubProfileScreen.tsx(534,29): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(645,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(709,47): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(725,29): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(793,29): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Club/ClubProfileScreen.tsx(980,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ClubProfileScreen.tsx(982,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Club/CreateEventScreen.tsx(5,3): error TS2305: Module '"react-native-paper"' has no exported member 'HelperText'.
+src/screens/Club/CreateEventScreen.tsx(5,15): error TS2305: Module '"react-native-paper"' has no exported member 'Switch'.
+src/screens/Club/CreateEventScreen.tsx(6,3): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Club/CreateEventScreen.tsx(6,22): error TS2305: Module '"react-native-paper"' has no exported member 'Snackbar'.
+src/screens/Club/CreateEventScreen.tsx(6,32): error TS2305: Module '"react-native-paper"' has no exported member 'List'.
+src/screens/Club/CreateEventScreen.tsx(240,41): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/CreateEventScreen.tsx(549,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Club/CreateEventScreen.tsx(555,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/CreateEventScreen.tsx(562,49): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/CreateEventScreen.tsx(567,55): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/CreateEventScreen.tsx(604,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Club/CreateEventScreen.tsx(605,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Club/CreateEventScreen.tsx(653,31): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/CreateEventScreen.tsx(732,17): error TS2339: Property 'BackAction' does not exist on type '{ Content: ComponentType<any>; Header: ComponentType<any>; }'.
+src/screens/Club/CreateEventScreen.tsx(817,32): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/screens/Club/CreateEventScreen.tsx(859,38): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/CreateEventScreen.tsx(1427,34): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/CreateEventScreen.tsx(1439,34): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/CreateEventScreen.tsx(1516,37): error TS2339: Property 'Affix' does not exist on type 'ComponentType<any>'.
+  Property 'Affix' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/CreateEventScreen.tsx(1517,36): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/CreateEventScreen.tsx(1566,36): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/CreateEventScreen.tsx(1662,32): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/EventAttendeesScreen.tsx(3,38): error TS2305: Module '"react-native-paper"' has no exported member 'Menu'.
+src/screens/Club/EventAttendeesScreen.tsx(3,44): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Club/EventAttendeesScreen.tsx(89,61): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/EventAttendeesScreen.tsx(93,48): error TS7006: Parameter 'userId' implicitly has an 'any' type.
+src/screens/Club/EventAttendeesScreen.tsx(126,56): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/EventAttendeesScreen.tsx(129,48): error TS7006: Parameter 'userId' implicitly has an 'any' type.
+src/screens/Club/EventAttendeesScreen.tsx(239,15): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/EventAttendeesScreen.tsx(270,16): error TS2339: Property 'Content' does not exist on type 'ComponentType<any>'.
+  Property 'Content' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Club/MembershipApplicationsScreen.tsx(17,3): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Club/MembershipApplicationsScreen.tsx(118,62): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(185,18): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ViewEventScreen.tsx(186,17): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(192,18): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(199,43): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(221,18): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ViewEventScreen.tsx(222,17): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(228,18): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(235,43): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(266,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Club/ViewEventScreen.tsx(267,8): error TS7006: Parameter 'eventDoc' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(302,8): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Club/ViewEventScreen.tsx(512,17): error TS2339: Property 'BackAction' does not exist on type '{ Content: ComponentType<any>; Header: ComponentType<any>; }'.
+src/screens/Club/ViewEventScreen.tsx(514,17): error TS2339: Property 'Action' does not exist on type '{ Content: ComponentType<any>; Header: ComponentType<any>; }'.
+src/screens/Clubs/ClubFollowersScreen.tsx(3,51): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Clubs/ClubFollowersScreen.tsx(346,21): error TS2339: Property 'Text' does not exist on type 'ComponentType<any>'.
+  Property 'Text' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Clubs/ClubFollowersScreen.tsx(399,21): error TS2339: Property 'Text' does not exist on type 'ComponentType<any>'.
+  Property 'Text' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Clubs/ClubsScreen.tsx(3,46): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Clubs/ClubsScreen.tsx(89,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ClubsScreen.tsx(113,51): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Clubs/ClubsScreen.tsx(201,26): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ClubsScreen.tsx(204,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Clubs/ClubsScreen.tsx(482,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ClubsScreen.tsx(486,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Clubs/ClubsScreen.tsx(487,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Clubs/ClubsScreen.tsx(501,46): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(3,69): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Clubs/ViewClubScreen.tsx(467,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(474,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(480,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(489,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(495,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(510,50): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(517,16): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(522,16): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(530,40): error TS7006: Parameter 'eventId' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(535,18): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(541,18): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(595,47): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(599,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(617,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(634,48): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(638,10): error TS7006: Parameter 'clubDoc' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(647,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(663,41): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(668,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(673,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(687,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(691,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(696,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Clubs/ViewClubScreen.tsx(918,48): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(925,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(937,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(941,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Clubs/ViewClubScreen.tsx(1069,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Clubs/ViewClubScreen.tsx(1072,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Clubs/ViewClubScreen.tsx(1187,23): error TS2339: Property 'Image' does not exist on type 'ComponentType<any>'.
+  Property 'Image' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Clubs/ViewClubScreen.tsx(1203,21): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Events/EventDetailScreen_Tabbed.tsx(131,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Events/EventDetailScreen_Tabbed.tsx(423,17): error TS2339: Property 'BackAction' does not exist on type '{ Content: ComponentType<any>; Header: ComponentType<any>; }'.
+src/screens/Home/EventsScreen.tsx(3,24): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Home/EventsScreen.tsx(3,43): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Home/EventsScreen.tsx(166,54): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(259,54): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(259,88): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(395,52): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(403,27): error TS2538: Type 'unknown' cannot be used as an index type.
+src/screens/Home/EventsScreen.tsx(414,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/screens/Home/EventsScreen.tsx(426,61): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(488,40): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(493,25): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(493,28): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/screens/Home/EventsScreen.tsx(506,31): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/screens/Home/FixedNotificationScreen.tsx(112,29): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/HomeScreen.tsx(3,63): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Home/HomeScreen.tsx(343,33): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/HomeScreen.tsx(729,24): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/HomeScreen.tsx(816,26): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/HomeScreen.tsx(1115,48): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/HomeScreen.tsx(1159,33): error TS7006: Parameter 'eventDoc' implicitly has an 'any' type.
+src/screens/Home/HomeScreen.tsx(1279,48): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/HomeScreen.tsx(1399,29): error TS2339: Property 'headerContent' does not exist on type '{ safeArea: { flex: number; backgroundColor: string; }; scrollView: { flex: number; }; scrollViewContent: { paddingBottom: number; }; header: { flexDirection: "row"; alignItems: "center"; justifyContent: "space-between"; ... 5 more ...; borderBottomColor: string; }; ... 118 more ...; moreResultsText: { ...; }; }'.
+src/screens/Home/HomeScreen.tsx(1480,16): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: FlatListProps<User>): FlatList<User>', gave the following error.
+    Type '{ removeClippedSubviews: boolean; maxToRenderPerBatch: number; updateCellsBatchingPeriod: number; initialNumToRender: number; windowSize: number; getItemLayout: undefined; keyExtractor: (item: any, index: number) => any; ... 9 more ...; contentContainerStyle: { ...; }; }' is not assignable to type 'Readonly<FlatListProps<User>>'.
+      Types of property 'decelerationRate' are incompatible.
+        Type 'string' is not assignable to type 'number | "normal" | "fast" | undefined'.
+  Overload 2 of 2, '(props: FlatListProps<User>, context: any): FlatList<User>', gave the following error.
+    Type '{ removeClippedSubviews: boolean; maxToRenderPerBatch: number; updateCellsBatchingPeriod: number; initialNumToRender: number; windowSize: number; getItemLayout: undefined; keyExtractor: (item: any, index: number) => any; ... 9 more ...; contentContainerStyle: { ...; }; }' is not assignable to type 'Readonly<FlatListProps<User>>'.
+      Types of property 'decelerationRate' are incompatible.
+        Type 'string' is not assignable to type 'number | "normal" | "fast" | undefined'.
+src/screens/Home/HomeScreen.tsx(1482,17): error TS2783: 'keyExtractor' is specified more than once, so this usage will be overwritten.
+src/screens/Home/NotificationScreen.tsx(230,29): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Home/NotificationScreen.tsx(372,93): error TS2339: Property 'h4' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/screens/Home/NotificationScreen.tsx(375,95): error TS2339: Property 'body' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/screens/Home/NotificationScreen.tsx(385,96): error TS2339: Property 'h3' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/screens/Home/NotificationScreen.tsx(393,98): error TS2339: Property 'caption' does not exist on type '{ xs: number; sm: number; md: number; lg: number; xl: number; xxl: number; xxxl: number; title: number; header: number; tab: number; }'.
+src/screens/Home/SearchScreen.tsx(14,3): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(22,3): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(23,3): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(173,46): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(185,50): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(242,47): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(251,59): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(288,46): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Leaderboard/StatisticsLeaderboardScreen.tsx(297,57): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/MyMembershipsScreen.tsx(3,26): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Profile/MyMembershipsScreen.tsx(102,60): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/MyMembershipsScreen.tsx(334,10): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowersScreen.tsx(3,51): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Profile/ProfileFollowersScreen.tsx(117,84): error TS7006: Parameter 'userDoc' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowersScreen.tsx(133,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowersScreen.tsx(211,20): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowersScreen.tsx(224,14): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowingScreen.tsx(3,51): error TS2305: Module '"react-native-paper"' has no exported member 'Searchbar'.
+src/screens/Profile/ProfileFollowingScreen.tsx(131,84): error TS7006: Parameter 'userDoc' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowingScreen.tsx(144,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowingScreen.tsx(350,20): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileFollowingScreen.tsx(363,14): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(3,42): error TS2305: Module '"react-native-paper"' has no exported member 'Dialog'.
+src/screens/Profile/ProfileScreen.tsx(3,79): error TS2305: Module '"react-native-paper"' has no exported member 'Menu'.
+src/screens/Profile/ProfileScreen.tsx(161,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(184,26): error TS7006: Parameter 'snap' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(186,42): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(199,39): error TS2339: Property 'FieldPath' does not exist on type 'typeof firestore'.
+src/screens/Profile/ProfileScreen.tsx(202,45): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(218,11): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(276,49): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(289,52): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(478,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(481,20): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(486,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(497,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(500,26): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(518,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(535,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(539,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(543,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(581,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(630,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(649,50): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(654,56): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(658,52): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(659,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(664,19): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(665,16): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(670,50): error TS7006: Parameter 'score' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(692,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(698,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Profile/ProfileScreen.tsx(718,43): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(724,53): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(729,62): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ProfileScreen.tsx(732,53): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(780,29): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/screens/Profile/ProfileScreen.tsx(967,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ProfileScreen.tsx(969,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/screens/Profile/ProfileScreen.tsx(1067,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/StudentEventsListScreen.tsx(71,16): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/screens/Profile/StudentEventsListScreen.tsx(72,20): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/screens/Profile/StudentEventsListScreen.tsx(107,32): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/screens/Profile/ViewProfileScreen.tsx(3,69): error TS2305: Module '"react-native-paper"' has no exported member 'ActivityIndicator'.
+src/screens/Profile/ViewProfileScreen.tsx(99,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ViewProfileScreen.tsx(100,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ViewProfileScreen.tsx(101,20): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/screens/Profile/ViewProfileScreen.tsx(330,23): error TS2339: Property 'Image' does not exist on type 'ComponentType<any>'.
+  Property 'Image' does not exist on type 'ComponentClass<any, any>'.
+src/screens/Profile/ViewProfileScreen.tsx(337,21): error TS2339: Property 'Icon' does not exist on type 'ComponentType<any>'.
+  Property 'Icon' does not exist on type 'ComponentClass<any, any>'.
+src/services/accountDeletionService.ts(12,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/accountDeletionService.ts(13,34): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/services/accountDeletionService.ts(14,37): error TS2339: Property 'storage' does not exist on type 'typeof firebase'.
+src/services/accountDeletionService.ts(179,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(244,43): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(259,43): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(291,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(292,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(312,35): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(334,40): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(356,40): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(378,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(422,52): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(423,35): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(433,65): error TS7006: Parameter 'prefix' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(436,55): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(437,39): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(498,35): error TS2339: Property 'auth' does not exist on type 'typeof firebase'.
+src/services/accountDeletionService.ts(557,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(602,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(619,45): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(636,47): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/accountDeletionService.ts(652,49): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/activityLogger.ts(57,44): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/attendeesMigrationService.ts(7,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/attendeesMigrationService.ts(52,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/attendeesMigrationService.ts(101,75): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/attendeesMigrationService.ts(125,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/backgroundLoadingService.ts(100,50): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/backgroundLoadingService.ts(133,50): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/backgroundLoadingService.ts(166,51): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/backgroundLoadingService.ts(217,58): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/centralizedRankingService.ts(190,22): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/centralizedRankingService.ts(269,26): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/clubDataSyncService.ts(104,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubDataSyncService.ts(180,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubDataSyncService.ts(187,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubDataSyncService.ts(195,32): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/clubDataSyncService.ts(202,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubDataSyncService.ts(211,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/clubDataSyncService.ts(217,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(72,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubFollowSyncService.ts(119,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubFollowSyncService.ts(127,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(128,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(132,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(133,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(220,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubFollowSyncService.ts(228,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(229,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(233,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubFollowSyncService.ts(234,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubMemberStatsService.ts(49,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubMemberStatsService.ts(63,36): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/clubMemberStatsService.ts(184,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubNotificationService.ts(56,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubNotificationService.ts(63,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(21,39): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(53,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(66,31): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(84,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(85,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(93,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(98,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(109,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(113,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(114,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(115,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(125,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(129,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(130,46): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(131,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(141,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(145,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(146,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(156,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(160,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(161,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(162,49): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(163,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(173,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(177,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(178,49): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(179,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(190,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(194,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(195,49): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(196,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(206,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(210,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(211,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(212,49): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(213,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(236,45): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(245,46): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(264,50): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(309,44): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(335,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(339,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(340,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(353,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(357,49): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(358,49): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(359,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(380,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(385,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(400,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(404,49): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(405,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(426,37): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(448,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/clubStatsService.ts(474,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/clubStatsService.ts(478,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/clubStatsService.ts(488,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/comprehensiveDataSyncService.ts(137,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/comprehensiveDataSyncService.ts(144,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/comprehensiveDataSyncService.ts(152,32): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/comprehensiveDataSyncService.ts(158,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/comprehensiveDataSyncService.ts(167,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/comprehensiveDataSyncService.ts(173,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/comprehensiveDataSyncService.ts(182,35): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/comprehensiveDataSyncService.ts(188,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/comprehensiveDataSyncService.ts(207,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/dailyLoginService.ts(10,23): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/dailyLoginService.ts(13,28): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/dailyLoginService.ts(19,24): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/dailyLoginService.ts(205,53): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/dataSynchronizationService.ts(191,43): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/dataSynchronizationService.ts(209,44): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/dataSynchronizationService.ts(227,43): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/dataSynchronizationService.ts(245,51): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/detailedNotificationService.ts(10,32): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/detailedNotificationService.ts(465,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/detailedNotificationService.ts(494,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/detailedNotificationService.ts(523,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/emailValidationService.ts(199,71): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/services/enhancedClubActivityService.ts(36,23): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedClubActivityService.ts(71,24): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedClubActivityService.ts(182,24): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/enhancedClubActivityService.ts(244,27): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedClubActivityService.ts(299,22): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/services/enhancedClubActivityService.ts(302,29): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/enhancedClubActivityService.ts(333,13): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/enhancedClubActivityService.ts(619,40): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedClubActivityService.ts(619,91): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedClubStatsService.ts(54,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/enhancedClubStatsService.ts(133,43): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/services/enhancedClubStatsService.ts(213,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/enhancedClubStatsService.ts(274,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(275,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(276,47): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(289,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(290,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(303,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(304,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(305,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(318,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(319,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(320,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(333,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(334,47): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(347,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(348,47): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(361,47): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(374,47): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(394,12): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/enhancedClubStatsService.ts(403,12): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/enhancedClubStatsService.ts(450,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedClubStatsService.ts(451,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedDataSyncService.ts(31,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/enhancedDataSyncService.ts(196,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/enhancedDataSyncService.ts(209,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/enhancedDataSyncService.ts(223,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/enhancedDataSyncService.ts(237,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/enhancedDataSyncService.ts(257,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/enhancedDataSyncService.ts(270,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/enhancedRealtimeSyncService.ts(39,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/enhancedRealtimeSyncService.ts(103,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedRealtimeSyncService.ts(142,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedRealtimeSyncService.ts(177,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedRealtimeSyncService.ts(197,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/enhancedRealtimeSyncService.ts(210,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/enhancedRealtimeSyncService.ts(224,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/enhancedRealtimeSyncService.ts(238,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/enhancedRealtimeSyncService.ts(259,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/enhancedRealtimeSyncService.ts(260,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedRealtimeSyncService.ts(268,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedRealtimeSyncService.ts(276,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedStatisticsService.ts(42,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/enhancedStatisticsService.ts(112,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedStatisticsService.ts(163,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedStatisticsService.ts(265,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/enhancedStatisticsService.ts(300,8): error TS7006: Parameter 'docSnapshot' implicitly has an 'any' type.
+src/services/enhancedStatisticsService.ts(308,7): error TS2554: Expected 1 arguments, but got 2.
+src/services/enhancedStatisticsService.ts(308,8): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/enhancedUserActivityService.ts(44,23): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedUserActivityService.ts(79,24): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedUserActivityService.ts(160,14): error TS18046: 'docRef' is of type 'unknown'.
+src/services/enhancedUserActivityService.ts(254,27): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/enhancedUserActivityService.ts(291,24): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/enhancedUserActivityService.ts(358,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/services/enhancedUserActivityService.ts(362,28): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/enhancedUserActivityService.ts(394,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/fcmTokenService.ts(7,23): error TS2307: Cannot find module '@react-native-firebase/messaging' or its corresponding type declarations.
+src/services/fcmTokenService.ts(125,39): error TS7006: Parameter 'token' implicitly has an 'any' type.
+src/services/fcmTokenService.ts(137,34): error TS7006: Parameter 'remoteMessage' implicitly has an 'any' type.
+src/services/globalAvatarCacheService.ts(72,38): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/globalAvatarCacheService.ts(191,34): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/globalAvatarCacheService.ts(193,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/globalAvatarCacheService.ts(224,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/globalAvatarCacheService.ts(318,40): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/globalRealtimeSyncService.ts(23,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/globalRealtimeSyncService.ts(85,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(122,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(156,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(190,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(199,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(233,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(242,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(276,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(285,45): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/globalRealtimeSyncService.ts(313,40): error TS2339: Property 'metadata' does not exist on type 'DocumentSnapshot'.
+src/services/globalRealtimeSyncService.ts(325,47): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/hybridPushNotificationService.ts(218,18): error TS18046: 'error' is of type 'unknown'.
+src/services/modernScoringEngine.ts(135,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/modernScoringEngine.ts(319,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(323,61): error TS2339: Property 'add' does not exist on type 'CollectionReference'.
+src/services/modernScoringEngine.ts(346,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/modernScoringEngine.ts(352,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(353,89): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(354,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(362,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(363,89): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(364,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(372,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(373,89): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/modernScoringEngine.ts(374,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/optimizedFirebaseService.ts(51,31): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/optimizedFirebaseService.ts(110,27): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/optimizedFirebaseService.ts(135,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/optimizedFirebaseService.ts(195,25): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/optimizedFirebaseService.ts(219,8): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/services/optimizedFirebaseService.ts(222,8): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realTimeClubScoresService.ts(24,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/realTimeClubScoresService.ts(73,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeClubScoresService.ts(74,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeDataSyncService.ts(224,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/realTimeDataSyncService.ts(493,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(506,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(519,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(532,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(586,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(610,30): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(611,36): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(632,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(651,20): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(676,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(691,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/realTimeDataSyncService.ts(803,14): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeDataSyncService.ts(813,7): error TS2554: Expected 1 arguments, but got 2.
+src/services/realTimeDataSyncService.ts(813,8): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realTimeDataSyncService.ts(834,14): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeDataSyncService.ts(844,7): error TS2554: Expected 1 arguments, but got 2.
+src/services/realTimeDataSyncService.ts(844,8): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realTimeProfileSyncService.ts(32,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/realTimeProfileSyncService.ts(90,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeProfileSyncService.ts(98,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeProfileSyncService.ts(106,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeProfileSyncService.ts(118,34): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeProfileSyncService.ts(132,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeProfileSyncService.ts(146,39): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeProfileSyncService.ts(213,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeProfileSyncService.ts(220,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realTimeProfileSyncService.ts(236,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeProfileSyncService.ts(242,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realTimeStatsSyncService.ts(28,25): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/realTimeStatsSyncService.ts(48,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(84,31): error TS2694: Namespace 'firebase.firestore' has no exported member 'WriteBatch'.
+src/services/realTimeStatsSyncService.ts(94,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(99,35): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(104,52): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(105,48): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(108,55): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(109,51): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(112,61): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(113,57): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(116,55): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(117,52): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(120,60): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(121,56): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(133,31): error TS2694: Namespace 'firebase.firestore' has no exported member 'WriteBatch'.
+src/services/realTimeStatsSyncService.ts(143,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(148,35): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(153,52): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(154,53): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(157,55): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(158,56): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(161,59): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(162,60): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(165,55): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(166,55): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(169,53): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(170,54): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(182,31): error TS2694: Namespace 'firebase.firestore' has no exported member 'WriteBatch'.
+src/services/realTimeStatsSyncService.ts(191,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(196,52): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(199,55): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(202,59): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/realTimeStatsSyncService.ts(223,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realTimeStatsSyncService.ts(240,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realtimeUpdateManager.ts(174,25): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/realtimeUpdateManager.ts(195,10): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/services/realtimeUpdateManager.ts(200,42): error TS7006: Parameter 'change' implicitly has an 'any' type.
+src/services/realtimeUpdateManager.ts(220,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realtimeUpdateManager.ts(253,10): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/realtimeUpdateManager.ts(274,10): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/realtimeUpdateManager.ts(440,88): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/realtimeUpdateManager.ts(460,46): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/SafeNotificationCreator.ts(19,24): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/searchService.ts(160,27): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/searchService.ts(205,27): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/searchService.ts(252,27): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/systemHealthMonitor.ts(53,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/unifiedClubDataManager.ts(27,32): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/unifiedClubDataManager.ts(138,22): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/services/unifiedClubDataManager.ts(140,53): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/unifiedClubDataManager.ts(161,13): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/unifiedClubDataManager.ts(182,22): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/services/unifiedClubDataManager.ts(184,50): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/unifiedClubDataManager.ts(205,13): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/unifiedDataSyncService.ts(120,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/unifiedDataSyncService.ts(260,11): error TS2322: Type 'string' is not assignable to type '"none" | "approved" | "pending" | "rejected"'.
+src/services/unifiedDataSyncService.ts(310,17): error TS2322: Type '"student" | "club"' is not assignable to type '"club"'.
+  Type '"student"' is not assignable to type '"club"'.
+src/services/unifiedDataSyncService.ts(464,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(476,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(488,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(501,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(520,37): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(542,43): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(566,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(579,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(591,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(615,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(624,38): error TS2551: Property 'collectionGroup' does not exist on type 'Firestore'. Did you mean 'collection'?
+src/services/unifiedDataSyncService.ts(639,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(652,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(664,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(676,23): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(691,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(706,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(721,20): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(738,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(752,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/unifiedDataSyncService.ts(766,24): error TS2339: Property 'empty' does not exist on type 'QuerySnapshot'.
+src/services/unifiedNotificationService.ts(24,23): error TS2694: Namespace '"C:/Users/lenovo/Desktop/Universe/node_modules/firebase/compat/index"' has no exported member 'firestore'.
+src/services/unifiedNotificationService.ts(697,37): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/unifiedNotificationService.ts(714,41): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/unifiedNotificationService.ts(732,39): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/unifiedNotificationService.ts(749,41): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/unifiedStatisticsService.ts(41,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/unifiedStatisticsService.ts(63,58): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedStatisticsService.ts(70,40): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedStatisticsService.ts(77,48): error TS2551: Property 'collectionGroup' does not exist on type 'Firestore'. Did you mean 'collection'?
+src/services/unifiedStatisticsService.ts(102,43): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedStatisticsService.ts(202,43): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedStatisticsService.ts(212,34): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/unifiedStatisticsService.ts(231,37): error TS2339: Property 'size' does not exist on type 'QuerySnapshot'.
+src/services/universalProfileSyncService.ts(40,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/universalProfileSyncService.ts(211,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/universalProfileSyncService.ts(226,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/universalProfileSyncService.ts(240,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/universalProfileSyncService.ts(254,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/userFollowSyncService.ts(61,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userFollowSyncService.ts(86,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/userFollowSyncService.ts(87,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(92,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(93,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(100,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(101,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(156,31): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userFollowSyncService.ts(162,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(163,46): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(169,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(170,46): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(222,29): error TS2339: Property 'batch' does not exist on type 'Firestore'.
+src/services/userFollowSyncService.ts(223,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(228,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(229,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(236,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(237,43): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(249,26): error TS2339: Property 'ref' does not exist on type 'DocumentSnapshot'.
+src/services/userFollowSyncService.ts(293,29): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userFollowSyncService.ts(299,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(300,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(306,38): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(307,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userFollowSyncService.ts(530,20): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/userFollowSyncService.ts(542,10): error TS2554: Expected 1 arguments, but got 2.
+src/services/userFollowSyncService.ts(542,11): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/services/usernameValidationService.ts(188,71): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+src/services/userStatsManagement.ts(25,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userStatsManagement.ts(43,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsManagement.ts(58,40): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsManagement.ts(59,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsManagement.ts(60,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsManagement.ts(61,42): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsManagement.ts(97,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsService.ts(33,24): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userStatsService.ts(48,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userStatsService.ts(55,61): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsService.ts(69,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userStatsService.ts(78,24): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/userStatsService.ts(94,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/services/userStatsService.ts(97,41): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/services/userStatsService.ts(136,44): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/theme/index.ts(1,10): error TS2305: Module '"react-native-paper"' has no exported member 'DefaultTheme'.
+src/utils/cleanupTestData.ts(51,40): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/utils/cleanupTestData.ts(73,39): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/utils/comprehensiveErrorHandler.ts(149,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/utils/comprehensiveErrorHandler.ts(154,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/utils/comprehensiveErrorHandler.ts(166,22): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/utils/comprehensiveErrorHandler.ts(171,39): error TS2339: Property 'FieldValue' does not exist on type 'typeof firestore'.
+src/utils/directNotificationCreator.ts(87,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/utils/directNotificationCreator.ts(122,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/utils/fixClubUsernames.ts(11,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/utils/fixClubUsernames.ts(23,28): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/utils/fixClubUsernames.ts(93,42): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/utils/notificationDebugger.ts(17,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/utils/notificationDebugger.ts(27,47): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/utils/notificationDebugger.ts(72,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.
+src/utils/notificationDebugger.ts(100,35): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/utils/notificationDebugger.ts(129,27): error TS2349: This expression is not callable.
+  Type 'typeof firestore' has no call signatures.

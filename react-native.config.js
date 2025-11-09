@@ -4,6 +4,7 @@ module.exports = {
     android: {
       sourceDir: './android',
       appName: 'app',
+      packageName: 'com.universekampus.universeapp2026',
     },
   },
   assets: [

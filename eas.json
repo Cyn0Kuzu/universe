@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 12.0.0"
+    "version": ">= 12.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -27,11 +28,12 @@
     },
     "production": {
       "ios": {
-        "resourceClass": "m1-medium",
-        "autoIncrement": "buildNumber"
+        "resourceClass": "m-medium",
+        "autoIncrement": "buildNumber",
+        "image": "latest"
       },
       "android": {
-        "buildType": "aab",
+        "buildType": "app-bundle",
         "resourceClass": "large",
         "autoIncrement": "versionCode"
       },
@@ -43,9 +45,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "YOUR_APPLE_ID@email.com",
-        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
-        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        "appleId": "cayankuzu.0@gmail.com",
+        "ascAppId": "6754333896",
+        "appleTeamId": "HBRG8P523Z"
       },
       "android": {
         "serviceAccountKeyPath": "./android-service-account.json",

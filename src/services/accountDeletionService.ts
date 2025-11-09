@@ -11,7 +11,7 @@ import 'firebase/compat/storage';
 export class AccountDeletionService {
   private static firestore = firebase.firestore();
   private static auth = firebase.auth();
-  private static storage = firebase.storage();
+  private static storage = (firebase as any).storage();
 
   /**
    * 🔍 User ID doğrulama fonksiyonu

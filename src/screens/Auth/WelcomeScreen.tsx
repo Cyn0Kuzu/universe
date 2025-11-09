@@ -303,7 +303,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           <Animated.View style={{ opacity: titleOpacity }}>
             <Text style={[styles.title, { color: theme.colors.text }]}>UNIVERSE</Text>
             <Text style={[styles.subtitle, { color: theme.colors.placeholder }]}>
-              Üniversite Yaşamınızı Kolaylaştıran Platform
+              ...Üniversite Evreni...
             </Text>
           </Animated.View>
           

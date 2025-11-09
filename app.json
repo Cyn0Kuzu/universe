@@ -2,7 +2,7 @@
   "expo": {
     "name": "universee",
     "slug": "universe-kampus",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "automatic",
@@ -24,9 +24,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.universekampus.app",
-      "buildNumber": "31",
+      "bundleIdentifier": "com.universekampus.universeapp2026",
+      "buildNumber": "42",
       "requireFullScreen": false,
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSCameraUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir.",
         "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
@@ -106,15 +107,19 @@
       "expo-asset"
     ],
     "extra": {
-      "firebaseApiKey": "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc",
+      "firebaseApiKey": "AIzaSyCMnMdxxsoiX83i0CrQF7_gCM5tuTgEs5I",
       "firebaseAuthDomain": "universe-a6f60.firebaseapp.com",
       "firebaseProjectId": "universe-a6f60",
-      "firebaseStorageBucket": "universe-a6f60.appspot.com",
+      "firebaseStorageBucket": "universe-a6f60.firebasestorage.app",
       "firebaseMessagingSenderId": "946853543876",
-      "firebaseAppId": "1:946853543876:android:7a40780d639fa5f763ae91",
+      "firebaseAppIdAndroid": "1:946853543876:android:969ff06b2d211c3263ae91",
+      "firebaseAppIdIos": "1:946853543876:ios:94254d726ecfa6e263ae91",
       "eas": {
         "projectId": "87915ccc-6506-4464-8a60-1573cbc33a76"
       }
+    },
+    "cli": {
+      "appVersionSource": "remote"
     }
   }
 }

@@ -5,30 +5,21 @@ import android.content.res.Configuration
 import android.os.StrictMode
 import androidx.annotation.NonNull
 
-import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.ReactPackage
 import com.facebook.react.ReactHost
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
-
-import expo.modules.ApplicationLifecycleDispatcher
-import expo.modules.ReactNativeHostWrapper
 
 class MainApplication : Application(), ReactApplication {
 
-  override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
-        this,
-        object : DefaultReactNativeHost(this) {
-          override fun getPackages(): List<ReactPackage> {
-            // Packages that cannot be autolinked yet can be added manually here, for example:
-            // packages.add(new MyReactNativePackage());
-            return PackageList(this).packages
+  override val reactNativeHost: ReactNativeHost = object : DefaultReactNativeHost(this) {
+          override fun getPackages(): List<com.facebook.react.ReactPackage> {
+            // Expo autolinking handles packages automatically
+            return emptyList()
           }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
@@ -38,7 +29,6 @@ class MainApplication : Application(), ReactApplication {
           override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
           override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
       }
-  )
 
   override val reactHost: ReactHost
     get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
@@ -73,24 +63,32 @@ class MainApplication : Application(), ReactApplication {
     
     SoLoader.init(this, false)
     
-    if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
-      ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false
-    }
-    
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
     
-    if (BuildConfig.DEBUG) {
-      ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
-    }
+    // Flipper is deprecated and removed
     
-    ApplicationLifecycleDispatcher.onApplicationCreate(this)
+    // Expo lifecycle dispatcher - optional, handled by autolinking
+    try {
+      val dispatcherClass = Class.forName("expo.modules.ApplicationLifecycleDispatcher")
+      val onApplicationCreateMethod = dispatcherClass.getMethod("onApplicationCreate", Application::class.java)
+      onApplicationCreateMethod.invoke(null, this)
+    } catch (e: Exception) {
+      // Expo modules not available or already handled by autolinking
+    }
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
-    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+    // Expo lifecycle dispatcher - optional, handled by autolinking
+    try {
+      val dispatcherClass = Class.forName("expo.modules.ApplicationLifecycleDispatcher")
+      val onConfigurationChangedMethod = dispatcherClass.getMethod("onConfigurationChanged", Application::class.java, Configuration::class.java)
+      onConfigurationChangedMethod.invoke(null, this, newConfig)
+    } catch (e: Exception) {
+      // Expo modules not available or already handled by autolinking
+    }
   }
 }

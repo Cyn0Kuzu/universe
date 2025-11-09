@@ -5,23 +5,27 @@ module.exports = function(api) {
     presets: [
       'babel-preset-expo',
       '@babel/preset-react',
-      '@babel/preset-typescript' // added for TS/TSX support
+      '@babel/preset-typescript'
     ],
     plugins: [
-      '@babel/plugin-syntax-jsx', // added plugin to enable parsing of JSX syntax
-      // Performance optimizations
+      '@babel/plugin-syntax-jsx',
       '@babel/plugin-transform-runtime',
-      '@babel/plugin-proposal-optional-chaining',
-      '@babel/plugin-proposal-nullish-coalescing-operator',
+      ['@babel/plugin-transform-optional-chaining', { loose: true }],
+      ['@babel/plugin-transform-nullish-coalescing-operator', { loose: true }],
+      ['@babel/plugin-transform-class-properties', { loose: true }],
+      ['@babel/plugin-transform-object-rest-spread', { loose: true }],
+      ['@babel/plugin-transform-async-generator-functions', { loose: true }],
+      ['@babel/plugin-transform-numeric-separator', { loose: true }],
+      ['@babel/plugin-transform-optional-catch-binding', { loose: true }],
       // Reanimated plugin MUST be at the end
       'react-native-reanimated/plugin',
     ],
     env: {
       production: {
         plugins: [
-          // Production optimizations
-          '@babel/plugin-transform-react-constant-elements',
-          '@babel/plugin-transform-react-inline-elements',
+          // Production optimizations - temporarily disabled
+          // '@babel/plugin-transform-react-constant-elements',
+          // '@babel/plugin-transform-react-inline-elements',
         ],
       },
       development: {

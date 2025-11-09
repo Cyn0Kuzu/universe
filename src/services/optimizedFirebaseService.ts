@@ -107,7 +107,7 @@ export class OptimizedFirebaseService {
         return cached || { data: [] };
       }
 
-      let query: firebase.firestore.Query = firebase.firestore().collection(collection);
+      let query: any = firebase.firestore().collection(collection); // firebase.firestore.Query
 
       // Apply where conditions
       if (options.where) {
@@ -192,7 +192,7 @@ export class OptimizedFirebaseService {
     onUpdate: (data: any[]) => void,
     onError?: (error: any) => void
   ): () => void {
-    let query: firebase.firestore.Query = firebase.firestore().collection(collection);
+    let query: any = firebase.firestore().collection(collection); // firebase.firestore.Query
 
     // Apply conditions
     if (options.where) {

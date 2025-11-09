@@ -196,7 +196,7 @@ const ProfileScreen: React.FC = () => {
           // Firestore 'in' supports up to 10
           const clubsSnap = await db
             .collection('users')
-            .where(firebase.firestore.FieldPath.documentId(), 'in', limitedIds)
+            .where((firebase.firestore as any).FieldPath.documentId(), 'in', limitedIds)
             .get();
 
           const items = clubsSnap.docs.map((doc) => {

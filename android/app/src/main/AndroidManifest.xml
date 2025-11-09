@@ -17,6 +17,18 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+  
+  <!-- Make hardware features optional to maximize device compatibility -->
+  <!-- Camera is optional - app works without it -->
+  <uses-feature android:name="android.hardware.camera" android:required="false"/>
+  <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+  <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+  <!-- Audio recording is optional - app works without it -->
+  <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+  <!-- Location is optional - app works without GPS -->
+  <uses-feature android:name="android.hardware.location" android:required="false"/>
+  <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+  <uses-feature android:name="android.hardware.location.network" android:required="false"/>
   <queries>
     <intent>
       <action android:name="android.intent.action.VIEW"/>

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
-import { firebase, auth, getUserProfile, checkEmailVerification } from '../firebase';
+// 🛡️ CRITICAL: Lazy load Firebase to prevent native module crashes
+// Firebase imports are loaded asynchronously on first use, not at module load time
 import { refreshUserProfileCounts } from '../firebase/userProfile';
 // Modern scoring system will handle user scoring
 import FirebaseAuthPersistenceManager from '../firebase/authPersistenceManager';
@@ -8,10 +9,65 @@ import { NetworkManager } from '../utils/networkManager';
 import { globalRealtimeSyncService } from '../services/globalRealtimeSyncService';
 import { enhancedRealtimeSyncService } from '../services/enhancedRealtimeSyncService';
 import { universalProfileSyncService } from '../services/universalProfileSyncService';
-import 'firebase/compat/auth';
+// 🛡️ CRITICAL: Don't import firebase/compat/auth at top level - it will be loaded lazily
+
+// Type alias for Firebase User
+type FirebaseUser = any; // Using any to avoid namespace issues
+
+// 🛡️ CRITICAL: Lazy load Firebase modules to prevent native module crashes
+// These helper functions load Firebase modules asynchronously on first use
+const getFirebase = async () => {
+  try {
+    const firebaseModule = require('../firebase');
+    // Ensure Firebase services are initialized
+    const firebaseConfigModule = require('../firebase/config');
+    if (firebaseConfigModule.initializeFirebaseServices) {
+      await firebaseConfigModule.initializeFirebaseServices();
+    }
+    return firebaseModule.firebase;
+  } catch (error: any) {
+    console.error('❌ Firebase lazy load error:', error);
+    throw error;
+  }
+};
+
+const getAuth = async () => {
+  try {
+    const firebaseModule = require('../firebase');
+    // Ensure Firebase services are initialized
+    const firebaseConfigModule = require('../firebase/config');
+    if (firebaseConfigModule.initializeFirebaseServices) {
+      await firebaseConfigModule.initializeFirebaseServices();
+    }
+    return firebaseModule.auth;
+  } catch (error: any) {
+    console.error('❌ Auth lazy load error:', error);
+    throw error;
+  }
+};
+
+const getUserProfileLazy = async (uid: string) => {
+  try {
+    const { getUserProfile } = require('../firebase');
+    return await getUserProfile(uid);
+  } catch (error: any) {
+    console.error('❌ getUserProfile lazy load error:', error);
+    throw error;
+  }
+};
+
+const checkEmailVerificationLazy = async () => {
+  try {
+    const { checkEmailVerification } = require('../firebase');
+    return await checkEmailVerification();
+  } catch (error: any) {
+    console.error('❌ checkEmailVerification lazy load error:', error);
+    throw error;
+  }
+};
 
 interface AuthContextType {
-  currentUser: firebase.User | null;
+  currentUser: FirebaseUser | null;
   userProfile: any | null;
   loading: boolean;
   isEmailVerified: boolean;
@@ -58,7 +114,7 @@ const normalizeProfileDates = (profile: any) => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userProfile, setUserProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
@@ -70,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkVerification = useCallback(async (): Promise<boolean> => {
     if (currentUser) {
       try {
-        const isVerified = await checkEmailVerification();
+        const isVerified = await checkEmailVerificationLazy();
         setIsEmailVerified(isVerified);
         return isVerified;
       } catch (error) {
@@ -84,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshUserProfile = useCallback(async () => {
     if (currentUser?.uid) {
       try {
-  const profile = await getUserProfile(currentUser.uid);
+        const profile = await getUserProfileLazy(currentUser.uid);
         if (profile) {
           const normalizedProfile = normalizeProfileDates(profile);
           setUserProfile(normalizedProfile);
@@ -105,7 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await refreshUserProfileCounts(currentUser.uid);
         
         // Re-fetch the updated profile to get the new counts
-        const updatedProfile = await getUserProfile(currentUser.uid);
+        const updatedProfile = await getUserProfileLazy(currentUser.uid);
         if (updatedProfile) {
           const normalizedProfile = normalizeProfileDates(updatedProfile);
           setUserProfile(normalizedProfile);
@@ -121,6 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Defensive repair: if user has club fields but userType != 'club', fix it
   const ensureCorrectUserType = useCallback(async (uid: string) => {
     try {
+      const firebase = await getFirebase();
       const doc = await firebase.firestore().collection('users').doc(uid).get();
       if (!doc.exists) {
         return;
@@ -150,6 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Only repair if we have STRONG evidence this should be a club AND explicit accountType='club'
       if (looksLikeClub && data.accountType === 'club' && data.userType !== 'club') {
         console.log('🛠️ Repairing misclassified user to club for UID:', uid);
+        const firebase = await getFirebase();
         await firebase.firestore().collection('users').doc(uid).update({
           userType: 'club',
           accountType: 'club'
@@ -286,15 +344,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🚀 Starting enhanced auto sign-in system...');
       
       try {
-        // Network manager'ı başlat (lightweight)
-        NetworkManager.init();
-        
-        // Global real-time synchronization'ı başlat
-        globalRealtimeSyncService.startGlobalSync();
-        
-        // Delay auth operations until after splash screen completes (2+ seconds)
+        // 🛡️ iOS CRASH PREVENTION: Initialize services asynchronously
+        // Use setTimeout to prevent main thread blocking
         setTimeout(async () => {
           try {
+            // Network manager'ı başlat (lightweight, async)
+            try {
+              NetworkManager.init();
+            } catch (networkError: any) {
+              console.warn('⚠️ NetworkManager init error:', networkError);
+            }
+            
+            // Global real-time synchronization'ı başlat (async, non-blocking)
+            try {
+              // Use setTimeout to ensure this doesn't block main thread
+              setTimeout(() => {
+                try {
+                  globalRealtimeSyncService.startGlobalSync();
+                } catch (syncError: any) {
+                  console.warn('⚠️ Global sync start error:', syncError);
+                }
+              }, 100); // Delay to prevent blocking
+            } catch (syncInitError: any) {
+              console.warn('⚠️ Sync service init error:', syncInitError);
+            }
+            
+            // Delay auth operations until after splash screen completes (2+ seconds)
+            setTimeout(async () => {
+              try {
             // Önce SecureStorage'dan kontrol et
             console.log('🔍 DEBUG: Checking SecureStorage for user session...');
             const storedSession = await SecureStorage.getUserSession();
@@ -307,7 +384,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           // Kullanıcıyı her durumda giriş yapmış duruma getir
           try {
-            const currentFirebaseUser = firebase.auth().currentUser;
+            const firebase = await getFirebase();
+            const auth = await getAuth();
+            const currentFirebaseUser = auth.currentUser;
             
             if (currentFirebaseUser && currentFirebaseUser.uid === storedSession.uid) {
               console.log('✅ Firebase user already authenticated and matches stored session');
@@ -320,7 +399,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               if (storedSession.password) {
                 console.log('🔑 Attempting real Firebase sign-in with stored credentials');
                 try {
-                  const userCredential = await firebase.auth().signInWithEmailAndPassword(
+                  const userCredential = await auth.signInWithEmailAndPassword(
                     storedSession.email, 
                     storedSession.password
                   );
@@ -339,7 +418,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     email: storedSession.email,
                     displayName: storedSession.displayName,
                     emailVerified: storedSession.emailVerified,
-                  } as firebase.User;
+                  } as FirebaseUser;
                   
                   setCurrentUser(basicUser);
                   setIsEmailVerified(storedSession.emailVerified);
@@ -353,7 +432,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   email: storedSession.email,
                   displayName: storedSession.displayName,
                   emailVerified: storedSession.emailVerified,
-                } as firebase.User;
+                } as FirebaseUser;
                 
                 setCurrentUser(basicUser);
                 setIsEmailVerified(storedSession.emailVerified);
@@ -367,7 +446,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               email: storedSession.email,
               displayName: storedSession.displayName,
               emailVerified: storedSession.emailVerified,
-            } as firebase.User;
+            } as FirebaseUser;
             
             setCurrentUser(basicUser);
             setIsEmailVerified(storedSession.emailVerified);
@@ -376,7 +455,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Kullanıcı profilini yükle - hata olsa da devam et
           try {
             const profile = await NetworkManager.handleApiCall(
-              () => getUserProfile(storedSession.uid),
+              () => getUserProfileLazy(storedSession.uid),
               { 
                 cacheKey: `profile_${storedSession.uid}`,
                 offlineMessage: 'Profil verisi offline modda yüklenemedi',
@@ -442,6 +521,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               // Firestore'dan gerçek userType'ı almaya çalış
               let inferredUserType: 'student' | 'club' = 'student';
               try {
+                const firebase = await getFirebase();
                 const userDoc = await firebase.firestore().collection('users').doc(persistedUser.uid).get();
                 const data = userDoc.data();
                 if (data?.userType === 'club') inferredUserType = 'club';
@@ -469,13 +549,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
         
-          } catch (error) {
-            console.error('❌ Auto sign-in system failed:', error);
+              } catch (error) {
+                console.error('❌ Auto sign-in system failed:', error);
+              }
+              
+              setLoading(false);
+              authInitialized = true;
+            }, 2500); // Delay auth operations until after splash screen completes (2+ seconds)
+            
+          } catch (innerError: any) {
+            console.error('❌ Inner auth initialization error:', innerError);
           }
-          
-          setLoading(false);
-          authInitialized = true;
-        }, 2500); // Delay auth operations until after splash screen completes (2+ seconds)
+        }, 50); // Small delay to prevent main thread blocking
         
       } catch (error) {
         console.error('❌ Auth initialization failed:', error);
@@ -486,17 +571,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
 
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!authInitialized) return;
+    // 🛡️ CRITICAL: Lazy load auth for onAuthStateChanged
+    const setupAuthListener = async () => {
+      try {
+        const auth = await getAuth();
+        return auth.onAuthStateChanged(async (user) => {
+          if (!authInitialized) return;
 
-      console.log('🔄 Auth state changed:', user ? `User: ${user.email} (UID: ${user.uid})` : 'No user');
+          console.log('🔄 Auth state changed:', user ? `User: ${user.email} (UID: ${user.uid})` : 'No user');
 
-      if (user) {
-        setCurrentUser(user as any);
-        setIsEmailVerified(user.emailVerified);
+          if (user) {
+            setCurrentUser(user as any);
+            setIsEmailVerified(user.emailVerified);
 
-        try {
-          const profile = await getUserProfile(user.uid);
+            try {
+              const profile = await getUserProfileLazy(user.uid);
           if (profile) {
             const normalizedProfile = normalizeProfileDates(profile);
             setUserProfile(normalizedProfile);
@@ -513,10 +602,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsEmailVerified(false);
       }
 
-      setLoading(false);
-    });
+          setLoading(false);
+        });
+      } catch (error: any) {
+        console.error('❌ Auth listener setup error:', error);
+        return () => {}; // Return empty unsubscribe function
+      }
+    };
 
-    return unsubscribe;
+    const unsubscribePromise = setupAuthListener();
+    return () => {
+      unsubscribePromise.then(unsubscribe => unsubscribe()).catch(() => {});
+    };
   }, []);
 
   // Real-time guard: prevent club → student downgrades
@@ -529,33 +626,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!currentUser?.uid) return;
 
     const uid = currentUser.uid;
-    const unsub = firebase.firestore().collection('users').doc(uid).onSnapshot(async (snap) => {
+    // 🛡️ CRITICAL: Lazy load Firebase for real-time listener
+    const setupRealtimeListener = async () => {
       try {
-        if (!snap.exists) return;
-        const data: any = snap.data() || {};
-        
-        // Club account detection based on email domain and explicit account type
-        let userTypeToSet = data.userType || 'student';
-        
-        if (data.accountType === 'club' || data.isClub === true) {
-          // Explicitly marked as club account
-          userTypeToSet = 'club';
-        } else if (data.email && data.email.includes('@club.')) {
-          // Club domain detection
-          userTypeToSet = 'club';
-        } else if (data.clubName || (Array.isArray(data.clubTypes) && data.clubTypes.length > 0)) {
-          // Has club-specific fields
-          userTypeToSet = 'club';
-        }
+        const firebase = await getFirebase();
+        return firebase.firestore().collection('users').doc(uid).onSnapshot(async (snap) => {
+          try {
+            if (!snap.exists) return;
+            const data: any = snap.data() || {};
+            
+            // Club account detection based on email domain and explicit account type
+            let userTypeToSet = data.userType || 'student';
+            
+            if (data.accountType === 'club' || data.isClub === true) {
+              // Explicitly marked as club account
+              userTypeToSet = 'club';
+            } else if (data.email && data.email.includes('@club.')) {
+              // Club domain detection
+              userTypeToSet = 'club';
+            } else if (data.clubName || (Array.isArray(data.clubTypes) && data.clubTypes.length > 0)) {
+              // Has club-specific fields
+              userTypeToSet = 'club';
+            }
 
-        // Update user type if needed
-        if (data.userType !== userTypeToSet) {
-          await firebase.firestore().collection('users').doc(uid).update({
-            userType: userTypeToSet,
-            accountType: userTypeToSet
-          });
-          setUserProfile((prev: any) => prev ? { ...prev, userType: userTypeToSet, accountType: userTypeToSet } : prev);
-        }
+            // Update user type if needed
+            if (data.userType !== userTypeToSet) {
+              const firebase = await getFirebase();
+              await firebase.firestore().collection('users').doc(uid).update({
+                userType: userTypeToSet,
+                accountType: userTypeToSet
+              });
+              setUserProfile((prev: any) => prev ? { ...prev, userType: userTypeToSet, accountType: userTypeToSet } : prev);
+            }
 
         // TEMPORARILY DISABLED - Real-time name repair causing issues
         /*
@@ -618,12 +720,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
         */
-        // End of temporarily disabled real-time name repair
-      } catch (e) {
-        console.warn('Real-time guard failed:', e);
+            // End of temporarily disabled real-time name repair
+          } catch (e) {
+            console.warn('Real-time guard failed:', e);
+          }
+        });
+      } catch (error: any) {
+        console.error('❌ Realtime listener setup error:', error);
+        return () => {}; // Return empty unsubscribe function
       }
+    };
+
+    setupRealtimeListener().then(unsub => {
+      userDocUnsubRef.current = unsub;
+    }).catch(error => {
+      console.error('❌ Realtime listener setup failed:', error);
     });
-    userDocUnsubRef.current = unsub;
 
     return () => {
       if (userDocUnsubRef.current) {
@@ -638,8 +750,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     
     try {
+      const auth = await getAuth();
       const result = await NetworkManager.handleApiCall(
-        () => firebase.auth().signInWithEmailAndPassword(email.trim(), password),
+        () => auth.signInWithEmailAndPassword(email.trim(), password),
         { 
           offlineMessage: 'İnternet bağlantınızı kontrol edin ve tekrar deneyin',
           retryCount: 2
@@ -650,15 +763,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error(result.error);
       }
       
-  const userCredential = result.data;
-  const user = userCredential?.user;
+  const userCredential = result.data as any;
+  const user = userCredential?.user as FirebaseUser | undefined;
       
       if (user) {
         console.log('✅ Firebase sign-in successful');
         
         // Kullanıcı profilini al
         const profileResult = await NetworkManager.handleApiCall(
-          () => getUserProfile(user.uid),
+          () => getUserProfileLazy(user.uid),
           { 
             cacheKey: `profile_${user.uid}`,
             offlineMessage: 'Profil verisi yüklenemedi'
@@ -674,6 +787,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Re-read userType after potential repair to avoid saving stale type in session
         let repairedType: 'student' | 'club' = (userProfile?.userType as any) || 'student';
         try {
+          const firebase = await getFirebase();
           const typeDoc = await firebase.firestore().collection('users').doc(user.uid).get();
           const data: any = typeDoc.data() || {};
           if (data.userType === 'club') repairedType = 'club';

@@ -42,3 +42,6 @@
 ### ✅ 4. iOS Deployment Target
 - iOS 15.1+ olmalı (zaten mevcut)
 
+
+
+

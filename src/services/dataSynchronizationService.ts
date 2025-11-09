@@ -188,7 +188,7 @@ export class DataSynchronizationService {
   /**
    * User data sync
    */
-  private async syncUserData(db: firebase.firestore.Firestore, operation: SyncData): Promise<any> {
+  private async syncUserData(db: any, operation: SyncData): Promise<any> { // firebase.firestore.Firestore
     const { action, data } = operation;
     
     switch (action) {
@@ -206,7 +206,7 @@ export class DataSynchronizationService {
   /**
    * Event data sync
    */
-  private async syncEventData(db: firebase.firestore.Firestore, operation: SyncData): Promise<any> {
+  private async syncEventData(db: any, operation: SyncData): Promise<any> { // firebase.firestore.Firestore
     const { action, data } = operation;
     
     switch (action) {
@@ -224,7 +224,7 @@ export class DataSynchronizationService {
   /**
    * Club data sync
    */
-  private async syncClubData(db: firebase.firestore.Firestore, operation: SyncData): Promise<any> {
+  private async syncClubData(db: any, operation: SyncData): Promise<any> { // firebase.firestore.Firestore
     const { action, data } = operation;
     
     switch (action) {
@@ -242,7 +242,7 @@ export class DataSynchronizationService {
   /**
    * Notification data sync
    */
-  private async syncNotificationData(db: firebase.firestore.Firestore, operation: SyncData): Promise<any> {
+  private async syncNotificationData(db: any, operation: SyncData): Promise<any> { // firebase.firestore.Firestore
     const { action, data } = operation;
     
     switch (action) {

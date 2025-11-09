@@ -33,7 +33,7 @@ export interface ClubActivity {
     newAttendeeCount?: number;
     changeDetails?: any;
   };
-  createdAt: firebase.firestore.Timestamp;
+  createdAt: any; // firebase.firestore.Timestamp
   isHighlighted: boolean;
   isPinned: boolean;
   reactions?: {
@@ -68,7 +68,7 @@ export interface ActivityFilter {
  */
 export class EnhancedClubActivityService {
   private static instance: EnhancedClubActivityService;
-  private db: firebase.firestore.Firestore;
+  private db: any; // firebase.firestore.Firestore
   private cache: Map<string, ClubActivity[]> = new Map();
   private listeners: Map<string, () => void> = new Map();
   private cacheExpiry: Map<string, number> = new Map();
@@ -241,7 +241,7 @@ export class EnhancedClubActivityService {
     filter?: ActivityFilter
   ): Promise<ClubActivity[]> {
     try {
-      let query: firebase.firestore.Query = this.db
+      let query: any = this.db // firebase.firestore.Query
         .collection('activities')
         .where('userId', '==', userId);
 
@@ -616,7 +616,7 @@ export class EnhancedClubActivityService {
     return required.every(field => activity[field as keyof ClubActivity] != null);
   }
 
-  private applyFilters(query: firebase.firestore.Query, filter: ActivityFilter): firebase.firestore.Query {
+  private applyFilters(query: any, filter: ActivityFilter): any { // firebase.firestore.Query
     if (filter.type && filter.type.length > 0) {
       query = query.where('type', 'in', filter.type);
     }

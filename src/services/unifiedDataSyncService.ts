@@ -201,7 +201,7 @@ class UnifiedDataSyncService {
           totalScore,
           isFollowing,
           isMember,
-          membershipStatus
+          membershipStatusResult
         ] = await Promise.all([
           this.getClubMemberCount(clubId),
           this.getClubFollowerCount(clubId),
@@ -212,8 +212,10 @@ class UnifiedDataSyncService {
           this.getClubTotalScore(clubId),
           currentUserId ? this.isUserFollowingClub(currentUserId, clubId) : false,
           currentUserId ? this.isUserMemberOfClub(currentUserId, clubId) : false,
-          currentUserId ? this.getMembershipStatus(currentUserId, clubId) : 'none'
+          currentUserId ? this.getMembershipStatus(currentUserId, clubId) : Promise.resolve('none' as const)
         ]);
+        
+        const membershipStatus: 'none' | 'pending' | 'approved' | 'rejected' = membershipStatusResult || 'none';
         
         const level = this.calculateLevel(totalScore);
         const rank = await this.calculateClubRank(clubId, totalScore);
@@ -291,7 +293,7 @@ class UnifiedDataSyncService {
         
         // Get organizer data
         const organizerId = eventData?.createdBy || eventData?.organizer?.id;
-        let organizer = {
+        let organizer: UnifiedEventData['organizer'] = {
           id: organizerId || '',
           name: 'Bilinmeyen Organizatör',
           avatar: '',
@@ -307,7 +309,7 @@ class UnifiedDataSyncService {
                 id: organizerId,
                 name: organizerData?.displayName || organizerData?.clubName || organizerData?.name || 'Bilinmeyen Organizatör',
                 avatar: organizerData?.profileImage || organizerData?.photoURL || '',
-                type: organizerData?.userType === 'club' ? 'club' : 'student'
+                type: (organizerData?.userType === 'club' ? 'club' : 'student') as 'club' | 'student'
               };
             }
           } catch (error) {
@@ -934,6 +936,32 @@ class UnifiedDataSyncService {
 }
 
 export default UnifiedDataSyncService.getInstance();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

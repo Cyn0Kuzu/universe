@@ -1,0 +1,89 @@
+[1mdiff --git a/app.json b/app.json[m
+[1mindex 68118b5..b033047 100644[m
+[1m--- a/app.json[m
+[1m+++ b/app.json[m
+[36m@@ -1,12 +1,12 @@[m
+ {[m
+   "expo": {[m
+[31m-    "name": "Universe Campus",[m
+[32m+[m[32m    "name": "universee",[m
+     "slug": "universe-kampus",[m
+[31m-    "version": "1.4.0",[m
+[32m+[m[32m    "version": "1.5.0",[m
+     "orientation": "portrait",[m
+     "icon": "./assets/favicon.png",[m
+     "userInterfaceStyle": "automatic",[m
+[31m-    "description": "Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu. Kampüsünüzdeki tüm etkinlikleri takip edin, kulüplere üye olun ve sosyal ağınızı genişletin.",[m
+[32m+[m[32m    "description": "Üniversite Evreni - Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu. Kampüsünüzdeki tüm etkinlikleri takip edin, kulüplere üye olun ve sosyal ağınızı genişletin.",[m
+     "privacy": "public",[m
+     "primaryColor": "#6750A4",[m
+     "splash": {[m
+[36m@@ -25,15 +25,15 @@[m
+     "ios": {[m
+       "supportsTablet": true,[m
+       "bundleIdentifier": "com.universekampus.app",[m
+[31m-      "buildNumber": "2",[m
+[32m+[m[32m      "buildNumber": "31",[m
+       "requireFullScreen": false,[m
+       "infoPlist": {[m
+         "NSCameraUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir.",[m
+         "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",[m
+         "NSLocationWhenInUseUsageDescription": "Yakınızdaki etkinlikleri göstermek için konum bilgisi kullanılır.",[m
+         "NSUserNotificationsUsageDescription": "Etkinlik hatırlatmaları ve önemli duyurular için bildirim izni gereklidir.",[m
+[32m+[m[32m        "NSUserTrackingUsageDescription": "Uygulama kullanıcı verilerini reklam amaçlı takip etmemektedir. Sadece uygulama içi özellikleri kişiselleştirmek için kullanılmaktadır.",[m
+         "UIBackgroundModes": [[m
+[31m-          "background-fetch",[m
+           "remote-notification"[m
+         ][m
+       },[m
+[36m@@ -47,7 +47,7 @@[m
+         "backgroundColor": "#FFFFFF"[m
+       },[m
+       "package": "com.universekampus.universeapp2026",[m
+[31m-        "versionCode": 402,[m
+[32m+[m[32m      "versionCode": 500,[m
+       "permissions": [[m
+         "CAMERA",[m
+         "READ_EXTERNAL_STORAGE",[m
+[36m@@ -70,14 +70,14 @@[m
+           "cameraPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir."[m
+         }[m
+       ],[m
+[31m-        [[m
+[31m-          "expo-notifications",[m
+[31m-          {[m
+[31m-            "icon": "./assets/favicon.png",[m
+[31m-            "color": "#6750A4",[m
+[31m-            "defaultChannel": "default"[m
+[31m-          }[m
+[31m-        ],[m
+[32m+[m[32m      [[m
+[32m+[m[32m        "expo-notifications",[m
+[32m+[m[32m        {[m
+[32m+[m[32m          "icon": "./assets/favicon.png",[m
+[32m+[m[32m          "color": "#6750A4",[m
+[32m+[m[32m          "defaultChannel": "default"[m
+[32m+[m[32m        }[m
+[32m+[m[32m      ],[m
+       [[m
+         "expo-build-properties",[m
+         {[m
+[36m@@ -91,7 +91,7 @@[m
+             "kotlinVersion": "1.9.22"[m
+           },[m
+           "ios": {[m
+[31m-            "deploymentTarget": "13.4"[m
+[32m+[m[32m            "deploymentTarget": "15.1"[m
+           }[m
+         }[m
+       ],[m
+[36m@@ -102,7 +102,8 @@[m
+           "backgroundColor": "#FFFFFF"[m
+         }[m
+       ],[m
+[31m-      "expo-font"[m
+[32m+[m[32m      "expo-font",[m
+[32m+[m[32m      "expo-asset"[m
+     ],[m
+     "extra": {[m
+       "firebaseApiKey": "AIzaSyDcaOq6dViuwHtnBdOoUhuIPGl21_L25Uc",[m
