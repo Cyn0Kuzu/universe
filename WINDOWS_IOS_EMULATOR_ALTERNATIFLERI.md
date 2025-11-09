@@ -165,3 +165,4 @@ Aşağıdaki alternatifler **GERÇEK iOS Simulator DEĞİLDİR** ve sınırlı i
 
 
 
+

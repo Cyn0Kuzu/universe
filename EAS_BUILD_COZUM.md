@@ -112,3 +112,4 @@ eas submit --platform ios --id cd218b0a-a3df-4a5b-9d73-01753f8778ed
 3. **Build Logs:** Son build'in loglarına bakın
 
 
+

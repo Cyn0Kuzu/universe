@@ -177,3 +177,4 @@ Apple'ın review sonucunu bekleyin. Genellikle 24-48 saat içinde sonuç gelir.
 
 
 
+

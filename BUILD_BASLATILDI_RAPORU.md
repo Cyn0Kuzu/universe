@@ -144,3 +144,4 @@ eas build:view [build-id]
 **Detaylı talimatlar:** `BUILD_DURUM_VE_TESTFLIGHT.md`
 
 
+

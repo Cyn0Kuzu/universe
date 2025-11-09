@@ -151,3 +151,4 @@ Liderlik tablosu artık:
 
 
 
+
