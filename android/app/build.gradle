@@ -1,0 +1,442 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
+
+def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
+/**
+ * This is the configuration block to customize your React Native Android app.
+ * By default you don't need to apply any configuration, just uncomment the lines you need.
+ */
+react {
+    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+    reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+
+    // Use Expo CLI to bundle the app
+    cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
+    bundleCommand = "export:embed"
+
+    /* Folders */
+     //   The root of your project, i.e. where "package.json" lives. Default is '../..'
+    // root = file("../../")
+    //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
+    // reactNativeDir = file("../../node_modules/react-native")
+    //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
+    // codegenDir = file("../../node_modules/@react-native/codegen")
+
+    /* Variants */
+    //   The list of variants to that are debuggable. For those we're going to
+    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
+    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
+    // debuggableVariants = ["liteDebug", "prodDebug"]
+
+    /* Bundling */
+    //   A list containing the node command and its flags. Default is just 'node'.
+    // nodeExecutableAndArgs = ["node"]
+
+    //
+    //   The path to the CLI configuration file. Default is empty.
+    // bundleConfig = file(../rn-cli.config.js)
+    //
+    //   The name of the generated asset file containing your JS bundle
+    // bundleAssetName = "MyApplication.android.bundle"
+    //
+    //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
+    // entryFile = file("../js/MyApplication.android.js")
+    //
+    //   A list of extra flags to pass to the 'bundle' commands.
+    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
+    // extraPackagerArgs = []
+
+    /* Hermes Commands */
+    //   The hermes compiler command to run. By default it is 'hermesc'
+    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
+    //
+    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
+    // hermesFlags = ["-O", "-output-source-map"]
+
+    /* Autolinking */
+    autolinkLibrariesWithApp()
+}
+
+/**
+ * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
+ */
+def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInReleaseBuilds') ?: false).toBoolean()
+
+/**
+ * The preferred build flavor of JavaScriptCore (JSC)
+ *
+ * For example, to use the international variant, you can use:
+ * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ *
+ * The international variant includes ICU i18n library and necessary data
+ * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
+ * give correct results when using with locales other than en-US. Note that
+ * this variant is about 6MiB larger per architecture than default.
+ */
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+
+    namespace 'com.universekampus.universeapp20261'
+    defaultConfig {
+        applicationId 'com.universekampus.universeapp20261'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 621
+        versionName "1.5.45"
+    }
+    
+    // Ensure expo-dev-launcher dummy files exist before build
+    afterEvaluate {
+        // Create files immediately and before any task runs
+        def createDummyFiles = {
+            def navFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/navigation_json/release/extractDeepLinksRelease/navigation.json")
+            navFile.parentFile.mkdirs()
+            navFile.text = '[]'
+            
+            def manifestFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml")
+            manifestFile.parentFile.mkdirs()
+            manifestFile.text = '<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" package="expo.modules.devlauncher"></manifest>'
+            
+            def aarFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties")
+            aarFile.parentFile.mkdirs()
+            aarFile.text = """aarFormatVersion=1.0
+aarMetadataVersion=1.0
+minCompileSdk=24
+minCompileSdkExtension=0
+minAndroidGradlePluginVersion=1.0.0
+coreLibraryDesugaringEnabled=false
+"""
+        }
+        
+        // Create files before preBuild (en erken aşama)
+        tasks.matching { it.name == 'preBuild' || it.name == 'preReleaseBuild' }.all { task ->
+            task.doFirst createDummyFiles
+        }
+        
+        // Create files before extractDeepLinksRelease
+        tasks.matching { it.name == 'extractDeepLinksRelease' }.all { task ->
+            task.doFirst createDummyFiles
+        }
+        
+        // Create files before processReleaseMainManifest
+        tasks.matching { it.name == 'processReleaseMainManifest' }.all { task ->
+            task.doFirst createDummyFiles
+        }
+        
+        // Create files before checkReleaseAarMetadata
+        tasks.matching { it.name == 'checkReleaseAarMetadata' }.all { task ->
+            task.doFirst createDummyFiles
+        }
+        
+        // Create immediately
+        createDummyFiles()
+    }
+    
+    // Manifest merger yapılandırması - expo-dev-launcher manifest'ini garanti altına al
+    afterEvaluate {
+        tasks.matching { it.name == 'processReleaseMainManifest' }.all { task ->
+            task.doFirst {
+                def manifestFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml")
+                manifestFile.parentFile.mkdirs()
+                if (!manifestFile.exists()) {
+                    manifestFile.text = '<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" package="expo.modules.devlauncher"></manifest>'
+                }
+            }
+        }
+        
+        // Disable checkReleaseAarMetadata for expo-dev-launcher to avoid missing file errors
+        tasks.matching { it.name == 'checkReleaseAarMetadata' }.all { task ->
+            task.doFirst {
+                def aarFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties")
+                aarFile.parentFile.mkdirs()
+                if (!aarFile.exists()) {
+                    aarFile.text = """aarFormatVersion=1.0
+aarMetadataVersion=1.0
+minCompileSdk=24
+minCompileSdkExtension=0
+minAndroidGradlePluginVersion=1.0.0
+coreLibraryDesugaringEnabled=false
+"""
+                }
+            }
+            // Skip checking expo-dev-launcher aar metadata
+            task.onlyIf { 
+                !task.inputs.files.files.any { it.path.contains('expo-dev-launcher') }
+            }
+        }
+    }
+
+    afterEvaluate {
+        tasks.matching { it.name == 'copyReactNativeVectorIconFonts' }.all { task ->
+            task.doNotTrackState("Workaround for OneDrive placeholders causing snapshot failures")
+        }
+    }
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+        release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
+            shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
+        }
+    }
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+        }
+    }
+    androidResources {
+        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+    }
+}
+
+// Apply static values from `gradle.properties` to the `android.packagingOptions`
+// Accepts values in comma delimited lists, example:
+// android.packagingOptions.pickFirsts=/LICENSE,**/picasa.ini
+["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
+    // Split option: 'foo,bar' -> ['foo', 'bar']
+    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",");
+    // Trim all elements in place.
+    for (i in 0..<options.size()) options[i] = options[i].trim();
+    // `[] - ""` is essentially `[""].filter(Boolean)` removing all empty strings.
+    options -= ""
+
+    if (options.length > 0) {
+        println "android.packagingOptions.$prop += $options ($options.length)"
+        // Ex: android.packagingOptions.pickFirsts += '**/SCCS/**'
+        options.each {
+            android.packagingOptions[prop] += it
+        }
+    }
+}
+
+// Skip react-native-reanimated native build tasks completely
+// Reanimated native build is disabled to avoid NDK/C++ compilation issues
+// JS animations will still work through the JavaScript runtime
+afterEvaluate {
+    // Disable all Reanimated CMake/native build tasks
+    try {
+        def reanimatedProject = project(':react-native-reanimated')
+        reanimatedProject.tasks.all { task ->
+            if (task.name.contains('buildCMake') || 
+                task.name.contains('configureCMake') || 
+                task.name.contains('packageNdkLibs') ||
+                task.name.contains('CMake') ||
+                task.name.contains('cxx') ||
+                task.name.contains('CMake')) {
+                task.enabled = false
+                task.onlyIf { false }
+                task.dependsOn.clear()
+            }
+        }
+    } catch (Exception e) {
+        // Ignore if project doesn't exist
+        println("Warning: Could not disable Reanimated tasks: ${e.message}")
+    }
+    
+    // Skip expo-dev-launcher tasks for release builds to avoid Kotlin version conflicts
+    try {
+        def devLauncherProject = project(':expo-dev-launcher')
+        devLauncherProject.tasks.all { task ->
+            if (task.name.contains('compileReleaseKotlin') || 
+                task.name.contains('compileReleaseJava') ||
+                task.name.contains('bundleRelease') ||
+                task.name.contains('Release')) {
+                task.enabled = false
+                task.onlyIf { false }
+                task.dependsOn.clear()
+            }
+        }
+    } catch (Exception e) {
+        // Ignore if project doesn't exist
+        println("Warning: Could not disable expo-dev-launcher tasks: ${e.message}")
+    }
+}
+
+gradle.projectsEvaluated {
+    // Also disable at projectsEvaluated stage
+    try {
+        project(':react-native-reanimated').tasks.matching { task ->
+            task.name.contains('buildCMake') || task.name.contains('configureCMake') || task.name.contains('packageNdkLibs')
+        }.each { task ->
+            task.enabled = false
+            task.onlyIf { false }
+        }
+    } catch (Exception e) {
+        // Ignore if project doesn't exist
+    }
+    
+    // Skip expo-dev-launcher tasks for release builds to avoid Kotlin version conflicts
+    try {
+        def devLauncherProject = project(':expo-dev-launcher')
+        
+        // Clean task'ını devre dışı bırak (dosyaların silinmesini önle)
+        devLauncherProject.tasks.matching { it.name == 'clean' }.all { task ->
+            task.enabled = false
+            task.onlyIf { false }
+        }
+        
+        // Disable all release tasks EXCEPT processReleaseManifest and extractDeepLinksRelease (we need their outputs)
+        devLauncherProject.tasks.matching { task ->
+            (task.name.contains('Release') || 
+            task.name.contains('release') ||
+            task.name.contains('compileRelease') ||
+            task.name.contains('bundleRelease') ||
+            task.name.contains('packageRelease') ||
+            task.name.contains('writeReleaseAarMetadata')) &&
+            !task.name.contains('processReleaseManifest') &&
+            !task.name.contains('extractDeepLinksRelease')
+        }.each { task ->
+            task.enabled = false
+            task.onlyIf { false }
+        }
+        
+        // Create dummy outputs for required tasks - ensure files exist before build
+        def navFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/navigation_json/release/extractDeepLinksRelease/navigation.json")
+        navFile.parentFile.mkdirs()
+        navFile.text = '[]'
+        
+        def manifestFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml")
+        manifestFile.parentFile.mkdirs()
+        manifestFile.text = '<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" package="expo.modules.devlauncher"></manifest>'
+        
+        // For extractDeepLinksRelease, just create the output file
+        def extractTask = devLauncherProject.tasks.findByName('extractDeepLinksRelease')
+        if (extractTask) {
+            extractTask.enabled = true
+            extractTask.dependsOn.clear()
+            // Set output file
+            extractTask.outputs.file(navFile)
+            // Clear all actions and replace with file creation
+            extractTask.actions.clear()
+            extractTask.doLast {
+                navFile.parentFile.mkdirs()
+                navFile.text = '[]'
+            }
+        }
+        
+        // For processReleaseManifest, ensure output file exists and task dependencies are minimal
+        def processTask = devLauncherProject.tasks.findByName('processReleaseManifest')
+        if (processTask) {
+            processTask.enabled = true
+            // Remove all dependencies that might fail
+            processTask.dependsOn.clear()
+            // Set output file
+            processTask.outputs.file(manifestFile)
+            // Clear all actions and replace with file creation
+            processTask.actions.clear()
+            processTask.doLast {
+                // Ensure file exists
+                manifestFile.parentFile.mkdirs()
+                manifestFile.text = '<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" package="expo.modules.devlauncher"></manifest>'
+            }
+        }
+        
+        def aarFile = new File(project.rootDir, "node_modules/expo-dev-launcher/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties")
+        aarFile.parentFile.mkdirs()
+        aarFile.text = """aarFormatVersion=1.0
+aarMetadataVersion=1.0
+minCompileSdk=24
+minCompileSdkExtension=0
+minAndroidGradlePluginVersion=1.0.0
+coreLibraryDesugaringEnabled=false
+"""
+        
+        // For writeReleaseAarMetadata, just create the output file
+        def aarTask = devLauncherProject.tasks.findByName('writeReleaseAarMetadata')
+        if (aarTask) {
+            aarTask.enabled = true
+            aarTask.dependsOn.clear()
+            aarTask.outputs.file(aarFile)
+            aarTask.actions.clear()
+            aarTask.doLast {
+                aarFile.parentFile.mkdirs()
+                aarFile.text = """aarFormatVersion=1.0
+aarMetadataVersion=1.0
+minCompileSdk=24
+minCompileSdkExtension=0
+minAndroidGradlePluginVersion=1.0.0
+coreLibraryDesugaringEnabled=false
+"""
+            }
+        }
+    } catch (Exception e) {
+        // Ignore if project doesn't exist
+        println("Warning: Could not disable expo-dev-launcher tasks: ${e.message}")
+    }
+}
+
+configurations.all {
+    exclude group: 'expo.modules', module: 'expo-dev-launcher'
+    exclude group: 'com.facebook.react', module: 'expo-dev-launcher'
+}
+
+dependencies {
+    // Force Kotlin stdlib version to match Kotlin compiler version (1.9.25)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.25")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.25")
+    
+    // The version of react-native is set by the React Native Gradle Plugin
+    implementation("com.facebook.react:react-android")
+
+    def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
+    def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
+    def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
+
+    if (isGifEnabled) {
+        // For animated gif support
+        implementation("com.facebook.fresco:animated-gif:${reactAndroidLibs.versions.fresco.get()}")
+    }
+
+    if (isWebpEnabled) {
+        // For webp support
+        implementation("com.facebook.fresco:webpsupport:${reactAndroidLibs.versions.fresco.get()}")
+        if (isWebpAnimatedEnabled) {
+            // Animated webp support
+            implementation("com.facebook.fresco:animated-webp:${reactAndroidLibs.versions.fresco.get()}")
+        }
+    }
+
+    if (hermesEnabled.toBoolean()) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        implementation jscFlavor
+    }
+}
+
+// Ensure vector icon fonts are bundled automatically
+def vectorIconsFonts = file("../../node_modules/react-native-vector-icons/fonts.gradle")
+if (vectorIconsFonts.exists()) {
+    apply from: vectorIconsFonts
+} else {
+    println("Warning: Vector icons fonts.gradle not found at ${vectorIconsFonts}")
+}

@@ -1,0 +1,113 @@
+{
+  "expo": {
+    "name": "universee",
+    "slug": "universe-kampus",
+        "version": "1.5.45",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "description": "Üniversite Evreni - Üniversite öğrencileri için kampüs yaşamını keşfetme, kulüplere katılma ve etkinliklere katılma platformu. Kampüsünüzdeki tüm etkinlikleri takip edin, kulüplere üye olun ve sosyal ağınızı genişletin.",
+    "privacy": "public",
+    "primaryColor": "#6750A4",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "jsEngine": "jsc",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.universekampus.universeapp20261",
+          "buildNumber": "621",
+      "requireFullScreen": false,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir.",
+        "NSPhotoLibraryUsageDescription": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
+        "NSLocationWhenInUseUsageDescription": "Yakınızdaki etkinlikleri göstermek için konum bilgisi kullanılır.",
+        "NSUserNotificationsUsageDescription": "Etkinlik hatırlatmaları ve önemli duyurular için bildirim izni gereklidir.",
+        "NSUserTrackingUsageDescription": "Uygulama kullanıcı verilerini reklam amaçlı takip etmemektedir. Sadece uygulama içi özellikleri kişiselleştirmek için kullanılmaktadır.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.universekampus.universeapp20261",
+          "versionCode": 621,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
+      "useNextNotificationsApi": true
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için fotoğraf kütüphanesi erişimi gereklidir.",
+          "cameraPermission": "Profil fotoğrafı ve etkinlik fotoğrafları için kamera erişimi gereklidir."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/compact_icon.png",
+          "color": "#6750A4",
+          "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "minifyEnabled": true,
+            "shrinkResources": true,
+            "enableProguardInReleaseBuilds": true,
+            "kotlinVersion": "1.9.22"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      "expo-font",
+      "expo-asset"
+    ],
+    "extra": {
+      "firebaseApiKey": "AIzaSyCMnMdxxsoiX83i0CrQF7_gCM5tuTgEs5I",
+      "firebaseAuthDomain": "universe-a6f60.firebaseapp.com",
+      "firebaseProjectId": "universe-a6f60",
+      "firebaseStorageBucket": "universe-a6f60.firebasestorage.app",
+      "firebaseMessagingSenderId": "946853543876",
+      "firebaseAppIdAndroid": "1:946853543876:android:969ff06b2d211c3263ae91",
+      "firebaseAppIdIos": "1:946853543876:ios:94254d726ecfa6e263ae91",
+      "eas": {
+        "projectId": "87915ccc-6506-4464-8a60-1573cbc33a76"
+      }
+    },
+    "cli": {
+      "appVersionSource": "remote"
+    }
+  }
+}

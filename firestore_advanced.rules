@@ -1,0 +1,344 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================================================
+    // ULTRA ADVANCED HELPER FUNCTIONS - ENTERPRISE LEVEL SECURITY
+    // ============================================================================
+    
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
+    }
+    
+    function isClubAdmin(clubId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(clubId)) &&
+             get(/databases/$(database)/documents/users/$(clubId)).data.userType == 'club' &&
+             (get(/databases/$(database)/documents/users/$(clubId)).data.adminIds.hasAny([request.auth.uid]) ||
+              get(/databases/$(database)/documents/users/$(clubId)).data.leaderId == request.auth.uid);
+    }
+    
+    function isClubMember(clubId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(clubId)) &&
+             get(/databases/$(database)/documents/users/$(clubId)).data.userType == 'club' &&
+             get(/databases/$(database)/documents/users/$(clubId)).data.memberIds.hasAny([request.auth.uid]);
+    }
+    
+    function isClubOwner(clubId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(clubId)) &&
+             get(/databases/$(database)/documents/users/$(clubId)).data.userType == 'club' &&
+             get(/databases/$(database)/documents/users/$(clubId)).data.leaderId == request.auth.uid;
+    }
+    
+    function isEventCreator(eventId) {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/events/$(eventId)) &&
+             get(/databases/$(database)/documents/events/$(eventId)).data.creatorId == request.auth.uid;
+    }
+    
+    function hasValidUserData() {
+      return request.resource.data.keys().hasAll(['email', 'name', 'userType']) &&
+             request.resource.data.userType in ['student', 'club'] &&
+             request.resource.data.email is string &&
+             request.resource.data.name is string;
+    }
+    
+    function hasValidEventData() {
+      return request.resource.data.keys().hasAll(['title', 'description', 'creatorId', 'timestamp']) &&
+             request.resource.data.title is string &&
+             request.resource.data.description is string &&
+             request.resource.data.creatorId == request.auth.uid;
+    }
+    
+    function canModifyClub(clubId) {
+      return isAdmin() || isClubOwner(clubId) || isClubAdmin(clubId);
+    }
+    
+    function canAccessEvent(eventId) {
+      return isAuthenticated() && 
+             (isAdmin() || 
+              isEventCreator(eventId) ||
+              exists(/databases/$(database)/documents/events/$(eventId)));
+    }
+    
+    function isValidInteraction() {
+      return request.resource.data.userId == request.auth.uid &&
+             request.resource.data.timestamp is timestamp;
+    }
+    
+    // ============================================================================
+    // USER COLLECTION - ENTERPRISE SECURITY
+    // ============================================================================
+    
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && hasValidUserData();
+      allow update: if isOwner(userId) || isAdmin() || 
+                      (isAuthenticated() && 
+                       request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['following', 'followingCount', 'followers', 'followerCount', 'memberClubs', 'followedClubs']));
+      allow delete: if isOwner(userId) || isAdmin();
+      
+      // User Social Features
+      match /likes/{likeId} {
+        allow read, write: if isAuthenticated();
+      }
+      
+      match /followers/{followerId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isAuthenticated();
+      }
+      
+      match /following/{followingId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isAuthenticated();
+      }
+      
+      match /notifications/{notificationId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      
+      match /memberClubs/{clubId} {
+        allow read: if isAuthenticated();
+        allow write: if isOwner(userId) || canModifyClub(clubId);
+      }
+      
+      match /followedClubs/{clubId} {
+        allow read: if isAuthenticated();
+        allow write: if isOwner(userId);
+      }
+    }
+    
+    // ============================================================================
+    // EVENTS COLLECTION - ULTRA ADVANCED SECURITY
+    // ============================================================================
+    
+    match /events/{eventId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && hasValidEventData();
+      allow update: if isEventCreator(eventId) || isAdmin();
+      allow delete: if isEventCreator(eventId) || isAdmin();
+      
+      // Event Comments Subcollection
+      match /comments/{commentId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && 
+                         request.resource.data.userId == request.auth.uid &&
+                         request.resource.data.content is string &&
+                         request.resource.data.content.size() > 0 &&
+                         request.resource.data.content.size() <= 1000;
+        allow update: if isAuthenticated() && 
+                         resource.data.userId == request.auth.uid;
+        allow delete: if isAuthenticated() && 
+                         (resource.data.userId == request.auth.uid || 
+                          isEventCreator(eventId) || 
+                          isAdmin());
+      }
+      
+      // Event Likes Subcollection
+      match /likes/{likeId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && isValidInteraction();
+        allow delete: if isAuthenticated() && 
+                         resource.data.userId == request.auth.uid;
+      }
+      
+      // Event Participants Subcollection
+      match /participants/{participantId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && isValidInteraction();
+        allow delete: if isAuthenticated() && 
+                         resource.data.userId == request.auth.uid;
+      }
+    }
+    
+    // ============================================================================
+    // STANDALONE SOCIAL COLLECTIONS - PROFESSIONAL LEVEL
+    // ============================================================================
+    
+    // Event Likes Collection
+    match /eventLikes/{likeId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.eventId is string &&
+                       exists(/databases/$(database)/documents/events/$(request.resource.data.eventId));
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+    }
+    
+    // Event Comments Collection
+    match /eventComments/{commentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.eventId is string &&
+                       request.resource.data.content is string &&
+                       request.resource.data.content.size() > 0 &&
+                       request.resource.data.content.size() <= 1000 &&
+                       exists(/databases/$(database)/documents/events/$(request.resource.data.eventId));
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+    }
+    
+    // Event Participants Collection
+    match /eventParticipants/{participantId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.eventId is string &&
+                       exists(/databases/$(database)/documents/events/$(request.resource.data.eventId));
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+    }
+    
+    // User Follows Collection
+    match /userFollows/{followId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       request.resource.data.followerId == request.auth.uid &&
+                       request.resource.data.followedId is string &&
+                       request.resource.data.followerId != request.resource.data.followedId;
+      allow delete: if isAuthenticated() && 
+                       resource.data.followerId == request.auth.uid;
+    }
+    
+    // Club Memberships Collection
+    match /clubMemberships/{membershipId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.clubId is string &&
+                       request.resource.data.role in ['member', 'moderator', 'admin'];
+      allow update: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || 
+                        canModifyClub(resource.data.clubId));
+      allow delete: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || 
+                        canModifyClub(resource.data.clubId));
+    }
+    
+    // ============================================================================
+    // CLUB STATISTICS AND ANALYTICS - ENTERPRISE LEVEL
+    // ============================================================================
+    
+    match /clubStats/{clubId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       (canModifyClub(clubId) || isAdmin());
+      allow update: if isAuthenticated() && 
+                       (canModifyClub(clubId) || isAdmin()) &&
+                       // Ensure non-negative values
+                       request.resource.data.get('totalEvents', 0) >= 0 &&
+                       request.resource.data.get('totalMembers', 0) >= 0 &&
+                       request.resource.data.get('totalLikes', 0) >= 0 &&
+                       request.resource.data.get('totalComments', 0) >= 0;
+      allow delete: if isAdmin();
+    }
+    
+    match /userStats/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && 
+                       (isOwner(userId) || isAdmin()) &&
+                       request.resource.data.get('totalPoints', 0) >= 0 &&
+                       request.resource.data.get('level', 1) >= 1;
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================================
+    // ACTIVITY AND NOTIFICATION SYSTEMS
+    // ============================================================================
+    
+    match /clubActivities/{activityId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || 
+                        canModifyClub(resource.data.clubId) || 
+                        isAdmin());
+      allow delete: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || 
+                        canModifyClub(resource.data.clubId) || 
+                        isAdmin());
+    }
+    
+    match /userActivities/{activityId} {
+      allow read: if isAuthenticated() && 
+                     (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if false; // Activities are immutable
+      allow delete: if isAdmin();
+    }
+    
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && 
+                     (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+    }
+    
+    // ============================================================================
+    // SCORING AND ANALYTICS SYSTEMS
+    // ============================================================================
+    
+    match /scoringAnalytics/{analyticsId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    match /leaderboard/{leaderboardId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================================
+    // SYSTEM COLLECTIONS
+    // ============================================================================
+    
+    match /systemSettings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    match /appMetrics/{metricId} {
+      allow read: if isAdmin();
+      allow write: if isAuthenticated();
+    }
+    
+    // ============================================================================
+    // FALLBACK RULE - AUTHENTICATED ACCESS FOR UNLISTED COLLECTIONS
+    // ============================================================================
+    
+    match /{collection}/{document} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    match /{collection}/{document}/{subcollection}/{subdocument} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "strict": false,
+    "noEmit": true,
+    "jsx": "react-native",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": false,
+    "module": "esnext",
+    "target": "es2017",
+    "lib": [
+      "es2017",
+      "es2018",
+      "es2019",
+      "es2020",
+      "dom"
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "App.tsx",
+    "app.config.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/tests/**/*"
+  ],
+  "extends": "expo/tsconfig.base"
+}
