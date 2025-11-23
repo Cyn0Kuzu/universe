@@ -35,26 +35,45 @@ target 'UniverseCampus' do
         config.build_settings['DEFINES_MODULE'] = 'YES'
         config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
         
-        # Fix minimum deployment target
+        # Fix minimum deployment target for all pods
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
         
-        # Fix for Firebase specific issues
-        if target.name.include?('Firebase') || target.name.include?('Google')
-          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-        end
-        
-        # Fix for React Native 0.76+ compatibility
+        # Fix for React Native 0.76+ and Expo SDK 52 compatibility
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_NO_CONFIG=1'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_MOBILE=1'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_LIBCPP=1'
+        
+        # Fix for Firebase specific issues
+        if target.name.include?('Firebase') || target.name.include?('Google')
+          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+          config.build_settings['SWIFT_VERSION'] = '5.0'
+        end
+        
+        # Fix for Expo modules
+        if target.name.include?('Expo') || target.name.include?('expo')
+          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        end
         
         # Fix warnings
         config.build_settings['WARNING_CFLAGS'] ||= ['$(inherited)']
         config.build_settings['WARNING_CFLAGS'] << '-Wno-shorten-64-to-32'
         config.build_settings['WARNING_CFLAGS'] << '-Wno-comma'
         config.build_settings['WARNING_CFLAGS'] << '-Wno-unreachable-code'
+        config.build_settings['WARNING_CFLAGS'] << '-Wno-deprecated-declarations'
+        
+        # Fix bitcode (deprecated but some pods still require it)
+        config.build_settings['ENABLE_BITCODE'] = 'NO'
+        
+        # Fix for Xcode 15+ compatibility
+        config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
       end
+    end
+    
+    # Fix for CocoaPods 1.15+ compatibility
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
     end
   end
 end
