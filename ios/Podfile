@@ -35,10 +35,25 @@ target 'UniverseCampus' do
         config.build_settings['DEFINES_MODULE'] = 'YES'
         config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
         
+        # Fix minimum deployment target
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+        
         # Fix for Firebase specific issues
         if target.name.include?('Firebase') || target.name.include?('Google')
           config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
         end
+        
+        # Fix for React Native 0.76+ compatibility
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_NO_CONFIG=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_MOBILE=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_LIBCPP=1'
+        
+        # Fix warnings
+        config.build_settings['WARNING_CFLAGS'] ||= ['$(inherited)']
+        config.build_settings['WARNING_CFLAGS'] << '-Wno-shorten-64-to-32'
+        config.build_settings['WARNING_CFLAGS'] << '-Wno-comma'
+        config.build_settings['WARNING_CFLAGS'] << '-Wno-unreachable-code'
       end
     end
   end
