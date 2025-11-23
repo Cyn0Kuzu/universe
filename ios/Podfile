@@ -7,14 +7,19 @@ prepare_react_native_project!
 # Enable modular headers globally for Firebase
 use_modular_headers!
 
-# Pre-install hook to update CocoaPods repo
-pre_install do |installer|
-  # Update CocoaPods repo to ensure latest specs
-  system('pod repo update trunk || true')
-end
-
 target 'UniverseCampus' do
   config = use_native_modules!
+
+  expo_modules_config = {}
+  if ENV['NODE_ENV'] == 'production'
+    expo_modules_config[:exclude] = [
+      'expo-dev-client',
+      'expo-dev-menu',
+      'expo-dev-menu-interface',
+      'expo-dev-launcher'
+    ]
+  end
+  use_expo_modules!(expo_modules_config)
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -33,16 +38,6 @@ target 'UniverseCampus' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    
-    # Remove expo-dev-* modules from production builds
-    # These should only be included in development builds
-    if ENV['NODE_ENV'] == 'production'
-      installer.pods_project.targets.each do |target|
-        if target.name.include?('expo-dev-launcher') || target.name.include?('expo-dev-menu') || target.name.include?('expo-dev-menu-interface')
-          target.remove_from_project
-        end
-      end
-    end
     
     # Fix for Firebase Swift pods - Force modular headers
     installer.pods_project.targets.each do |target|
