@@ -15,12 +15,6 @@ end
 
 target 'UniverseCampus' do
   config = use_native_modules!
-  
-  # Explicitly add expo-dev-menu if expo-dev-launcher is present
-  # This fixes the "Unable to find a specification for expo-dev-menu" error
-  if File.exist?('../node_modules/expo-dev-menu')
-    pod 'expo-dev-menu', :path => '../node_modules/expo-dev-menu', :modular_headers => true
-  end
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -39,6 +33,16 @@ target 'UniverseCampus' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+    
+    # Remove expo-dev-* modules from production builds
+    # These should only be included in development builds
+    if ENV['NODE_ENV'] == 'production'
+      installer.pods_project.targets.each do |target|
+        if target.name.include?('expo-dev-launcher') || target.name.include?('expo-dev-menu') || target.name.include?('expo-dev-menu-interface')
+          target.remove_from_project
+        end
+      end
+    end
     
     # Fix for Firebase Swift pods - Force modular headers
     installer.pods_project.targets.each do |target|
