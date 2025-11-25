@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universe Kampüs - Politika ve Kullanım Şartları</title>
+<title>Universe Kampüs - Politika ve Kullanım Şartları</title>
     <style>
         * {
             margin: 0;
@@ -129,20 +129,91 @@
             margin-bottom: 15px;
         }
         
-        .permission-link {
+        .section-tag {
             display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            background: rgba(102, 126, 234, 0.12);
+            color: #4b5fc4;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
         
-        .permission-link:hover {
-            background: #5a6fd8;
-            transform: translateY(-2px);
+        .info-block {
+            background: #eef1ff;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #e1f5fe;
+            color: #0277bd;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            margin-right: 8px;
+        }
+        
+        .list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .list-grid ul {
+            list-style: none;
+            padding-left: 0;
+            color: #566573;
+        }
+        
+        .list-grid li {
+            margin-bottom: 10px;
+            padding-left: 18px;
+            position: relative;
+        }
+        
+        .list-grid li::before {
+            content: "•";
+            color: #667eea;
+            position: absolute;
+            left: 0;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .data-table th, .data-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+            color: #53606b;
+        }
+        
+        .data-table th {
+            background: #f3f5ff;
+            color: #2c3e50;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .contact-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #edf0ff;
         }
         
         .footer {
@@ -199,49 +270,49 @@
     <div class="container">
         <div class="header">
             <h1>🌌 Universe Kampüs</h1>
-            <p>Politikalar ve Kullanım Şartları</p>
+            <p>Politikalar, yasal belgeler ve mağaza onay gereksinimleri</p>
             
             <div class="last-updated">
-                <strong>Son Güncelleme:</strong> 10 Ekim 2025<br>
-                Bu sayfada Universe Kampüs uygulamasının tüm yasal belgeleri ve politikaları yer almaktadır.
+                <strong>Son Güncelleme:</strong> 25 Kasım 2025<br>
+                Universe Campus uygulamasının (iOS 1.5.47 / Android 1.5.47, sürüm kodu 105047) resmi politika portalı.
             </div>
         </div>
         
         <div class="content">
             <h2 style="color: #2c3e50; margin-bottom: 20px;">📋 Politika ve Belgeler</h2>
-            
+            <p>Bu sayfa App Store 1.2 (Safety), 2.3.3 (Accurate Metadata) ve 5.1.2 (Privacy) gereksinimlerini karşılamak için hazırlanmış olup uygulamadaki gerçek özelliklere göre düzenli olarak güncellenir.</p>
             <div class="policies-grid">
                 <a href="https://cyn0kuzu.github.io/Universee/foreground-service-explanation.html" class="policy-card" style="border-left-color: #ff6b35; background: linear-gradient(135deg, #fff5f0 0%, #ffe8e0 100%);">
                     <h3><span class="icon">🔧</span>FOREGROUND_SERVICE_DATA_SYNC İzni</h3>
                     <p>Uygulamamızın arka planda veri senkronizasyonu için kullandığı izin hakkında detaylı açıklama ve teknik bilgiler.</p>
                 </a>
                 
-                <a href="#" class="policy-card">
+                <a href="#privacy" class="policy-card">
                     <h3><span class="icon">🔒</span>Gizlilik Politikası</h3>
                     <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi.</p>
                 </a>
                 
-                <a href="#" class="policy-card">
+                <a href="#terms" class="policy-card">
                     <h3><span class="icon">📋</span>Kullanım Şartları</h3>
                     <p>Universe Kampüs uygulamasını kullanırken uymanız gereken kurallar ve şartlar.</p>
                 </a>
                 
-                <a href="#" class="policy-card">
+                <a href="#child-safety" class="policy-card">
                     <h3><span class="icon">👶</span>Çocuk Güvenliği</h3>
                     <p>13 yaş altı kullanıcıların güvenliği için aldığımız özel önlemler ve standartlar.</p>
                 </a>
                 
-                <a href="#" class="policy-card">
+                <a href="#security" class="policy-card">
                     <h3><span class="icon">🛡️</span>Güvenlik Politikası</h3>
                     <p>Uygulamanızın ve verilerinizin güvenliğini sağlamak için uyguladığımız güvenlik önlemleri.</p>
                 </a>
                 
-                <a href="#" class="policy-card">
+                <a href="#community" class="policy-card">
                     <h3><span class="icon">🏫</span>Topluluk Kuralları</h3>
                     <p>Sağlıklı ve güvenli bir kampüs ortamı için topluluk kuralları ve davranış standartları.</p>
                 </a>
                 
-                <a href="#" class="policy-card">
+                <a href="#contact" class="policy-card">
                     <h3><span class="icon">📞</span>İletişim ve Destek</h3>
                     <p>Sorularınız, önerileriniz veya sorunlarınız için bizimle iletişime geçin.</p>
                 </a>
@@ -254,81 +325,268 @@
             </div>
         </div>
         
-        <div class="content">
-            <h2 style="color: #2c3e50; margin-bottom: 20px;">🔄 Düzenli Değerlendirme</h2>
-            
-            <h3 style="color: #34495e; margin: 20px 0 10px 0;">9.1 Düzenli Değerlendirme</h3>
-            <ul style="margin-left: 20px; color: #7f8c8d;">
-                <li>Aylık güvenlik değerlendirme toplantıları</li>
-                <li>Çeyreklik politika ve prosedür güncellemeleri</li>
-                <li>Yıllık bağımsız güvenlik denetimi</li>
-                <li>Kullanıcı geri bildirimlerine dayalı iyileştirmeler</li>
-            </ul>
-            
-            <h3 style="color: #34495e; margin: 20px 0 10px 0;">9.2 Teknoloji Güncellemeleri</h3>
-            <ul style="margin-left: 20px; color: #7f8c8d;">
-                <li>En son AI ve ML teknolojilerinin entegrasyonu</li>
-                <li>Emerging threats'e karşı proaktif koruma</li>
-                <li>Sektör best practices'lerinin uygulanması</li>
-                <li>Uluslararası güvenlik standartlarına uyum</li>
-            </ul>
-        </div>
-        
-        <div class="content">
-            <h2 style="color: #2c3e50; margin-bottom: 20px;">📞 İletişim Bilgileri</h2>
-            
-            <h3 style="color: #34495e; margin: 20px 0 10px 0;">Çocuk Güvenliği İletişim</h3>
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
-                <p><strong>Ana İletişim:</strong> memodee333@gmail.com</p>
-                <p><strong>Güvenlik Ekibi:</strong> safety@universekampus.com</p>
-                <p><strong>Acil Bildirimi:</strong> emergency@universekampus.com</p>
-                <p><strong>Yasal Süreçler:</strong> legal@universekampus.com</p>
+        <div id="privacy" class="content">
+            <span class="section-tag">Gizlilik Politikası</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🔒 Kişisel Verilerin Korunması</h2>
+            <p>Universe Campus; Firebase Authentication, Firestore, Storage, Expo Push Notification ve Google Maps SDK’larını kullanır. Veriler yalnızca hizmet sunmak, güvenliği sağlamak ve zorunlu yasal yükümlülükler için işlenir.</p>
+            <div class="list-grid">
+                <div>
+                    <h3>Toplanan Bilgi</h3>
+                    <ul>
+                        <li>Hesap: ad, soyad, üniversite, e-posta, profil fotoğrafı</li>
+                        <li>İçerik: paylaşılan kartlar, etkinlikler, kulüp üyelikleri</li>
+                        <li>Cihaz: işletim sistemi sürümü, çökme günlükleri, push token</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Kullanım Amaçları</h3>
+                    <ul>
+                        <li>Kimlik doğrulama ve hesap yönetimi</li>
+                        <li>Bildirim ve rapor süreçlerinin işletilmesi</li>
+                        <li>Güvenlik denetimleri ve kötüye kullanım tespiti</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Paylaşım</h3>
+                    <ul>
+                        <li>Google Firebase (veri saklama ve loglama)</li>
+                        <li>Google Maps SDK (kampüs konumları)</li>
+                        <li>Expo/Apple Push servisleri (bildirim gönderimi)</li>
+                    </ul>
+                </div>
             </div>
-            
-            <h3 style="color: #34495e; margin: 20px 0 10px 0;">Sorumlu Kişiler</h3>
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
-                <p><strong>Çocuk Koruma Sorumlusu:</strong>  (memodee333@gmail.com)</p>
-                <p><strong>Güvenlik Müdürü:</strong> Universe Security Team</p>
-                <p><strong>Yasal Danışman:</strong> Universe Legal Department</p>
-            </div>
-            
-            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <p><strong>Acil Durumlar İçin:</strong><br>
-                Çocuk güvenliği ile ilgili acil durumlar için 7/24 ulaşılabilir güvenlik hattımızı kullanın.<br>
-                <strong>E-posta:</strong> emergency@universekampus.com<br>
-                <strong>Yanıt Süresi:</strong> 15 dakika içinde</p>
+            <div class="info-block">
+                <p><span class="badge">Veri Saklama</span> Aktif hesaplar silme isteğine kadar saklanır. Engellenen kullanıcı kayıtları ve rapor logları 24 ay tutulur. Çökme raporları 180 gün içinde anonimleştirilir.</p>
+                <p><span class="badge">Veri Silme</span> Profil → ⋮ → “Hesabı Sil” seçeneği veya <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a> adresine talep göndererek kapatabilirsiniz. Talep 30 gün içinde tamamlanır.</p>
             </div>
         </div>
         
-        <div class="content">
-            <h2 style="color: #2c3e50; margin-bottom: 20px;">🛡️ Uygulama İçi Güvenlik Özellikleri</h2>
-            
-            <h3 style="color: #34495e; margin: 20px 0 10px 0;">11.1 Bildirimi Sistemi</h3>
-            <p style="color: #7f8c8d; margin-bottom: 15px;">Universe Kampüs uygulaması içinde kullanıcıların çocuk güvenliğiyle ilgili endişelerini bildirmesi için aşağıdaki yöntemler mevcuttur:</p>
-            <ul style="margin-left: 20px; color: #7f8c8d;">
-                <li><strong>Hızlı Bildirimi Butonu:</strong> Her içerik ve profilde bulunan "⚠️ Bildir" butonu</li>
-                <li><strong>Detaylı Bildirimi Formu:</strong> Olay detaylarını açıklayabileceğiniz kapsamlı form</li>
-                <li><strong>Anonim Bildirimi:</strong> Kimlik gizliliği ile bildirimi seçeneği</li>
-                <li><strong>Sesli Bildirimi:</strong> Görme engelli kullanıcılar için sesli bildirimi sistemi</li>
+        <div id="terms" class="content">
+            <span class="section-tag">Kullanım Şartları</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">📋 Hizmet Kapsamı ve Sorumluluklar</h2>
+            <p>Universe Campus, üniversite öğrencileri için kulüp ve etkinlik keşfi, içerik paylaşımı, profil görüntüleme ve raporlama/engelleme araçları sağlar. Uygulama iOS 15.1+ ve Android 8+ cihazlarda, çentikli ekranlar için safe-area optimizasyonu aktif olacak şekilde çalışır.</p>
+            <div class="list-grid">
+                <div>
+                    <h3>Kullanıcı Yükümlülükleri</h3>
+                    <ul>
+                        <li>Gerçek kimlik ve okul bilgisiyle kayıt olmak</li>
+                        <li>Topluluk kurallarına uygun içerik üretmek</li>
+                        <li>Profil menüsündeki “Bildir” özelliğini kötüye kullanmamak</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>İzinler ve Özellikler</h3>
+                    <ul>
+                        <li>Konum izni: yakın etkinlik önerileri için opsiyonel</li>
+                        <li>Bildirim izni: kulüp, rapor ve moderasyon yanıtları için zorunlu</li>
+                        <li>Arka plan veri senkronu: etkinlik verisini çevrimdışı saklama</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>İhlal Durumları</h3>
+                    <ul>
+                        <li>İlk ihlal: uygulama içi uyarı ve içerik kaldırma</li>
+                        <li>Tekrarı: hesabın geçici askıya alınması</li>
+                        <li>Ağır ihlal: kalıcı kapatma ve yasal raporlama</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="child-safety" class="content">
+            <span class="section-tag">Çocuk Güvenliği</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">👶 Yaş Politikası ve Bildirim Akışı</h2>
+            <p>Universe Campus yalnızca 13 yaş ve üzeri kullanıcıları hedefler. Her içerik kartı ve profil, üç noktalı menü içinde “Bildir” ve “Engelle” seçeneklerini içerir. Kullanıcı kendi profilinde yalnızca “Çıkış Yap / Hesabı Sil / Engellediklerim” seçeneklerini görür.</p>
+            <div class="list-grid">
+                <div>
+                    <h3>Bildirim Süreci</h3>
+                    <ul>
+                        <li>“Bildir” formunda başlık, konu, içerik alanları zorunludur</li>
+                        <li>Gönderimler otomatik olarak `reports` koleksiyonuna kaydedilir</li>
+                        <li>Eş zamanlı e-posta memodee333@gmail.com ve memodee@gmail.com adreslerine iletilir</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Bloklama</h3>
+                    <ul>
+                        <li>Engellenen kişi, engelleyenin tüm içeriklerini göremez</li>
+                        <li>“Engellediklerim” ekranı üzerinden engel kaldırılabilir</li>
+                        <li>Engellenen eşleşmeler Firestore’da çift yönlü tutulur</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Acil Temas</h3>
+                    <ul>
+                        <li>emergency@universekampus.com – 15 dk içinde yanıt</li>
+                        <li>safety@universekampus.com – güvenlik ekibi</li>
+                        <li>memodee333@gmail.com – çocuk koruma sorumlusu</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="security" class="content">
+            <span class="section-tag">Güvenlik Politikası</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🛡️ Teknik ve Operasyonel Önlemler</h2>
+            <ul style="margin-left: 20px; color: #566573;">
+                <li>SSL/TLS ile tüm istemci–sunucu trafiği şifrelenir.</li>
+                <li>Firebase Security Rules, sadece oturum sahibi kullanıcının verisine erişimine izin verir.</li>
+                <li>Cloud Functions, rapor e-postaları ve engel eşitlemesi için kimlik doğrulamalı çağrılar kullanır.</li>
+                <li>Uygulama her açılışta engel/rapor listelerini senkronize ederek kötüye kullanımı önler.</li>
+                <li>iOS safe-area ve Android notch desteği ile kritik butonların üst üste binmesi engellenmiştir.</li>
             </ul>
-            
-            <h3 style="color: #34495e; margin: 20px 0 10px 0;">11.2 Güvenli İletişim</h3>
-            <ul style="margin-left: 20px; color: #7f8c8d;">
-                <li>End-to-end şifreli mesajlaşma</li>
-                <li>Otomatik şüpheli mesaj tespiti</li>
-                <li>Spam ve taciz filtreleri</li>
-                <li>Blokaje ve bildirimi entegrasyonu</li>
-            </ul>
+        </div>
+        
+        <div id="community" class="content">
+            <span class="section-tag">Topluluk Kuralları</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🏫 Davranış Standartları</h2>
+            <div class="list-grid">
+                <div>
+                    <h3>Paylaşılabilecek İçerikler</h3>
+                    <ul>
+                        <li>Kulüp ve etkinlik duyuruları</li>
+                        <li>Kampüs yaşamına dair bilgi paylaşımı</li>
+                        <li>Doğrulanabilir akademik veya sosyal yardım çağrıları</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Yasaklı İçerikler</h3>
+                    <ul>
+                        <li>Nefret söylemi, taciz, tehdit</li>
+                        <li>Yanıltıcı veya spam içerikler</li>
+                        <li>Çocuklara zarar verebilecek içerikler</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Yaptırımlar</h3>
+                    <ul>
+                        <li>İçeriğin kaldırılması ve uyarı</li>
+                        <li>Geçici hesap kilidi</li>
+                        <li>Yetkili mercilere bildirim ve kalıcı ban</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="data-sharing" class="content">
+            <span class="section-tag">Veri Kullanımı</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">5.1.2 Uygunluğu – Veri İşleme ve Paylaşım</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Veri Kategorisi</th>
+                        <th>İşleme Amacı</th>
+                        <th>Hizmet Sağlayıcı / Lokasyon</th>
+                        <th>Saklama Süresi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hesap bilgileri</td>
+                        <td>Kimlik doğrulama, profil gösterimi</td>
+                        <td>Firebase Authentication (ABD / AB veri merkezleri)</td>
+                        <td>Hesap silinene kadar</td>
+                    </tr>
+                    <tr>
+                        <td>Profil ve içerik</td>
+                        <td>Feed, kulüp ve etkinlik dağıtımı</td>
+                        <td>Firestore & Storage (Google Cloud)</td>
+                        <td>Silme talebi + 30 gün</td>
+                    </tr>
+                    <tr>
+                        <td>Bildirim ve rapor kayıtları</td>
+                        <td>Güvenlik denetimi ve moderasyon</td>
+                        <td>Firestore + e-posta arşivi</td>
+                        <td>24 ay</td>
+                    </tr>
+                    <tr>
+                        <td>Cihaz ve performans logları</td>
+                        <td>Hata analizi, performans</td>
+                        <td>Expo / Google Play & App Store diagnostic</td>
+                        <td>180 gün</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="color: #566573;">Verilerinizi üçüncü taraf reklam ağlarıyla paylaşmıyoruz; Universe Campus’te hedefli reklam yoktur. Kullanıcılar, bildirim e-postalarından veya uygulama içi ayarlardan ileti tercihlerini değiştirebilir.</p>
+        </div>
+        
+        <div id="contact" class="content">
+            <span class="section-tag">İletişim</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">📞 Destek ve Yasal Başvuru Kanalları</h2>
+            <p>Her türlü gizlilik, güvenlik, mağaza uyumluluğu veya topluluk ihlali bildirimi için aşağıdaki kanallardan bize ulaşabilirsiniz.</p>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h3>Genel Destek</h3>
+                    <p><strong>E-posta:</strong> memodee333@gmail.com</p>
+                    <p>Yanıt süresi: 24-48 saat</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Güvenlik & Çocuk Koruma</h3>
+                    <p><strong>E-posta:</strong> safety@universekampus.com</p>
+                    <p><strong>Acil:</strong> emergency@universekampus.com</p>
+                    <p>Yanıt süresi: 15 dakika (acil)</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Yasal ve KVKK</h3>
+                    <p><strong>E-posta:</strong> legal@universekampus.com</p>
+                    <p><strong>Veri Silme:</strong> gizlilik@universe-kampus.com</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Mağaza İletişimi</h3>
+                    <p><strong>Apple Review Notları:</strong> App Store Connect → Universe Campus</p>
+                    <p><strong>Google Play:</strong> Play Console → Policy</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="compliance" class="content">
+            <span class="section-tag">Uyumluluk Durumu</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">✅ App Store & Google Play Gereksinimleri</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Politika Maddesi</th>
+                        <th>Durum</th>
+                        <th>Uygulamada Karşılığı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Apple 1.2.0 Safety – UGC</td>
+                        <td>Uygun</td>
+                        <td>Profil menülerinde “Bildir / Engelle”, rapor e-postaları, engel listesi</td>
+                    </tr>
+                    <tr>
+                        <td>Apple 2.3.3 Performance – Metadata</td>
+                        <td>Uygun</td>
+                        <td>Store açıklamaları yalnızca mevcut özellikleri (kulüp, etkinlik, rapor) listeler</td>
+                    </tr>
+                    <tr>
+                        <td>Apple 5.1.2 Legal – Privacy</td>
+                        <td>Uygun</td>
+                        <td>Uygulama içi ve bu sayfadaki gizlilik politikası, veri silme akışı</td>
+                    </tr>
+                    <tr>
+                        <td>Google Families / Safety</td>
+                        <td>Uygun</td>
+                        <td>13+ yaş sınırlaması, rapor-ihbar mekanizması ve acil iletişim</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="info-block">
+                <p><span class="badge">Testler</span> iPhone 15 Pro (iOS 18) ve Pixel 7 (Android 14) cihazlarında safe-area ve profil görüntüsü problemleri giderilmiştir; tüm kritik butonlar notch alanından uzakta gösterilir.</p>
+                <p><span class="badge">Düzenli Değerlendirme</span> Aylık güvenlik toplantıları, çeyreklik içerik taraması ve rapor yanıt süresi takibi yapılır.</p>
+            </div>
         </div>
         
         <div class="footer">
-            <h3>Universe - Çocuk Güvenliği Standartları</h3>
-            <p>Bu doküman, Google Play Store Çocuk Güvenliği Standartları Politikası gereksinimlerini karşılamak üzere hazırlanmıştır.</p>
-            <p>Düzenli olarak güncellenir ve geliştirilir. Son güncelleme: 10 Ekim 2025</p>
+            <h3>Universe Campus – Politika Portalı</h3>
+            <p>Bu doküman App Store ve Google Play politikalarındaki son değişiklikler takip edilerek güncellenir.</p>
             <p><strong>URL:</strong> https://cyn0kuzu.github.io/universe/</p>
-            <p><strong>Uygulama:</strong> Universe (com.universekampus.app) v1.5.0</p>
+            <p><strong>Sürüm:</strong> 1.5.47 (Kasım 2025)</p>
+            <p><strong>Bundle ID:</strong> com.universekampus.app</p>
             <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <p><strong>Yasal Uyarı:</strong> Bu standartlar, tüm ulusal ve uluslararası çocuk koruma yasalarına uygun olarak hazırlanmıştır. Universe, çocukların güvenliğini koruma konusunda tam sorumluluk üstlenir ve bu konuda sıfır tolerans politikası uygular.</p>
+                <p><strong>Yasal Uyarı:</strong> Universe, KVKK ve uluslararası çocuk koruma yasalarına uymayı taahhüt eder. Herhangi bir ihlal bildirimi derhal işleme alınır.</p>
             </div>
         </div>
     </div>
