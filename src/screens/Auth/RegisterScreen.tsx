@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ImageUploadService } from '../../services/imageUploadService';
 import { usernameValidationService } from '../../services/usernameValidationService';
 import { emailValidationService } from '../../services/emailValidationService';
@@ -15,7 +15,8 @@ import {
   Alert,
   ActivityIndicator,
   Modal,
-  FlatList
+  FlatList,
+  Linking
 } from 'react-native';
 import { 
   TextInput, 
@@ -36,6 +37,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
+
+const POLICY_URL = 'https://cyn0kuzu.github.io/universe/';
 import { DEPARTMENTS_DATA as departments } from '../../constants/departments';
 import { CLASS_LEVELS_DATA as classLevels } from '../../constants/classLevels';
 import { UNIVERSITIES_DATA as universities } from '../../constants/universities';
@@ -193,6 +196,13 @@ type UserType = 'student' | 'club';
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const theme = useTheme() as unknown as CustomTheme;
+  const openPolicyLink = useCallback(async () => {
+    try {
+      await Linking.openURL(POLICY_URL);
+    } catch (error) {
+      console.error('❌ Policy link could not be opened:', error);
+    }
+  }, []);
   
   // Common fields
   const [email, setEmail] = useState<string>('');
@@ -1864,6 +1874,20 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
               {currentStep < 4 ? "İlerle" : "Kayıt Ol"}
             </Button>
 
+            <View style={styles.policyNotice}>
+              <Text style={styles.policyText}>
+                Kayıt olarak{' '}
+                <Text style={[styles.policyLink, { color: theme.colors.primary }]} onPress={openPolicyLink}>
+                  Gizlilik Politikası
+                </Text>
+                {' '}ve{' '}
+                <Text style={[styles.policyLink, { color: theme.colors.primary }]} onPress={openPolicyLink}>
+                  Kullanım Şartları
+                </Text>
+                nı kabul etmiş olursunuz.
+              </Text>
+            </View>
+
             {currentStep === 2 && (
               <View style={styles.footer}>
                 <Text style={styles.footerText}>Zaten hesabınız var mı? </Text>
@@ -2406,6 +2430,21 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 8,
     borderRadius: 12,
+  },
+  policyNotice: {
+    marginTop: 12,
+    marginBottom: 4,
+    paddingHorizontal: 8,
+  },
+  policyText: {
+    fontSize: 12,
+    color: '#555',
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  policyLink: {
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
   imagePickerContainer: {
     marginBottom: 20,

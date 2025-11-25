@@ -91,8 +91,8 @@ android {
         applicationId 'com.universekampus.universeapp20261'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 621
-        versionName "1.5.45"
+        versionCode 623
+        versionName "1.5.47"
     }
     
     // Ensure expo-dev-launcher dummy files exist before build

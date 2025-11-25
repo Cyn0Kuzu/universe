@@ -117,6 +117,20 @@ EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
 EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 ```
 
+### Reporting Email (Cloud Functions)
+
+The in-app report dialog sends detailed emails through Firebase Functions. Before deploying functions, configure the Gmail app password that will send reports:
+
+```bash
+cd functions
+firebase functions:config:set reporting.sender="memodee333@gmail.com" \
+  reporting.password="your_app_password" \
+  reporting.recipient="memodee@gmail.com"
+firebase deploy --only functions
+```
+
+> ⚠️ Use a Gmail [App Password](https://myaccount.google.com/apppasswords); regular account passwords are blocked by Google.
+
 ## 🤝 Contributing
 
 1. Fork the repository

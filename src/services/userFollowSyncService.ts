@@ -46,6 +46,7 @@ export interface UserFollowData {
   isFollowing?: boolean;
   isFollowedBy?: boolean;
   followedAt?: FirestoreTimestamp;
+  blockedUsers?: string[];
 }
 
 export interface FollowStats {
@@ -374,7 +375,8 @@ export class UserFollowSyncService {
               photoURL: data?.photoURL,
               university: data?.university,
               department: data?.department,
-              isFollowing: true
+            isFollowing: true,
+            blockedUsers: Array.isArray(data?.blockedUsers) ? data.blockedUsers : [],
             });
           }
         });
@@ -431,7 +433,8 @@ export class UserFollowSyncService {
               photoURL: data?.photoURL,
               university: data?.university,
               department: data?.department,
-              isFollowedBy: true
+            isFollowedBy: true,
+            blockedUsers: Array.isArray(data?.blockedUsers) ? data.blockedUsers : [],
             });
           }
         });

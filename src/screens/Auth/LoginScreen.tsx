@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Animated, Image, KeyboardAvoidingView, Platform, ActivityIndicator, useWindowDimensions } from 'react-native';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Animated, Image, KeyboardAvoidingView, Platform, ActivityIndicator, useWindowDimensions, Linking } from 'react-native';
 import { safeAlert } from '../../utils/safeAlert';
 import { TextInput, Text, Button, useTheme, HelperText, Dialog, Portal, Checkbox } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
@@ -13,6 +13,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { CustomTheme } from '../../types/theme';
 import AdminControlService from '../../services/adminControlService';
 import { ensureAdminSession } from '../../services/adminSessionManager';
+
+const POLICY_URL = 'https://cyn0kuzu.github.io/universe/';
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Login'>;
@@ -37,6 +39,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const logoAnim = useRef(new Animated.Value(0)).current;
+  
+  const openPolicyLink = useCallback(async () => {
+    try {
+      await Linking.openURL(POLICY_URL);
+    } catch (error) {
+      console.error('❌ Policy link could not be opened:', error);
+    }
+  }, []);
   
   useEffect(() => {
     Animated.sequence([
@@ -335,6 +345,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
               )}
             </TouchableOpacity>
             
+            <View style={styles.policyNotice}>
+              <Text style={styles.policyText}>
+                Giriş yaparak{' '}
+                <Text style={[styles.policyLink, { color: theme.colors.primary }]} onPress={openPolicyLink}>
+                  Gizlilik Politikası
+                </Text>
+                {' '}ve{' '}
+                <Text style={[styles.policyLink, { color: theme.colors.primary }]} onPress={openPolicyLink}>
+                  Kullanım Şartları
+                </Text>
+                nı kabul etmiş olursunuz.
+              </Text>
+            </View>
+            
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>Hesabınız yok mu? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
@@ -509,6 +533,20 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 14,
     fontWeight: '600',
+  },
+  policyNotice: {
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  policyText: {
+    fontSize: 12,
+    color: '#555',
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  policyLink: {
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   verificationIcon: {
     alignItems: 'center',

@@ -41,6 +41,7 @@ interface User {
   bio?: string;
   isFollowing?: boolean;
   userType?: 'student' | 'club';
+  blockedUsers?: string[];
 }
 
 const ProfileFollowingScreen: React.FC = () => {
@@ -48,7 +49,7 @@ const ProfileFollowingScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<StudentStackParamList>>();
   const route = useRoute<ProfileFollowingScreenRouteProp>();
   const { userId } = route.params;
-  const { currentUser, isClubAccount } = useAuth();
+  const { currentUser, isClubAccount, userProfile: authUserProfile } = useAuth();
   
   // Global follow state integration
   const globalFollowActions = {
@@ -91,6 +92,17 @@ const ProfileFollowingScreen: React.FC = () => {
       user.department?.toLowerCase().includes(query)
     );
   }, [following, searchQuery]);
+
+  const isUserHidden = useCallback(
+    (targetId: string, targetBlockedUsers?: string[]) => {
+      if (!currentUser?.uid) return false;
+      const blockedByMe =
+        Array.isArray(authUserProfile?.blockedUsers) && authUserProfile!.blockedUsers.includes(targetId);
+      const blockedMe = Array.isArray(targetBlockedUsers) && targetBlockedUsers.includes(currentUser.uid);
+      return blockedByMe || blockedMe;
+    },
+    [authUserProfile?.blockedUsers, currentUser?.uid]
+  );
 
   // Avatar label'ı güvenli şekilde al
   const getAvatarLabel = (user: User): string => {
@@ -161,15 +173,21 @@ const ProfileFollowingScreen: React.FC = () => {
       // Yeni servis ile takip listesini al
       const followingData = await userFollowSyncService.getUserFollowing(userId, false);
       
-      // UserFollowData[] formatından User[] formatına dönüştür
-      const formattedFollowing: User[] = followingData.map(item => ({
+      const formattedFollowing: User[] = [];
+      for (const item of followingData) {
+        if (isUserHidden(item.id, item.blockedUsers)) {
+          continue;
+        }
+        formattedFollowing.push({
         id: item.id,
         displayName: item.displayName,
         email: item.email,
         profileImage: item.photoURL,
         isFollowing: item.isFollowing,
-        userType: 'student' as const
-      }));
+          userType: 'student' as const,
+          blockedUsers: Array.isArray(item.blockedUsers) ? item.blockedUsers : [],
+        });
+      }
       
       setFollowing(formattedFollowing);
       console.log(`✅ Following data loaded: ${formattedFollowing.length} users`);
@@ -188,7 +206,7 @@ const ProfileFollowingScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, isUserHidden]);
 
   const handleViewProfile = (userId: string) => {
     navigation.navigate('ViewProfile', { userId });

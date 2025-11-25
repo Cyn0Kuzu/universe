@@ -2448,7 +2448,7 @@ const StudentEventCard: React.FC<StudentEventCardProps> = ({
             />
             <TouchableOpacity
               style={styles.imagePreviewButton}
-              onPress={() => showPreview(eventImageUri, event.title || 'Etkinlik Görseli')}
+              onPress={() => showPreview(eventImageUri, { title: event.title || 'Etkinlik Görseli' })}
               activeOpacity={0.85}
             >
               <MaterialCommunityIcons name="magnify-plus-outline" size={20} color="#FFFFFF" />

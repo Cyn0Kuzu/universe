@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, ImageBackground, TouchableOpacity, Alert, Platform, Share, useWindowDimensions } from 'react-native';
-import { Text, useTheme, Button, Avatar, Divider, IconButton, Chip, ActivityIndicator } from 'react-native-paper';
+import { Text, useTheme, Button, Avatar, Divider, IconButton, Chip, ActivityIndicator, Menu } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,8 +17,10 @@ import { enhancedRealtimeSyncService } from '../../services/enhancedRealtimeSync
 import { comprehensiveDataSyncService } from '../../services/comprehensiveDataSyncService';
 import { clubDataSyncService } from '../../services/clubDataSyncService';
 import ImageZoomModal from '../../components/common/ImageZoomModal';
+import ReportUserModal from '../../components/reports/ReportUserModal';
 import { getFirebaseCompatSync } from '../../firebase/compat';
 import { userFollowSyncService } from '../../services/userFollowSyncService';
+import { userBlockService } from '../../services/userBlockService';
 
 interface UserProfile {
   id: string;
@@ -46,6 +48,7 @@ interface RouteParams {
 }
 
 const AVATAR_SIZE = 96;
+const COVER_HEIGHT = 220;
 const firebase = getFirebaseCompatSync();
 
 const ViewProfileScreen: React.FC = () => {
@@ -53,7 +56,7 @@ const ViewProfileScreen: React.FC = () => {
   const theme = baseTheme as unknown as CustomTheme;
   const navigation = useNavigation<NativeStackNavigationProp<StudentStackParamList>>();
   const route = useRoute();
-  const { currentUser, isClubAccount } = useAuth();
+  const { currentUser, isClubAccount, userProfile: authUserProfile, refreshUserProfile } = useAuth();
   const { fontSizes, spacing, shadows } = useResponsiveDesign();
   const { userId } = route.params as RouteParams;
   const { width: windowWidth } = useWindowDimensions();
@@ -68,10 +71,23 @@ const ViewProfileScreen: React.FC = () => {
   const [eventCount, setEventCount] = useState(0);
   const [memberCount, setMemberCount] = useState(0);
   const [followActionLoading, setFollowActionLoading] = useState(false);
+  const [optionsMenuVisible, setOptionsMenuVisible] = useState(false);
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [blockActionLoading, setBlockActionLoading] = useState(false);
+  const [blockState, setBlockState] = useState<{ youBlocked: boolean; blockedYou: boolean }>({
+    youBlocked: false,
+    blockedYou: false,
+  });
+  const isProfileRestricted = blockState.youBlocked || blockState.blockedYou;
+  const blockBannerTitle = blockState.blockedYou ? 'Bu kullanıcı seni engelledi' : 'Bu kullanıcıyı engellediniz';
+  const blockBannerDescription = blockState.blockedYou
+    ? 'Bu profili görüntüleyemezsiniz.'
+    : 'Engeli kaldırana kadar bu kullanıcının içerikleri gizlenecek.';
   
   const floatingButtonOffset = useMemo(() => ({
     top: Math.max(insets.top, 0) + 8,
   }), [insets.top]);
+  const coverSafeAreaPadding = useMemo(() => Math.max(insets.top, 16), [insets.top]);
 
   const avatarPositionStyle = useMemo(() => ({
     left: Math.max((windowWidth - AVATAR_SIZE) / 2, 16),
@@ -107,6 +123,14 @@ const ViewProfileScreen: React.FC = () => {
       
       if (profileData) {
         setUserProfile(profileData);
+        
+        const youBlocked = Array.isArray(authUserProfile?.blockedUsers)
+          ? authUserProfile!.blockedUsers.includes(userId)
+          : false;
+        const blockedYou = currentUser?.uid
+          ? Array.isArray(profileData.blockedUsers) && profileData.blockedUsers.includes(currentUser.uid)
+          : false;
+        setBlockState({ youBlocked, blockedYou });
         
         // Get real-time counts
         const [followerQuery, eventQuery, memberQuery] = await Promise.all([
@@ -147,7 +171,7 @@ const ViewProfileScreen: React.FC = () => {
     } finally {
         setLoading(false);
     }
-  }, [userId, navigation, currentUser?.uid]);
+  }, [userId, navigation, currentUser?.uid, authUserProfile?.blockedUsers]);
 
   // Universal gerçek zamanlı profil senkronizasyonu
   useEffect(() => {
@@ -277,7 +301,7 @@ const ViewProfileScreen: React.FC = () => {
   };
 
   const handleToggleFollow = useCallback(async () => {
-    if (!currentUser?.uid || currentUser.uid === userId || isClubAccount) {
+    if (!currentUser?.uid || currentUser.uid === userId || isClubAccount || isProfileRestricted) {
       return;
     }
 
@@ -311,7 +335,33 @@ const ViewProfileScreen: React.FC = () => {
     } finally {
       setFollowActionLoading(false);
     }
-  }, [currentUser?.uid, currentUser?.displayName, currentUser?.email, userId, isFollowing, isClubAccount]);
+  }, [currentUser?.uid, currentUser?.displayName, currentUser?.email, userId, isFollowing, isClubAccount, isProfileRestricted]);
+
+  const handleBlockToggle = useCallback(async () => {
+    if (!currentUser?.uid || currentUser.uid === userId) {
+      return;
+    }
+
+    setBlockActionLoading(true);
+    try {
+      if (blockState.youBlocked) {
+        await userBlockService.unblockUser(userId);
+        Alert.alert('Engel Kaldırıldı', 'Bu kullanıcıyı artık görebilirsiniz.');
+      } else {
+        await userBlockService.blockUser(userId, { targetDisplayName: userProfile?.displayName });
+        setIsFollowing(false);
+        Alert.alert('Kullanıcı Engellendi', 'Bu kullanıcının içerikleri size gösterilmeyecek.');
+      }
+
+      await refreshUserProfile();
+      await fetchUserProfile();
+    } catch (error) {
+      console.error('❌ Block toggle failed:', error);
+      Alert.alert('Hata', 'İşlem sırasında bir sorun oluştu. Lütfen tekrar deneyin.');
+    } finally {
+      setBlockActionLoading(false);
+    }
+  }, [blockState.youBlocked, currentUser?.uid, fetchUserProfile, refreshUserProfile, userId, userProfile?.displayName, setIsFollowing]);
 
   // Yükleniyor...
   if (loading) {
@@ -363,7 +413,15 @@ const ViewProfileScreen: React.FC = () => {
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={[styles.container, { backgroundColor: theme.colors.background }]}>
           {/* Cover Section */}
-          <View style={styles.coverSection}>
+          <View
+            style={[
+              styles.coverSection,
+              {
+                paddingTop: coverSafeAreaPadding,
+                height: COVER_HEIGHT + coverSafeAreaPadding,
+              },
+            ]}
+          >
         {/* Back Button */}
         <TouchableOpacity 
           style={[styles.backButton, floatingButtonOffset]}
@@ -372,13 +430,45 @@ const ViewProfileScreen: React.FC = () => {
           <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
         </TouchableOpacity>
         
-        {/* More Options Button */}
-        <TouchableOpacity 
-          style={[styles.menuButton, floatingButtonOffset]}
-          onPress={handleShare}
-        >
-          <MaterialCommunityIcons name="share-variant" size={24} color="#fff" />
-        </TouchableOpacity>
+        <View style={[styles.actionButtonsContainer, floatingButtonOffset]}>
+          <TouchableOpacity 
+            style={styles.actionIconButton}
+            onPress={handleShare}
+          >
+            <MaterialCommunityIcons name="share-variant" size={24} color="#fff" />
+          </TouchableOpacity>
+          <Menu
+            visible={optionsMenuVisible}
+            onDismiss={() => setOptionsMenuVisible(false)}
+            anchor={
+              <IconButton
+                icon="dots-vertical"
+                size={22}
+                iconColor="#fff"
+                style={styles.actionMenuIcon}
+                onPress={() => setOptionsMenuVisible(true)}
+              />
+            }
+          >
+            <Menu.Item
+              onPress={() => {
+                setOptionsMenuVisible(false);
+                setReportModalVisible(true);
+              }}
+              title="Bildir"
+              leadingIcon="alert-circle-outline"
+            />
+            <Menu.Item
+              onPress={() => {
+                setOptionsMenuVisible(false);
+                handleBlockToggle();
+              }}
+              title={blockState.youBlocked ? 'Engeli Kaldır' : 'Engelle'}
+              leadingIcon={blockState.youBlocked ? 'account-check' : 'account-cancel'}
+              disabled={blockActionLoading}
+            />
+          </Menu>
+        </View>
         
         {/* Cover Background */}
         <View style={[styles.coverBackground, { backgroundColor: theme.colors.primary }]}>
@@ -434,179 +524,202 @@ const ViewProfileScreen: React.FC = () => {
           )}
             </View>
             
-        {/* Bio Section */}
-        {userProfile.bio && (
-          <View style={styles.bioSection}>
-            <Text style={styles.bioText}>{userProfile.bio}</Text>
-                </View>
-        )}
-                
-        {/* Stats (Events, Followers, Following, Members) */}
-        <View style={styles.statsContainer}>
-                  <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{formatNumber(eventCount)}</Text>
-            <Text style={styles.statLabel}>Etkinlik</Text>
-            <MaterialCommunityIcons name="calendar-star" size={14} color="#666" style={styles.statIcon} />
-                  </View>
-
-          <View style={styles.verticalDivider} />
-          
-                  <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{formatNumber(followerCount)}</Text>
-            <Text style={styles.statLabel}>Takipçi</Text>
-            <MaterialCommunityIcons name="account-heart" size={14} color="#666" style={styles.statIcon} />
-                    </View>
-          
-          <View style={styles.verticalDivider} />
-          
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{formatNumber(followingCount)}</Text>
-            <Text style={styles.statLabel}>Takip</Text>
-            <MaterialCommunityIcons name="account-plus" size={14} color="#666" style={styles.statIcon} />
-            </View>
-            
-          {userProfile.userType === 'student' && (
-            <>
-              <View style={styles.verticalDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{formatNumber(memberCount)}</Text>
-                <Text style={styles.statLabel}>Kulüp</Text>
-                <MaterialCommunityIcons name="account-group" size={14} color="#666" style={styles.statIcon} />
-                </View>
-            </>
-          )}
-        </View>
-
-        {currentUser?.uid && currentUser.uid !== userId && !isClubAccount && (
-          <View style={styles.followActions}>
-            <Button
-              mode={isFollowing ? 'outlined' : 'contained'}
-              icon={isFollowing ? 'account-check' : 'account-plus'}
-              onPress={handleToggleFollow}
-              loading={followActionLoading}
-              style={isFollowing ? styles.followOutlinedButton : styles.followButton}
-              buttonColor={isFollowing ? 'transparent' : theme.colors.primary}
-              textColor={isFollowing ? theme.colors.primary : '#fff'}
-            >
-              {isFollowing ? 'Takipten Çık' : 'Takip Et'}
-            </Button>
+        {isProfileRestricted && (
+          <View style={styles.blockedContainer}>
+            <MaterialCommunityIcons
+              name={blockState.blockedYou ? 'lock-alert' : 'shield-off-outline'}
+              size={32}
+              color="#f87171"
+            />
+            <Text style={styles.blockedTitle}>{blockBannerTitle}</Text>
+            <Text style={styles.blockedText}>{blockBannerDescription}</Text>
+            {blockState.youBlocked && (
+              <Button
+                mode="contained"
+                onPress={handleBlockToggle}
+                loading={blockActionLoading}
+                style={styles.unblockCta}
+              >
+                Engeli Kaldır
+              </Button>
+            )}
           </View>
         )}
-            
-            {/* Personal Info Section */}
+
+        {!isProfileRestricted && (
+          <>
+            {userProfile.bio && (
+              <View style={styles.bioSection}>
+                <Text style={styles.bioText}>{userProfile.bio}</Text>
+              </View>
+            )}
+
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{formatNumber(eventCount)}</Text>
+                <Text style={styles.statLabel}>Etkinlik</Text>
+                <MaterialCommunityIcons name="calendar-star" size={14} color="#666" style={styles.statIcon} />
+              </View>
+
+              <View style={styles.verticalDivider} />
+
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{formatNumber(followerCount)}</Text>
+                <Text style={styles.statLabel}>Takipçi</Text>
+                <MaterialCommunityIcons name="account-heart" size={14} color="#666" style={styles.statIcon} />
+              </View>
+
+              <View style={styles.verticalDivider} />
+
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{formatNumber(followingCount)}</Text>
+                <Text style={styles.statLabel}>Takip</Text>
+                <MaterialCommunityIcons name="account-plus" size={14} color="#666" style={styles.statIcon} />
+              </View>
+
+              {userProfile.userType === 'student' && (
+                <>
+                  <View style={styles.verticalDivider} />
+                  <View style={styles.statItem}>
+                    <Text style={styles.statNumber}>{formatNumber(memberCount)}</Text>
+                    <Text style={styles.statLabel}>Kulüp</Text>
+                    <MaterialCommunityIcons name="account-group" size={14} color="#666" style={styles.statIcon} />
+                  </View>
+                </>
+              )}
+            </View>
+
+            {currentUser?.uid && currentUser.uid !== userId && !isClubAccount && (
+              <View style={styles.followActions}>
+                <Button
+                  mode={isFollowing ? 'outlined' : 'contained'}
+                  icon={isFollowing ? 'account-check' : 'account-plus'}
+                  onPress={handleToggleFollow}
+                  loading={followActionLoading}
+                  style={isFollowing ? styles.followOutlinedButton : styles.followButton}
+                  buttonColor={isFollowing ? 'transparent' : theme.colors.primary}
+                  textColor={isFollowing ? theme.colors.primary : '#fff'}
+                >
+                  {isFollowing ? 'Takipten Çık' : 'Takip Et'}
+                </Button>
+              </View>
+            )}
+
             <View style={styles.infoSection}>
               <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
-              {userProfile.userType === 'club' ? 'Kulüp Bilgileri' : 'Kişisel Bilgiler'}
-            </Text>
+                <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+                  {userProfile.userType === 'club' ? 'Kulüp Bilgileri' : 'Kişisel Bilgiler'}
+                </Text>
               </View>
-              
+
               <View style={styles.infoRow}>
                 <MaterialCommunityIcons name="email-outline" size={24} color={theme.colors.primary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>E-posta</Text>
-              <Text style={styles.infoValue}>{userProfile.email || 'Belirtilmemiş'}</Text>
-            </View>
+                <View style={styles.infoTextContainer}>
+                  <Text style={styles.infoLabel}>E-posta</Text>
+                  <Text style={styles.infoValue}>{userProfile.email || 'Belirtilmemiş'}</Text>
+                </View>
               </View>
 
               <View style={styles.infoRow}>
                 <MaterialCommunityIcons name="account-outline" size={24} color={theme.colors.primary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>Kullanıcı Tipi</Text>
-              <Text style={styles.infoValue}>
-                {userProfile.userType === 'student' ? 'Öğrenci' : 
-                 userProfile.userType === 'club' ? 'Kulüp' : 'Belirtilmemiş'}
-              </Text>
-            </View>
-              </View>
-              
-                <View style={styles.infoRow}>
-            <MaterialCommunityIcons name="school" size={24} color={theme.colors.primary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>Üniversite</Text>
-              <Text style={styles.infoValue}>{getDisplayValue('university', userProfile.university || '')}</Text>
-                </View>
-          </View>
-              
-          {userProfile.userType === 'student' && (
-            <>
-                <View style={styles.infoRow}>
-                <MaterialCommunityIcons name="book-open-outline" size={24} color={theme.colors.primary} />
                 <View style={styles.infoTextContainer}>
-                  <Text style={styles.infoLabel}>Bölüm</Text>
-                  <Text style={styles.infoValue}>{getDisplayValue('department', userProfile.department || '')}</Text>
+                  <Text style={styles.infoLabel}>Kullanıcı Tipi</Text>
+                  <Text style={styles.infoValue}>
+                    {userProfile.userType === 'student'
+                      ? 'Öğrenci'
+                      : userProfile.userType === 'club'
+                      ? 'Kulüp'
+                      : 'Belirtilmemiş'}
+                  </Text>
                 </View>
               </View>
-              
-                <View style={styles.infoRow}>
-                <MaterialCommunityIcons name="school-outline" size={24} color={theme.colors.primary} />
-                <View style={styles.infoTextContainer}>
-                  <Text style={styles.infoLabel}>Sınıf</Text>
-                  <Text style={styles.infoValue}>{getDisplayValue('classLevel', userProfile.classLevel || '')}</Text>
-                </View>
-              </View>
-            </>
-              )}
-              
-          {userProfile.userType === 'club' && (
-            <>
+
               <View style={styles.infoRow}>
-                <MaterialCommunityIcons name="domain" size={24} color={theme.colors.primary} />
+                <MaterialCommunityIcons name="school" size={24} color={theme.colors.primary} />
                 <View style={styles.infoTextContainer}>
-                  <Text style={styles.infoLabel}>Kulüp Adı</Text>
-                  <Text style={styles.infoValue}>{userProfile.clubName || userProfile.displayName || 'Belirtilmemiş'}</Text>
+                  <Text style={styles.infoLabel}>Üniversite</Text>
+                  <Text style={styles.infoValue}>{getDisplayValue('university', userProfile.university || '')}</Text>
+                </View>
               </View>
-            </View>
-            
-              {userProfile.clubTypes && userProfile.clubTypes.length > 0 && (
-                <View style={styles.infoRow}>
-                  <MaterialCommunityIcons name="tag-multiple" size={24} color={theme.colors.primary} />
-                  <View style={styles.infoTextContainer}>
-                    <Text style={styles.infoLabel}>Kategoriler</Text>
-                    <View style={styles.clubTagsContainer}>
-                      {userProfile.clubTypes.map((type, index) => (
-                        <Chip
-                          key={index}
-                          style={styles.clubTagChip}
-                          textStyle={{ color: 'white', fontSize: 12 }}
-                        >
-                          {type}
-                        </Chip>
-                      ))}
+
+              {userProfile.userType === 'student' && (
+                <>
+                  <View style={styles.infoRow}>
+                    <MaterialCommunityIcons name="book-open-outline" size={24} color={theme.colors.primary} />
+                    <View style={styles.infoTextContainer}>
+                      <Text style={styles.infoLabel}>Bölüm</Text>
+                      <Text style={styles.infoValue}>{getDisplayValue('department', userProfile.department || '')}</Text>
                     </View>
                   </View>
+
+                  <View style={styles.infoRow}>
+                    <MaterialCommunityIcons name="school-outline" size={24} color={theme.colors.primary} />
+                    <View style={styles.infoTextContainer}>
+                      <Text style={styles.infoLabel}>Sınıf</Text>
+                      <Text style={styles.infoValue}>{getDisplayValue('classLevel', userProfile.classLevel || '')}</Text>
+                    </View>
+                  </View>
+                </>
+              )}
+
+              {userProfile.userType === 'club' && (
+                <>
+                  <View style={styles.infoRow}>
+                    <MaterialCommunityIcons name="domain" size={24} color={theme.colors.primary} />
+                    <View style={styles.infoTextContainer}>
+                      <Text style={styles.infoLabel}>Kulüp Adı</Text>
+                      <Text style={styles.infoValue}>
+                        {userProfile.clubName || userProfile.displayName || 'Belirtilmemiş'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {userProfile.clubTypes && userProfile.clubTypes.length > 0 && (
+                    <View style={styles.infoRow}>
+                      <MaterialCommunityIcons name="tag-multiple" size={24} color={theme.colors.primary} />
+                      <View style={styles.infoTextContainer}>
+                        <Text style={styles.infoLabel}>Kategoriler</Text>
+                        <View style={styles.clubTagsContainer}>
+                          {userProfile.clubTypes.map((type, index) => (
+                            <Chip key={index} style={styles.clubTagChip} textStyle={{ color: 'white', fontSize: 12 }}>
+                              {type}
+                            </Chip>
+                          ))}
+                        </View>
+                      </View>
+                    </View>
+                  )}
+                </>
+              )}
+
+              <View style={styles.infoRow}>
+                <MaterialCommunityIcons name="calendar" size={24} color={theme.colors.primary} />
+                <View style={styles.infoTextContainer}>
+                  <Text style={styles.infoLabel}>Katılma Tarihi</Text>
+                  <Text style={styles.infoValue}>
+                    {(() => {
+                      try {
+                        if (userProfile.createdAt?.seconds) {
+                          return new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('tr-TR');
+                        } else if (userProfile.createdAt instanceof Date) {
+                          return userProfile.createdAt.toLocaleDateString('tr-TR');
+                        } else if (typeof userProfile.createdAt === 'string') {
+                          return new Date(userProfile.createdAt).toLocaleDateString('tr-TR');
+                        } else if (userProfile.createdAt && typeof userProfile.createdAt.toDate === 'function') {
+                          return userProfile.createdAt.toDate().toLocaleDateString('tr-TR');
+                        }
+                        return '—';
+                      } catch (e) {
+                        console.error('Tarih formatı hatası:', e);
+                        return '—';
+                      }
+                    })()}
+                  </Text>
+                </View>
               </View>
-            )}
-        </>
-      )}
-          
-          {/* Katılım Tarihi */}
-          <View style={styles.infoRow}>
-            <MaterialCommunityIcons name="calendar" size={24} color={theme.colors.primary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>Katılma Tarihi</Text>
-              <Text style={styles.infoValue}>
-                {(() => {
-                  try {
-                    if (userProfile.createdAt?.seconds) {
-                      return new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('tr-TR');
-                    } else if (userProfile.createdAt instanceof Date) {
-                      return userProfile.createdAt.toLocaleDateString('tr-TR');
-                    } else if (typeof userProfile.createdAt === 'string') {
-                      return new Date(userProfile.createdAt).toLocaleDateString('tr-TR');
-                    } else if (userProfile.createdAt && typeof userProfile.createdAt.toDate === 'function') {
-                      return userProfile.createdAt.toDate().toLocaleDateString('tr-TR');
-                    }
-                    return '—';
-                  } catch (e) {
-                    console.error('Tarih formatı hatası:', e);
-                    return '—';
-                  }
-                })()}
-              </Text>
             </View>
-          </View>
-        </View>
+          </>
+        )}
       </ScrollView>
       
       {/* Image Zoom Modal */}
@@ -615,6 +728,17 @@ const ViewProfileScreen: React.FC = () => {
         imageUri={imageZoomUri}
         onClose={() => setImageZoomVisible(false)}
         title={imageZoomTitle}
+      />
+      <ReportUserModal
+        visible={reportModalVisible}
+        onDismiss={() => setReportModalVisible(false)}
+        reportedUser={
+          userProfile
+            ? { id: userId, displayName: userProfile.displayName, email: userProfile.email }
+            : undefined
+        }
+        reporterEmail={currentUser?.email || authUserProfile?.email}
+        onSubmitted={() => undefined}
       />
     </SafeAreaView>
   );
@@ -633,31 +757,39 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   coverSection: {
-    height: 220,
+    height: COVER_HEIGHT,
     position: 'relative',
     marginTop: 0,
   },
   coverBackground: {
+    flex: 1,
     width: '100%',
-    height: '100%',
     overflow: 'hidden',
-    position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
   },
   coverIconStyle: {
     position: 'absolute',
   },
-  menuButton: {
+  actionButtonsContainer: {
     position: 'absolute',
     right: 10,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    zIndex: 10,
+  },
+  actionIconButton: {
+    backgroundColor: 'rgba(0,0,0,0.25)',
     width: 36,
     height: 36,
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 10,
+  },
+  actionMenuIcon: {
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    margin: 0,
   },
   backButton: {
     position: 'absolute',
@@ -718,6 +850,35 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingVertical: 8,
     paddingHorizontal: 4,
+  },
+  blockedContainer: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 24,
+    backgroundColor: '#fff7ed',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#fed7aa',
+    alignItems: 'center',
+  },
+  blockedTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#c2410c',
+    marginTop: 8,
+  },
+  blockedText: {
+    fontSize: 14,
+    color: '#7c2d12',
+    textAlign: 'center',
+    marginTop: 4,
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  unblockCta: {
+    borderRadius: 20,
+    paddingHorizontal: 16,
   },
   statsContainer: {
     flexDirection: 'row',

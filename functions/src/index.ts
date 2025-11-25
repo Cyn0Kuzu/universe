@@ -5,8 +5,29 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import * as nodemailer from 'nodemailer';
 
 admin.initializeApp();
+
+const reportingConfig = functions.config().reporting || {};
+const REPORT_SENDER = reportingConfig.sender || process.env.REPORT_SENDER || '';
+const REPORT_PASSWORD = reportingConfig.password || process.env.REPORT_PASSWORD || '';
+const REPORT_RECIPIENT = reportingConfig.recipient || process.env.REPORT_RECIPIENT || 'memodee@gmail.com';
+
+const getMailTransporter = () => {
+  if (!REPORT_SENDER || !REPORT_PASSWORD) {
+    console.warn('⚠️ Reporting email credentials are missing. Set functions.config().reporting.sender and .password');
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: REPORT_SENDER,
+      pass: REPORT_PASSWORD,
+    },
+  });
+};
 
 interface AdminPushQueuePayload {
   title: string;
@@ -1058,6 +1079,192 @@ export const sendNotificationToTopic = functions.https.onCall(async (data, conte
   });
 
   return { success: true };
+});
+
+export const submitUserReport = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated to report another profile.');
+  }
+
+  const {
+    reportedUserId,
+    reportedUserName,
+    reportedUserEmail,
+    title,
+    topic,
+    description,
+    attachmentUrl,
+    contactEmail,
+  } = data || {};
+
+  if (!reportedUserId || typeof reportedUserId !== 'string') {
+    throw new functions.https.HttpsError('invalid-argument', 'reportedUserId is required.');
+  }
+
+  if (!title || !description) {
+    throw new functions.https.HttpsError('invalid-argument', 'title and description are required.');
+  }
+
+  const reporterId = context.auth.uid;
+  const db = admin.firestore();
+
+  const [reporterSnap, reportedSnap] = await Promise.all([
+    db.collection('users').doc(reporterId).get(),
+    db.collection('users').doc(reportedUserId).get(),
+  ]);
+
+  if (!reportedSnap.exists) {
+    throw new functions.https.HttpsError('not-found', 'Reported user not found.');
+  }
+
+  const reporterData = reporterSnap.data() || {};
+  const reportedData = reportedSnap.data() || {};
+
+  const reportDoc = await db.collection('reports').add({
+    reporterId,
+    reportedUserId,
+    reporterEmail: reporterData.email || null,
+    reporterDisplayName: reporterData.displayName || reporterData.name || null,
+    reportedEmail: reportedData.email || reportedUserEmail || null,
+    reportedDisplayName: reportedData.displayName || reportedUserName || null,
+    title,
+    topic: topic || 'Diğer',
+    description,
+    attachmentUrl: attachmentUrl || null,
+    contactEmail: contactEmail || reporterData.email || null,
+    status: 'open',
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  const transporter = getMailTransporter();
+  if (transporter && REPORT_RECIPIENT) {
+    const mailBody = [
+      `📣 Yeni kullanıcı bildirimi alındı`,
+      `• Bildiren Kullanıcı: ${reporterData.displayName || reporterData.email || reporterId}`,
+      `• Bildirilen Kullanıcı: ${reportedData.displayName || reportedUserName || reportedUserId}`,
+      `• Başlık: ${title}`,
+      `• Konu: ${topic || 'Belirtilmedi'}`,
+      `• Açıklama: ${description}`,
+      attachmentUrl ? `• Kanıt: ${attachmentUrl}` : '',
+      `• İletişim: ${contactEmail || reporterData.email || 'Belirtilmedi'}`,
+      `• Rapor ID: ${reportDoc.id}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    await transporter.sendMail({
+      from: REPORT_SENDER,
+      to: REPORT_RECIPIENT,
+      subject: `[Universe] Yeni Bildirim: ${title}`,
+      text: mailBody,
+    });
+  }
+
+  return { success: true, reportId: reportDoc.id };
+});
+
+export const blockUserAccount = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated to block someone.');
+  }
+
+  const blockerId = context.auth.uid;
+  const targetUserId = data?.targetUserId;
+
+  if (!targetUserId || typeof targetUserId !== 'string') {
+    throw new functions.https.HttpsError('invalid-argument', 'targetUserId is required.');
+  }
+
+  if (targetUserId === blockerId) {
+    throw new functions.https.HttpsError('invalid-argument', 'You cannot block yourself.');
+  }
+
+  const db = admin.firestore();
+
+  await db.runTransaction(async (transaction) => {
+    const blockerRef = db.collection('users').doc(blockerId);
+    const targetRef = db.collection('users').doc(targetUserId);
+
+    const [blockerSnap, targetSnap] = await Promise.all([transaction.get(blockerRef), transaction.get(targetRef)]);
+
+    if (!targetSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Target user not found.');
+    }
+
+    if (!blockerSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Blocker user not found.');
+    }
+
+    transaction.update(blockerRef, {
+      blockedUsers: admin.firestore.FieldValue.arrayUnion(targetUserId),
+      following: admin.firestore.FieldValue.arrayRemove(targetUserId),
+      followers: admin.firestore.FieldValue.arrayRemove(targetUserId),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    transaction.update(targetRef, {
+      blockedBy: admin.firestore.FieldValue.arrayUnion(blockerId),
+      following: admin.firestore.FieldValue.arrayRemove(blockerId),
+      followers: admin.firestore.FieldValue.arrayRemove(blockerId),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const blockLogRef = db.collection('userBlocks').doc(`${blockerId}_${targetUserId}`);
+    transaction.set(blockLogRef, {
+      blockerId,
+      targetUserId,
+      status: 'blocked',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+  });
+
+  return { success: true, blockedUserId: targetUserId };
+});
+
+export const unblockUserAccount = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated to unblock someone.');
+  }
+
+  const blockerId = context.auth.uid;
+  const targetUserId = data?.targetUserId;
+
+  if (!targetUserId || typeof targetUserId !== 'string') {
+    throw new functions.https.HttpsError('invalid-argument', 'targetUserId is required.');
+  }
+
+  const db = admin.firestore();
+
+  await db.runTransaction(async (transaction) => {
+    const blockerRef = db.collection('users').doc(blockerId);
+    const targetRef = db.collection('users').doc(targetUserId);
+
+    const [blockerSnap, targetSnap] = await Promise.all([transaction.get(blockerRef), transaction.get(targetRef)]);
+
+    if (!blockerSnap.exists || !targetSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'User data not found.');
+    }
+
+    transaction.update(blockerRef, {
+      blockedUsers: admin.firestore.FieldValue.arrayRemove(targetUserId),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    transaction.update(targetRef, {
+      blockedBy: admin.firestore.FieldValue.arrayRemove(blockerId),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const blockLogRef = db.collection('userBlocks').doc(`${blockerId}_${targetUserId}`);
+    transaction.set(blockLogRef, {
+      blockerId,
+      targetUserId,
+      status: 'unblocked',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+  });
+
+  return { success: true, unblockedUserId: targetUserId };
 });
 
 

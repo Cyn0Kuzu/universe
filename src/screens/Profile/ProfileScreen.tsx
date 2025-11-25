@@ -41,6 +41,7 @@ import { getClubMembershipsFromStorage } from '../../utils/clubStorageManager';
 import { useImagePreview } from '../../contexts/ImagePreviewContext';
 
 const AVATAR_SIZE = 96;
+const COVER_HEIGHT = 220;
 const firebase = getFirebaseCompatSync();
 
 const ProfileScreen: React.FC = () => {
@@ -54,6 +55,7 @@ const ProfileScreen: React.FC = () => {
   const floatingMenuOffset = useMemo(() => ({
     top: Math.max(insets.top, 0) + 8,
   }), [insets.top]);
+  const coverSafeAreaPadding = useMemo(() => Math.max(insets.top, 16), [insets.top]);
   const avatarPositionStyle = useMemo(() => ({
     left: Math.max((windowWidth - AVATAR_SIZE) / 2, 16),
   }), [windowWidth]);
@@ -1062,6 +1064,16 @@ const ProfileScreen: React.FC = () => {
       updates.followedClubs = [];
       needsUpdate = true;
     }
+
+    if (!Array.isArray(userProfile.blockedUsers)) {
+      updates.blockedUsers = [];
+      needsUpdate = true;
+    }
+
+    if (!Array.isArray(userProfile.blockedBy)) {
+      updates.blockedBy = [];
+      needsUpdate = true;
+    }
     
     // Update profile if needed
     if (needsUpdate) {
@@ -1174,9 +1186,17 @@ const ProfileScreen: React.FC = () => {
       />
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Cover Section */}
-      <View style={styles.coverSection}>
+      <View
+        style={[
+          styles.coverSection,
+          {
+            paddingTop: coverSafeAreaPadding,
+            height: COVER_HEIGHT + coverSafeAreaPadding,
+          },
+        ]}
+      >
         <TouchableOpacity 
-          style={styles.coverBackground} 
+          style={styles.coverTouchable} 
           onPress={() => {
             if (userProfile?.coverImage) {
               handleImageZoom(userProfile.coverImage, 'Kapak Fotoğrafı');
@@ -1228,6 +1248,14 @@ const ProfileScreen: React.FC = () => {
           >
             <Menu.Item onPress={() => setLogoutDialogVisible(true)} title="Çıkış Yap" icon="logout" />
             <Menu.Item onPress={() => setDeleteAccountDialogVisible(true)} title="Hesabı Sil" icon="delete" />
+            <Menu.Item
+              onPress={() => {
+                setMenuVisible(false);
+                navigation.navigate('BlockedUsers');
+              }}
+              title="Engellediklerim"
+              icon="account-cancel"
+            />
           </Menu>
         </View>
         
@@ -1619,15 +1647,20 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   coverSection: {
-    height: 220, // Increased height to account for status bar
+    height: COVER_HEIGHT,
     position: 'relative',
     marginTop: 0,
   },
-  coverBackground: {
+  coverTouchable: {
+    flex: 1,
     width: '100%',
-    height: '100%',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     overflow: 'hidden',
-    position: 'absolute',
+  },
+  coverBackground: {
+    flex: 1,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },

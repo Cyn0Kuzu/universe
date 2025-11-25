@@ -2,7 +2,7 @@
   "expo": {
     "name": "universee",
     "slug": "universe-kampus",
-        "version": "1.5.45",
+        "version": "1.5.47",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.universekampus.universeapp20261",
-          "buildNumber": "621",
+          "buildNumber": "623",
       "requireFullScreen": false,
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
@@ -43,7 +43,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.universekampus.universeapp20261",
-          "versionCode": 621,
+          "versionCode": 623,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

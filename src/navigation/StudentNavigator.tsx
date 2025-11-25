@@ -25,6 +25,7 @@ import StudentEventsListScreen from '../screens/Profile/StudentEventsListScreen'
 import NotificationScreen from '../screens/Home/NotificationScreen';
 import MyMembershipsScreen from '../screens/Profile/MyMembershipsScreen';
 import FixedNotificationScreen from '../screens/Home/FixedNotificationScreen';
+import BlockedUsersScreen from '../screens/Profile/BlockedUsersScreen';
 // import AdminPanel from '../components/AdminPanel'; // Removed - not needed
 // import ClubProfileScreen from '../screens/Club/ClubProfileScreen'; // Import sorunu
 
@@ -56,6 +57,7 @@ export type StudentStackParamList = {
   MyMemberships: undefined; // Yeni ekran - Üye Olduklarım
   FixedNotifications: undefined; // Sabit bildirimler
   ModernLeaderboard: undefined; // Modern lider tablosu
+  BlockedUsers: undefined;
   // Buraya diğer stack ekranları eklenebilir
 };
 
@@ -326,6 +328,13 @@ const StudentNavigator = () => {
       <StudentStack.Screen 
         name="ModernLeaderboard" 
         component={StatisticsLeaderboardScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+      <StudentStack.Screen
+        name="BlockedUsers"
+        component={BlockedUsersScreen}
         options={{
           headerShown: false
         }}

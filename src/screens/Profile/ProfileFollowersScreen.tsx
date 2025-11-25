@@ -38,6 +38,7 @@ interface User {
   bio?: string;
   isFollowing?: boolean;
   userType?: 'student' | 'club';
+  blockedUsers?: string[];
 }
 
 const ProfileFollowersScreen: React.FC = () => {
@@ -45,7 +46,7 @@ const ProfileFollowersScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<StudentStackParamList>>();
   const route = useRoute<ProfileFollowersScreenRouteProp>();
   const { userId } = route.params;
-  const { currentUser, isClubAccount } = useAuth();
+  const { currentUser, isClubAccount, userProfile: authUserProfile } = useAuth();
   
   const [user, setUser] = useState<{
     id: string;
@@ -77,6 +78,17 @@ const ProfileFollowersScreen: React.FC = () => {
       user.department?.toLowerCase().includes(query)
     );
   }, [followers, searchQuery]);
+
+  const isUserHidden = useCallback(
+    (targetId: string, targetBlockedUsers?: string[]) => {
+      if (!currentUser?.uid) return false;
+      const blockedByMe =
+        Array.isArray(authUserProfile?.blockedUsers) && authUserProfile!.blockedUsers.includes(targetId);
+      const blockedMe = Array.isArray(targetBlockedUsers) && targetBlockedUsers.includes(currentUser.uid);
+      return blockedByMe || blockedMe;
+    },
+    [authUserProfile?.blockedUsers, currentUser?.uid]
+  );
 
   // Avatar label'ı güvenli şekilde al
   const getAvatarLabel = (user: User): string => {
@@ -155,6 +167,9 @@ const ProfileFollowersScreen: React.FC = () => {
       const formattedFollowers: User[] = [];
       
       for (const item of followersData) {
+        if (isUserHidden(item.id, item.blockedUsers)) {
+          continue;
+        }
         // Eğer giriş yapmış kullanıcı varsa, takip durumunu kontrol et
         let isFollowing = false;
         if (currentUser) {
@@ -168,7 +183,8 @@ const ProfileFollowersScreen: React.FC = () => {
           email: item.email,
           profileImage: item.photoURL,
           isFollowing,
-          userType: 'student' as const
+          userType: 'student' as const,
+          blockedUsers: Array.isArray(item.blockedUsers) ? item.blockedUsers : [],
         });
       }
       
@@ -190,7 +206,7 @@ const ProfileFollowersScreen: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [userId, currentUser]);
+  }, [userId, currentUser, isUserHidden]);
 
   // Ana initialization useEffect - Tüm listener'ları başlat
   useEffect(() => {

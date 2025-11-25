@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Image, ScrollView, ActivityIndicator, Share } from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Image, ScrollView, ActivityIndicator, Share, Alert } from 'react-native';
 import { Text, useTheme, Button, Avatar, Card, Chip, Divider, Searchbar } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -35,6 +35,7 @@ interface User {
   university?: string;
   department?: string;
   userType?: string;
+  blockedUsers?: string[];
 }
 
 interface Club {
@@ -106,7 +107,7 @@ interface Event {
 const HomeScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<StudentStackParamList>>();
-  const { currentUser } = useAuth();
+  const { currentUser, userProfile: authUserProfile } = useAuth();
   const { fontSizes, spacing, shadows, borderRadius, isTablet, isSmallDevice } = useResponsiveDesign();
   
   const [followedClubs, setFollowedClubs] = useState<Club[]>([]);
@@ -139,6 +140,20 @@ const HomeScreen: React.FC = () => {
   
   // Sort states
   const [sortOption, setSortOption] = useState<'newest' | 'oldest' | 'upcoming' | 'popular'>('newest');
+  const blockedUserIds = useMemo(
+    () => (Array.isArray(authUserProfile?.blockedUsers) ? authUserProfile!.blockedUsers : []),
+    [authUserProfile?.blockedUsers]
+  );
+
+  const shouldHideUser = useCallback(
+    (candidate?: { id?: string; blockedUsers?: string[] }) => {
+      if (!candidate?.id || !currentUser?.uid) return false;
+      const blockedByMe = blockedUserIds.includes(candidate.id);
+      const blockedMe = Array.isArray(candidate.blockedUsers) && candidate.blockedUsers.includes(currentUser.uid);
+      return blockedByMe || blockedMe;
+    },
+    [blockedUserIds, currentUser?.uid]
+  );
   
   // Bildirim sayısını al
   const { unreadCount: unreadNotificationCount, refreshCount: refreshNotificationCount } = useNotificationCount();
@@ -162,7 +177,7 @@ const HomeScreen: React.FC = () => {
     } catch (error) {
       console.error('Error fetching user joined events:', error);
     }
-  }, [currentUser, attachClubStatsListener]);
+  }, [currentUser]);
 
   useEffect(() => {
     return () => {
@@ -789,9 +804,10 @@ const HomeScreen: React.FC = () => {
       
       snapshot.forEach(doc => {
         const userData = doc.data();
-        // Mevcut kullanıcıyı hariç tut
-        if (doc.id !== currentUser?.uid) {
-          users.push({
+        if (doc.id === currentUser?.uid) {
+          return;
+        }
+        const candidate: User = {
             id: doc.id,
             displayName: userData.displayName,
             name: userData.name,
@@ -803,8 +819,11 @@ const HomeScreen: React.FC = () => {
             avatarColor: userData.avatarColor,
             university: userData.university,
             department: userData.department,
-            userType: userData.userType
-          });
+          userType: userData.userType,
+          blockedUsers: Array.isArray(userData.blockedUsers) ? userData.blockedUsers : [],
+        };
+        if (!shouldHideUser(candidate)) {
+          users.push(candidate);
         }
       });
       
@@ -876,8 +895,10 @@ const HomeScreen: React.FC = () => {
         
         snapshot.forEach(doc => {
           const userData = doc.data();
-          if (doc.id !== currentUser?.uid) {
-            const user = {
+          if (doc.id === currentUser?.uid) {
+            return;
+          }
+          const user: User = {
               id: doc.id,
               displayName: userData.displayName,
               name: userData.name,
@@ -889,10 +910,14 @@ const HomeScreen: React.FC = () => {
               avatarColor: userData.avatarColor,
               university: userData.university,
               department: userData.department,
-              userType: userData.userType
+            userType: userData.userType,
+            blockedUsers: Array.isArray(userData.blockedUsers) ? userData.blockedUsers : [],
             };
             
-            // Arama kriterlerine uyan kullanıcıları ekle
+          if (shouldHideUser(user)) {
+            return;
+          }
+          
             const displayName = (user.displayName || '').toLowerCase();
             const name = (user.name || '').toLowerCase();
             const firstName = (user.firstName || '').toLowerCase();
@@ -907,14 +932,15 @@ const HomeScreen: React.FC = () => {
                 fullName.includes(queryLower) ||
                 email.includes(queryLower)) {
               newUsers.push(user);
-            }
           }
         });
         
         // Duplikatları kaldır ve birleştir
-        const userMap = new Map();
+        const userMap = new Map<string, User>();
         [...allUsers, ...newUsers].forEach(user => {
+          if (!shouldHideUser(user)) {
           userMap.set(user.id, user);
+          }
         });
         
         const updatedAllUsers = Array.from(userMap.values());
@@ -922,6 +948,9 @@ const HomeScreen: React.FC = () => {
         
         // Güncellenmiş listeden tekrar filtrele
         filteredUsers = updatedAllUsers.filter(user => {
+          if (shouldHideUser(user)) {
+            return false;
+          }
           const displayName = (user.displayName || '').toLowerCase();
           const name = (user.name || '').toLowerCase();
           const firstName = (user.firstName || '').toLowerCase();
@@ -1014,6 +1043,12 @@ const HomeScreen: React.FC = () => {
     
     if (!userId) {
       console.error('❌ No userId provided to handleViewUserProfile');
+      return;
+    }
+    
+    const candidate = searchResults.find(user => user.id === userId) || allUsers.find(user => user.id === userId);
+    if (shouldHideUser(candidate || { id: userId })) {
+      Alert.alert('Profil Gizli', 'Bu kullanıcıyla ilgili içerikler engellendi.');
       return;
     }
     

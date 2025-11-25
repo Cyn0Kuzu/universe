@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -11,15 +11,14 @@ import {
   ViewToken, 
   Animated,
   Platform,
-  Modal,
-  ScrollView
+  ScrollView,
+  Linking
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme, Checkbox } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { TermsOfService, PrivacyPolicy } from '../../components/legal';
 import { CustomTheme } from '../../types/theme';
 
 const { width, height } = Dimensions.get('window');
@@ -39,13 +38,13 @@ interface SlideItem {
   features: string[];
 }
 
+const POLICY_URL = 'https://cyn0kuzu.github.io/universe/';
+
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
   const baseTheme = useTheme();
   const theme = baseTheme as unknown as CustomTheme;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false);
-  const [showTermsModal, setShowTermsModal] = useState<boolean>(false);
-  const [showPrivacyModal, setShowPrivacyModal] = useState<boolean>(false);
   const flatListRef = useRef<FlatList>(null);
   
   // Create animated values for elements
@@ -62,6 +61,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
       setCurrentIndex(viewableItems[0].index || 0);
     }
   }).current;
+
+  const openPolicyLink = useCallback(async () => {
+    try {
+      await Linking.openURL(POLICY_URL);
+    } catch (error) {
+      console.error('❌ Policy link could not be opened:', error);
+    }
+  }, []);
 
   // Define slide data
   const slides: SlideItem[] = [
@@ -403,13 +410,13 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
                 color={theme.colors.primary}
               />
               <Text style={[styles.termsText, { color: theme.colors.placeholder }]}>
-                <TouchableOpacity onPress={() => setShowTermsModal(true)}>
+                <TouchableOpacity onPress={openPolicyLink}>
                   <Text style={[styles.termsLink, { color: theme.colors.primary }]}>
                     Kullanım Şartları
                   </Text>
                 </TouchableOpacity>
                 {' '} ve {' '}
-                <TouchableOpacity onPress={() => setShowPrivacyModal(true)}>
+                <TouchableOpacity onPress={openPolicyLink}>
                   <Text style={[styles.termsLink, { color: theme.colors.primary }]}>
                     Gizlilik Politikası
                   </Text>
@@ -431,23 +438,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Terms of Service Modal */}
-      <Modal
-        visible={showTermsModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-      >
-        <TermsOfService onClose={() => setShowTermsModal(false)} />
-      </Modal>
-
-      {/* Privacy Policy Modal */}
-      <Modal
-        visible={showPrivacyModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-      >
-        <PrivacyPolicy onClose={() => setShowPrivacyModal(false)} />
-      </Modal>
     </SafeAreaView>
   );
 };

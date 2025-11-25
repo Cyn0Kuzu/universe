@@ -167,6 +167,7 @@ export interface NotificationBase extends BaseEntity {
   eventId?: string;
   clubId?: string;
   userId?: string;
+  _collection?: string;
 }
 
 export type NotificationType = 

@@ -25,7 +25,7 @@ export const useNotificationCount = () => {
         notificationsRef.where('recipientId', '==', currentUser.uid).get(),
       ]);
 
-      const docMap = new Map<string, firebaseCompat.firestore.QueryDocumentSnapshot>();
+      const docMap = new Map<string, firebaseCompat.firestore.DocumentSnapshot>();
       [userIdSnapshot, recipientSnapshot].forEach(snapshot => {
         snapshot.docs.forEach(doc => {
           if (!docMap.has(doc.id)) {

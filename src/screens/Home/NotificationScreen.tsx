@@ -228,7 +228,7 @@ const NotificationScreen: React.FC = () => {
         notificationsRef.where('recipientId', '==', currentUser.uid).limit(50).get(),
       ]);
 
-      const combinedDocs = new Map<string, firebaseCompat.firestore.QueryDocumentSnapshot>();
+      const combinedDocs = new Map<string, firebaseCompat.firestore.DocumentSnapshot>();
       [userIdSnapshot, recipientSnapshot].forEach((snapshot) => {
         snapshot.docs.forEach((doc) => {
           if (!combinedDocs.has(doc.id)) {
