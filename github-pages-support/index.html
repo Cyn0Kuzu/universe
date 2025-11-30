@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universe Campus - Destek ve Yardım</title>
+    <title>Universe Kampüs - Politika ve Kullanım Şartları</title>
     <style>
         * {
             margin: 0;
@@ -12,290 +12,774 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            padding: 20px;
         }
         
-        header {
-            background: linear-gradient(135deg, #6750A4 0%, #764ba2 100%);
-            color: white;
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
             padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
         
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+        .header h1 {
+            color: #2c3e50;
+            font-size: 3em;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        
+        .last-updated {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .last-updated strong {
+            color: #2e7d32;
         }
         
         .content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
             padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
         
-        .buttons-grid {
+        .policies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .policy-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .policy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .policy-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .policy-card p {
+            color: #7f8c8d;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .permission-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .permission-section h2 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+        
+        .permission-section p {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        
+        .section-tag {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.12);
+            color: #4b5fc4;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .info-block {
+            background: #eef1ff;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #e1f5fe;
+            color: #0277bd;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            margin-right: 8px;
+        }
+        
+        .list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .list-grid ul {
+            list-style: none;
+            padding-left: 0;
+            color: #566573;
+        }
+        
+        .list-grid li {
+            margin-bottom: 10px;
+            padding-left: 18px;
+            position: relative;
+        }
+        
+        .list-grid li::before {
+            content: "•";
+            color: #667eea;
+            position: absolute;
+            left: 0;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .data-table th, .data-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+            color: #53606b;
+        }
+        
+        .data-table th {
+            background: #f3f5ff;
+            color: #2c3e50;
+        }
+        
+        .contact-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin: 30px 0;
+            margin-top: 20px;
         }
         
-        .policy-button {
-            background: linear-gradient(135deg, #6750A4 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
+        .contact-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #edf0ff;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            text-decoration: none;
+            padding: 30px;
             text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         
-        .policy-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        .footer h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
         }
         
-        .policy-button .icon {
-            font-size: 2.5em;
+        .footer p {
+            color: #7f8c8d;
             margin-bottom: 10px;
         }
         
-        .policy-button .title {
-            font-size: 1.3em;
-            font-weight: bold;
+        .compliance-note {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .compliance-note strong {
+            color: #155724;
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #2196f3;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-highlight h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .feature-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .feature-item strong {
+            color: #1565c0;
+            display: block;
             margin-bottom: 5px;
         }
         
-        .policy-button .desc {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-        
-        .contact-box {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 30px;
-            border-radius: 15px;
-            margin: 40px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .contact-box h2 {
-            color: #6750A4;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-        
-        .contact-item {
-            margin: 15px 0;
-            font-size: 1.1em;
-        }
-        
-        .contact-item strong {
-            color: #6750A4;
-            display: inline-block;
-            min-width: 150px;
-        }
-        
-        a {
-            color: #6750A4;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-        
-        a:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-        
-        .app-info {
-            background: #e7f3ff;
-            border-left: 5px solid #2196F3;
-            padding: 20px;
-            margin: 30px 0;
-            border-radius: 5px;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 30px;
-            background: #f5f5f5;
-            color: #666;
-            margin-top: 40px;
-        }
-        
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 2em;
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
             }
             
             .content {
                 padding: 20px;
             }
             
-            .buttons-grid {
+            .policies-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .contact-item strong {
-                display: block;
-                margin-bottom: 5px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🚀 Universe Campus</h1>
-            <p>Üniversite Kampüs Yaşam Platformu</p>
-        </header>
-        
-        <div class="content">
-            <h2 style="text-align: center; color: #6750A4; margin-bottom: 30px;">Politikalar ve Kullanım Şartları</h2>
+        <div class="header">
+            <h1>🌌 Universe Kampüs</h1>
+            <p>Politikalar, yasal belgeler ve mağaza onay gereksinimleri</p>
             
-            <div class="buttons-grid">
-                <a href="#gizlilik" class="policy-button" onclick="showSection('gizlilik'); return false;">
-                    <div class="icon">🔒</div>
-                    <div class="title">Gizlilik Politikası</div>
-                    <div class="desc">Kişisel verilerinizin korunması</div>
-                </a>
-                
-                <a href="#kullanim" class="policy-button" onclick="showSection('kullanim'); return false;">
-                    <div class="icon">📋</div>
-                    <div class="title">Kullanım Şartları</div>
-                    <div class="desc">Uygulama kullanım kuralları</div>
-                </a>
-                
-                <a href="#cocuk-guvenligi" class="policy-button" onclick="showSection('cocuk-guvenligi'); return false;">
-                    <div class="icon">👶</div>
-                    <div class="title">Çocuk Güvenliği</div>
-                    <div class="desc">Çocuk koruma standartları</div>
-                </a>
-                
-                <a href="#guvenlik" class="policy-button" onclick="showSection('guvenlik'); return false;">
-                    <div class="icon">🛡️</div>
-                    <div class="title">Güvenlik Politikası</div>
-                    <div class="desc">Güvenlik önlemleri</div>
-                </a>
-                
-                <a href="#topluluk" class="policy-button" onclick="showSection('topluluk'); return false;">
-                    <div class="icon">🏫</div>
-                    <div class="title">Topluluk Kuralları</div>
-                    <div class="desc">Topluluk standartları</div>
-                </a>
-                
-                <a href="#iletisim" class="policy-button" onclick="showSection('iletisim'); return false;">
-                    <div class="icon">📞</div>
-                    <div class="title">İletişim ve Destek</div>
-                    <div class="desc">Destek ve iletişim bilgileri</div>
-                </a>
-            </div>
-
-            <div id="iletisim" class="contact-box" style="display: none;">
-                <h2>📧 İletişim ve Destek</h2>
-                <div class="contact-item">
-                    <strong>Email:</strong> 
-                    <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a>
-                </div>
-                <div class="contact-item">
-                    <strong>Yanıt Süresi:</strong> 24-48 saat içinde
-                </div>
-                <p style="margin-top: 20px; color: #666;">
-                    Sorularınız, önerileriniz veya teknik destek için yukarıdaki email adresine yazabilirsiniz.
-                </p>
-            </div>
-
-            <div id="gizlilik" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🔒 Gizlilik Politikası</h2>
-                <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi için uygulama içindeki Gizlilik Politikası bölümüne bakabilirsiniz.</p>
-            </div>
-
-            <div id="kullanim" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">📋 Kullanım Şartları</h2>
-                <p>Universe Campus uygulamasını kullanırken uymanız gereken kurallar ve şartlar için uygulama içindeki Kullanım Şartları bölümüne bakabilirsiniz.</p>
-            </div>
-
-            <div id="cocuk-guvenligi" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">👶 Çocuk Güvenliği</h2>
-                <p>13 yaş altı kullanıcıların güvenliği için aldığımız özel önlemler ve standartlar için uygulama içindeki Çocuk Güvenliği bölümüne bakabilirsiniz.</p>
-            </div>
-
-            <div id="guvenlik" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🛡️ Güvenlik Politikası</h2>
-                <p>Uygulamanızın ve verilerinizin güvenliğini sağlamak için uyguladığımız güvenlik önlemleri için uygulama içindeki Güvenlik Politikası bölümüne bakabilirsiniz.</p>
-            </div>
-
-            <div id="topluluk" style="display: none; margin-top: 30px;">
-                <h2 style="color: #6750A4; margin-bottom: 20px;">🏫 Topluluk Kuralları</h2>
-                <p>Sağlıklı ve güvenli bir kampüs ortamı için topluluk kuralları ve davranış standartları için uygulama içindeki Topluluk Kuralları bölümüne bakabilirsiniz.</p>
-            </div>
-
-            <div class="app-info">
-                <h3 style="color: #2196F3; margin-bottom: 15px;">📱 Uygulama Bilgileri</h3>
-                <p><strong>Uygulama Adı:</strong> Universe Campus</p>
-                <p><strong>Versiyon:</strong> 1.5.1</p>
-                <p><strong>Platform:</strong> iOS</p>
-                <p><strong>Minimum iOS:</strong> 15.1+</p>
+            <div class="last-updated">
+                <strong>Son Güncelleme:</strong> 30 Kasım 2025<br>
+                Universe Campus uygulamasının (iOS 1.5.69 / Android 1.5.69, sürüm kodu 645) resmi politika portalı.
             </div>
         </div>
-
-        <footer>
-            <p><strong>Universe Campus</strong></p>
-            <p>Üniversite öğrencileri için kampüs yaşam platformu</p>
-            <p style="margin-top: 20px; font-size: 0.9em;">
-                © 2025 Universe Campus. Tüm hakları saklıdır.
-            </p>
-        </footer>
-    </div>
-
-    <script>
-        function showSection(sectionId) {
-            // Tüm bölümleri gizle
-            const sections = ['gizlilik', 'kullanim', 'cocuk-guvenligi', 'guvenlik', 'topluluk', 'iletisim'];
-            sections.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.style.display = 'none';
-                }
-            });
-            
-            // Seçilen bölümü göster
-            const selectedSection = document.getElementById(sectionId);
-            if (selectedSection) {
-                selectedSection.style.display = 'block';
+        
+        <div class="content">
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">📋 Politika ve Belgeler</h2>
+            <p>Bu sayfa App Store 1.2 (Safety), 2.3.3 (Accurate Metadata) ve 5.1.2 (Privacy) gereksinimlerini karşılamak için hazırlanmış olup uygulamadaki gerçek özelliklere göre düzenli olarak güncellenir.</p>
+            <div class="policies-grid">
+                <a href="#foreground-service" class="policy-card" style="border-left-color: #ff6b35; background: linear-gradient(135deg, #fff5f0 0%, #ffe8e0 100%);">
+                    <h3><span class="icon">🔧</span>FOREGROUND_SERVICE_DATA_SYNC İzni</h3>
+                    <p>Uygulamamızın arka planda veri senkronizasyonu için kullandığı izin hakkında detaylı açıklama ve teknik bilgiler.</p>
+                </a>
                 
-                // Sayfayı bölüme kaydır
-                selectedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
-        // URL hash'e göre bölüm göster
-        window.addEventListener('load', function() {
-            const hash = window.location.hash.substring(1);
-            if (hash) {
-                showSection(hash);
-            }
-        });
-    </script>
+                <a href="#privacy" class="policy-card">
+                    <h3><span class="icon">🔒</span>Gizlilik Politikası</h3>
+                    <p>Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında detaylı bilgi.</p>
+                </a>
+                
+                <a href="#terms" class="policy-card">
+                    <h3><span class="icon">📋</span>Kullanım Şartları</h3>
+                    <p>Universe Kampüs uygulamasını kullanırken uymanız gereken kurallar ve şartlar.</p>
+                </a>
+                
+                <a href="#child-safety" class="policy-card">
+                    <h3><span class="icon">👶</span>Çocuk Güvenliği</h3>
+                    <p>13 yaş altı kullanıcıların güvenliği için aldığımız özel önlemler ve standartlar.</p>
+                </a>
+                
+                <a href="#security" class="policy-card">
+                    <h3><span class="icon">🛡️</span>Güvenlik Politikası</h3>
+                    <p>Uygulamanızın ve verilerinizin güvenliğini sağlamak için uyguladığımız güvenlik önlemleri.</p>
+                </a>
+                
+                <a href="#community" class="policy-card">
+                    <h3><span class="icon">🏫</span>Topluluk Kuralları</h3>
+                    <p>Sağlıklı ve güvenli bir kampüs ortamı için topluluk kuralları ve davranış standartları.</p>
+                </a>
+                
+                <a href="#reporting" class="policy-card" style="border-left-color: #e91e63; background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);">
+                    <h3><span class="icon">🚨</span>Bildirim ve Engelleme</h3>
+                    <p>Kullanıcı, yorum, profil ve içerik bildirimi ile engelleme özellikleri hakkında bilgi.</p>
+                </a>
+                
+                <a href="#contact" class="policy-card">
+                    <h3><span class="icon">📞</span>İletişim ve Destek</h3>
+                    <p>Sorularınız, önerileriniz veya sorunlarınız için bizimle iletişime geçin.</p>
+                </a>
+            </div>
+            
+            <div class="compliance-note">
+                <strong>Universe Kampüs</strong> - Güvenli ve Eğitici Kampüs Yaşamı<br>
+                Tüm hakları saklıdır © 2025<br><br>
+                Bu politikalar Google Play Store ve App Store gereksinimlerine uygun olarak hazırlanmıştır.
+            </div>
+        </div>
+        
+        <!-- FOREGROUND SERVICE DATA SYNC Section -->
+        <div id="foreground-service" class="content">
+            <span class="section-tag">FOREGROUND_SERVICE_DATA_SYNC</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🔧 Arka Plan Veri Senkronizasyonu İzni</h2>
+            <p>Universe Campus uygulaması, kullanıcı deneyimini iyileştirmek için <code>FOREGROUND_SERVICE_DATA_SYNC</code> iznini kullanmaktadır.</p>
+            
+            <div class="feature-highlight">
+                <h3>📱 İznin Kullanım Amacı</h3>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <strong>Etkinlik Bildirimleri</strong>
+                        Yaklaşan etkinlikler için zamanında bildirim gönderimi
+                    </div>
+                    <div class="feature-item">
+                        <strong>Kulüp Güncellemeleri</strong>
+                        Üye olunan kulüplerin duyuru ve aktivite bildirimleri
+                    </div>
+                    <div class="feature-item">
+                        <strong>Mesaj Senkronizasyonu</strong>
+                        Yeni mesaj ve etkileşim bildirimlerinin alınması
+                    </div>
+                    <div class="feature-item">
+                        <strong>Rapor Durumu</strong>
+                        Gönderilen raporların işlenme durumu bildirimleri
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-block">
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">🔒 Gizlilik ve Güvenlik</h3>
+                <ul style="margin-left: 20px; color: #566573;">
+                    <li>Bu izin yalnızca bildirim ve veri senkronizasyonu için kullanılır</li>
+                    <li>Konum takibi veya kullanıcı izleme yapılmaz</li>
+                    <li>Arka plan işlemleri minimum pil tüketimi için optimize edilmiştir</li>
+                    <li>Kullanıcı istediği zaman bildirimleri kapatabilir</li>
+                    <li>Firebase Cloud Messaging (FCM) altyapısı kullanılmaktadır</li>
+                </ul>
+            </div>
+            
+            <div class="info-block">
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">⚙️ Teknik Detaylar</h3>
+                <table class="data-table">
+                    <tr>
+                        <td><strong>İzin Adı</strong></td>
+                        <td>android.permission.FOREGROUND_SERVICE_DATA_SYNC</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Minimum SDK</strong></td>
+                        <td>Android 8.0 (API 26)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hedef SDK</strong></td>
+                        <td>Android 14 (API 35)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bildirim Servisi</strong></td>
+                        <td>Firebase Cloud Messaging + Expo Notifications</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pil Optimizasyonu</strong></td>
+                        <td>Doze mode uyumlu, WorkManager entegrasyonu</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div id="privacy" class="content">
+            <span class="section-tag">Gizlilik Politikası</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🔒 Kişisel Verilerin Korunması</h2>
+            <p>Universe Campus; Firebase Authentication, Firestore, Storage, Expo Push Notification ve Google Maps SDK'larını kullanır. Veriler yalnızca hizmet sunmak, güvenliği sağlamak ve zorunlu yasal yükümlülükler için işlenir.</p>
+            <div class="list-grid">
+                <div>
+                    <h3>Toplanan Bilgi</h3>
+                    <ul>
+                        <li>Hesap: ad, soyad, üniversite, e-posta, profil fotoğrafı</li>
+                        <li>İçerik: paylaşılan kartlar, etkinlikler, kulüp üyelikleri</li>
+                        <li>Cihaz: işletim sistemi sürümü, çökme günlükleri, push token</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Kullanım Amaçları</h3>
+                    <ul>
+                        <li>Kimlik doğrulama ve hesap yönetimi</li>
+                        <li>Bildirim ve rapor süreçlerinin işletilmesi</li>
+                        <li>Güvenlik denetimleri ve kötüye kullanım tespiti</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Paylaşım</h3>
+                    <ul>
+                        <li>Google Firebase (veri saklama ve loglama)</li>
+                        <li>Google Maps SDK (kampüs konumları)</li>
+                        <li>Expo/Apple Push servisleri (bildirim gönderimi)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="info-block">
+                <p><span class="badge">Veri Saklama</span> Aktif hesaplar silme isteğine kadar saklanır. Engellenen kullanıcı kayıtları ve rapor logları 24 ay tutulur. Çökme raporları 180 gün içinde anonimleştirilir.</p>
+                <p><span class="badge">Veri Silme</span> Profil → ⋮ → "Hesabı Sil" seçeneği veya <a href="mailto:memodee333@gmail.com">memodee333@gmail.com</a> adresine talep göndererek kapatabilirsiniz. Talep 30 gün içinde tamamlanır.</p>
+            </div>
+        </div>
+        
+        <div id="terms" class="content">
+            <span class="section-tag">Kullanım Şartları</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">📋 Hizmet Kapsamı ve Sorumluluklar</h2>
+            <p>Universe Campus, üniversite öğrencileri için kulüp ve etkinlik keşfi, içerik paylaşımı, profil görüntüleme ve raporlama/engelleme araçları sağlar. Uygulama iOS 15.1+ ve Android 8+ cihazlarda, çentikli ekranlar için safe-area optimizasyonu aktif olacak şekilde çalışır.</p>
+            <div class="list-grid">
+                <div>
+                    <h3>Kullanıcı Yükümlülükleri</h3>
+                    <ul>
+                        <li>Gerçek kimlik ve okul bilgisiyle kayıt olmak</li>
+                        <li>Topluluk kurallarına uygun içerik üretmek</li>
+                        <li>Profil menüsündeki "Bildir" özelliğini kötüye kullanmamak</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>İzinler ve Özellikler</h3>
+                    <ul>
+                        <li>Konum izni: yakın etkinlik önerileri için opsiyonel</li>
+                        <li>Bildirim izni: kulüp, rapor ve moderasyon yanıtları için zorunlu</li>
+                        <li>Arka plan veri senkronu: etkinlik verisini çevrimdışı saklama</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>İhlal Durumları</h3>
+                    <ul>
+                        <li>İlk ihlal: uygulama içi uyarı ve içerik kaldırma</li>
+                        <li>Tekrarı: hesabın geçici askıya alınması</li>
+                        <li>Ağır ihlal: kalıcı kapatma ve yasal raporlama</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Reporting Section -->
+        <div id="reporting" class="content">
+            <span class="section-tag">Bildirim ve Engelleme</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🚨 Kullanıcı Güvenliği Özellikleri</h2>
+            <p>Universe Campus, kullanıcıların güvenli bir ortamda etkileşim kurabilmesi için kapsamlı bildirim ve engelleme özellikleri sunar.</p>
+            
+            <div class="feature-highlight">
+                <h3>📋 Bildirim Türleri</h3>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <strong>👤 Profil Bildirimi</strong>
+                        Uygunsuz profil içeriği, sahte hesaplar veya spam hesapları bildirin
+                    </div>
+                    <div class="feature-item">
+                        <strong>💬 Yorum Bildirimi</strong>
+                        Uygunsuz, hakaret içeren veya spam yorumları bildirin
+                    </div>
+                    <div class="feature-item">
+                        <strong>📅 Etkinlik Bildirimi</strong>
+                        Yanıltıcı, uygunsuz veya spam etkinlikleri bildirin
+                    </div>
+                    <div class="feature-item">
+                        <strong>🏛️ Kulüp Bildirimi</strong>
+                        Kurallara aykırı kulüp içeriklerini bildirin
+                    </div>
+                </div>
+            </div>
+            
+            <div class="list-grid">
+                <div>
+                    <h3>🚫 Engelleme Özellikleri</h3>
+                    <ul>
+                        <li>Kullanıcıları profil menüsünden engelleyin</li>
+                        <li>Engellenen kişiler içeriklerinizi göremez</li>
+                        <li>Engellenen kişilerin içerikleri size gösterilmez</li>
+                        <li>"Engellediklerim" ekranından engelleri yönetin</li>
+                        <li>İstediğiniz zaman engeli kaldırabilirsiniz</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>📝 Bildirim Süreci</h3>
+                    <ul>
+                        <li>Üç nokta menüsünden "Bildir" seçeneğine tıklayın</li>
+                        <li>Bildirim kategorisini seçin</li>
+                        <li>Detaylı açıklama yazın (opsiyonel)</li>
+                        <li>Ekran görüntüsü ekleyebilirsiniz</li>
+                        <li>Gönder butonuna tıklayın</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>⏱️ İşlem Süreleri</h3>
+                    <ul>
+                        <li>Tüm bildirimler 24-48 saat içinde incelenir</li>
+                        <li>Acil durumlar (tehdit, taciz) 4 saat içinde değerlendirilir</li>
+                        <li>Sonuç e-posta ile bildirilir</li>
+                        <li>İhlal tespit edilirse içerik kaldırılır</li>
+                        <li>Tekrarlayan ihlallerde hesap askıya alınır</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="info-block">
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">📧 Bildirim E-posta Sistemi</h3>
+                <p>Tüm bildirimler otomatik olarak <strong>memodee333@gmail.com</strong> adresine iletilir. Bildirimler şu bilgileri içerir:</p>
+                <ul style="margin-left: 20px; color: #566573;">
+                    <li>Bildiren kullanıcı bilgileri</li>
+                    <li>Bildirilen içerik/kullanıcı detayları</li>
+                    <li>Bildirim kategorisi ve açıklaması</li>
+                    <li>Eklenen ekran görüntüleri (varsa)</li>
+                    <li>Zaman damgası ve cihaz bilgileri</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="child-safety" class="content">
+            <span class="section-tag">Çocuk Güvenliği</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">👶 Yaş Politikası ve Bildirim Akışı</h2>
+            <p>Universe Campus yalnızca 13 yaş ve üzeri kullanıcıları hedefler. Her içerik kartı ve profil, üç noktalı menü içinde "Bildir" ve "Engelle" seçeneklerini içerir. Kullanıcı kendi profilinde yalnızca "Çıkış Yap / Hesabı Sil / Engellediklerim" seçeneklerini görür.</p>
+            <div class="list-grid">
+                <div>
+                    <h3>Bildirim Süreci</h3>
+                    <ul>
+                        <li>"Bildir" formunda başlık, konu, içerik alanları zorunludur</li>
+                        <li>Gönderimler otomatik olarak `reports` koleksiyonuna kaydedilir</li>
+                        <li>Tüm bildirimler memodee333@gmail.com adresine e-posta olarak iletilir</li>
+                        <li>Ekran görüntüsü ekleme desteği mevcuttur</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Bloklama</h3>
+                    <ul>
+                        <li>Engellenen kişi, engelleyenin tüm içeriklerini göremez</li>
+                        <li>"Engellediklerim" ekranı üzerinden engel kaldırılabilir</li>
+                        <li>Engellenen eşleşmeler Firestore'da çift yönlü tutulur</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Acil Temas</h3>
+                    <ul>
+                        <li>emergency@universekampus.com – 15 dk içinde yanıt</li>
+                        <li>safety@universekampus.com – güvenlik ekibi</li>
+                        <li>memodee333@gmail.com – çocuk koruma sorumlusu</li>
+            </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="security" class="content">
+            <span class="section-tag">Güvenlik Politikası</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🛡️ Teknik ve Operasyonel Önlemler</h2>
+            <ul style="margin-left: 20px; color: #566573;">
+                <li>SSL/TLS ile tüm istemci–sunucu trafiği şifrelenir.</li>
+                <li>Firebase Security Rules, sadece oturum sahibi kullanıcının verisine erişimine izin verir.</li>
+                <li>Cloud Functions, rapor e-postaları ve engel eşitlemesi için kimlik doğrulamalı çağrılar kullanır.</li>
+                <li>Uygulama her açılışta engel/rapor listelerini senkronize ederek kötüye kullanımı önler.</li>
+                <li>iOS safe-area ve Android notch desteği ile kritik butonların üst üste binmesi engellenmiştir.</li>
+                <li>Nodemailer ile güvenli e-posta gönderimi sağlanır.</li>
+                <li>Tüm bildirimler Firebase Cloud Functions üzerinden işlenir.</li>
+            </ul>
+        </div>
+        
+        <div id="community" class="content">
+            <span class="section-tag">Topluluk Kuralları</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">🏫 Davranış Standartları</h2>
+            <div class="list-grid">
+                <div>
+                    <h3>Paylaşılabilecek İçerikler</h3>
+                    <ul>
+                        <li>Kulüp ve etkinlik duyuruları</li>
+                        <li>Kampüs yaşamına dair bilgi paylaşımı</li>
+                        <li>Doğrulanabilir akademik veya sosyal yardım çağrıları</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Yasaklı İçerikler</h3>
+                    <ul>
+                        <li>Nefret söylemi, taciz, tehdit</li>
+                        <li>Yanıltıcı veya spam içerikler</li>
+                        <li>Çocuklara zarar verebilecek içerikler</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Yaptırımlar</h3>
+                    <ul>
+                        <li>İçeriğin kaldırılması ve uyarı</li>
+                        <li>Geçici hesap kilidi</li>
+                        <li>Yetkili mercilere bildirim ve kalıcı ban</li>
+                    </ul>
+                </div>
+            </div>
+            </div>
+            
+        <div id="data-sharing" class="content">
+            <span class="section-tag">Veri Kullanımı</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">5.1.2 Uygunluğu – Veri İşleme ve Paylaşım</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Veri Kategorisi</th>
+                        <th>İşleme Amacı</th>
+                        <th>Hizmet Sağlayıcı / Lokasyon</th>
+                        <th>Saklama Süresi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hesap bilgileri</td>
+                        <td>Kimlik doğrulama, profil gösterimi</td>
+                        <td>Firebase Authentication (ABD / AB veri merkezleri)</td>
+                        <td>Hesap silinene kadar</td>
+                    </tr>
+                    <tr>
+                        <td>Profil ve içerik</td>
+                        <td>Feed, kulüp ve etkinlik dağıtımı</td>
+                        <td>Firestore & Storage (Google Cloud)</td>
+                        <td>Silme talebi + 30 gün</td>
+                    </tr>
+                    <tr>
+                        <td>Bildirim ve rapor kayıtları</td>
+                        <td>Güvenlik denetimi ve moderasyon</td>
+                        <td>Firestore + e-posta arşivi</td>
+                        <td>24 ay</td>
+                    </tr>
+                    <tr>
+                        <td>Cihaz ve performans logları</td>
+                        <td>Hata analizi, performans</td>
+                        <td>Expo / Google Play & App Store diagnostic</td>
+                        <td>180 gün</td>
+                    </tr>
+                    <tr>
+                        <td>Engelleme kayıtları</td>
+                        <td>Kullanıcı güvenliği</td>
+                        <td>Firestore (Google Cloud)</td>
+                        <td>Engel kaldırılana kadar</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="color: #566573;">Verilerinizi üçüncü taraf reklam ağlarıyla paylaşmıyoruz; Universe Campus'te hedefli reklam yoktur. Kullanıcılar, bildirim e-postalarından veya uygulama içi ayarlardan ileti tercihlerini değiştirebilir.</p>
+            </div>
+            
+        <div id="contact" class="content">
+            <span class="section-tag">İletişim</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">📞 Destek ve Yasal Başvuru Kanalları</h2>
+            <p>Her türlü gizlilik, güvenlik, mağaza uyumluluğu veya topluluk ihlali bildirimi için aşağıdaki kanallardan bize ulaşabilirsiniz.</p>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h3>Genel Destek</h3>
+                    <p><strong>E-posta:</strong> memodee333@gmail.com</p>
+                    <p>Yanıt süresi: 24-48 saat</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Güvenlik & Çocuk Koruma</h3>
+                    <p><strong>E-posta:</strong> safety@universekampus.com</p>
+                    <p><strong>Acil:</strong> emergency@universekampus.com</p>
+                    <p>Yanıt süresi: 15 dakika (acil)</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Yasal ve KVKK</h3>
+                    <p><strong>E-posta:</strong> legal@universekampus.com</p>
+                    <p><strong>Veri Silme:</strong> gizlilik@universe-kampus.com</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Mağaza İletişimi</h3>
+                    <p><strong>Apple Review Notları:</strong> App Store Connect → Universe Campus</p>
+                    <p><strong>Google Play:</strong> Play Console → Policy</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="compliance" class="content">
+            <span class="section-tag">Uyumluluk Durumu</span>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">✅ App Store & Google Play Gereksinimleri</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Politika Maddesi</th>
+                        <th>Durum</th>
+                        <th>Uygulamada Karşılığı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Apple 1.2.0 Safety – UGC</td>
+                        <td>✅ Uygun</td>
+                        <td>Profil, yorum ve içerik menülerinde "Bildir / Engelle", rapor e-postaları, engel listesi</td>
+                    </tr>
+                    <tr>
+                        <td>Apple 2.3.3 Performance – Metadata</td>
+                        <td>✅ Uygun</td>
+                        <td>Store açıklamaları yalnızca mevcut özellikleri (kulüp, etkinlik, rapor, engelleme) listeler</td>
+                    </tr>
+                    <tr>
+                        <td>Apple 5.1.2 Legal – Privacy</td>
+                        <td>✅ Uygun</td>
+                        <td>Uygulama içi ve bu sayfadaki gizlilik politikası, veri silme akışı</td>
+                    </tr>
+                    <tr>
+                        <td>Google Families / Safety</td>
+                        <td>✅ Uygun</td>
+                        <td>13+ yaş sınırlaması, rapor-ihbar mekanizması ve acil iletişim</td>
+                    </tr>
+                    <tr>
+                        <td>Google Play FOREGROUND_SERVICE</td>
+                        <td>✅ Uygun</td>
+                        <td>DATA_SYNC izni bildirim ve senkronizasyon için kullanılıyor</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="info-block">
+                <p><span class="badge">Testler</span> iPhone 15 Pro (iOS 18), iPhone SE (iOS 15), Pixel 7 (Android 14), Samsung Galaxy S21 (Android 13) cihazlarında safe-area ve profil görüntüsü problemleri giderilmiştir; tüm kritik butonlar notch alanından uzakta gösterilir.</p>
+                <p><span class="badge">Düzenli Değerlendirme</span> Aylık güvenlik toplantıları, çeyreklik içerik taraması ve rapor yanıt süresi takibi yapılır.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3>Universe Campus – Politika Portalı</h3>
+            <p>Bu doküman App Store ve Google Play politikalarındaki son değişiklikler takip edilerek güncellenir.</p>
+            <p><strong>URL:</strong> https://cyn0kuzu.github.io/universe/</p>
+            <p><strong>Sürüm:</strong> 1.5.69 (Kasım 2025)</p>
+            <p><strong>Bundle ID:</strong> com.universekampus.universeapp202611</p>
+            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                <p><strong>Yasal Uyarı:</strong> Universe, KVKK ve uluslararası çocuk koruma yasalarına uymayı taahhüt eder. Herhangi bir ihlal bildirimi derhal işleme alınır.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
